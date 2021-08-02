@@ -1,0 +1,25 @@
+# Default ignored files
+.idea/**
+__pycache__/**
+**.pyc
+mosaik_omnetpp_files/out/**
+mosaik_omnetpp_files/src/results/**
+*.pb.o
+*.pb.o.d
+/mosaik_omnetpp_observer/mosaik_omnetpp_observer
+/mosaik_omnetpp_observer/out/clang-release/mosaik_omnetpp_observer
+/mosaik_omnetpp_observer/out/clang-release/MosaikMessage_m.h.d
+/mosaik_omnetpp_observer/out/clang-release/MosaikMessage_m.o
+*.o.d
+*.o
+*.sca
+*.vci
+/mosaik_omnetpp_observer/results/General-\#0.vec
+*.settings.xml
+/mosaik_omnetpp_observer/Makefile
+/mosaik_omnetpp_observer/TikTokPacket_m.cc
+/mosaik_omnetpp_observer/TikTokPacket_m.h
+/mosaik_omnetpp_observer/out/clang-release/TikTokPacket_m.h.d
+/mosaik_omnetpp_observer/mosaik_omnetpp_observer_dbg
+/mosaik_omnetpp_observer/out/clang-debug/mosaik_omnetpp_observer_dbg
+/mosaik_omnetpp_observer/out/clang-debug/.last-copts

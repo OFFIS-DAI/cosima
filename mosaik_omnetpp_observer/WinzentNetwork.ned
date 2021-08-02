@@ -1,0 +1,116 @@
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+// 
+
+import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
+import inet.node.ethernet.Eth10M;
+import inet.node.ethernet.EtherLink;
+import inet.node.ethernet.EtherSwitch;
+import inet.node.inet.Router;
+import inet.node.inet.StandardHost;
+import inet.visualizer.integrated.IntegratedCanvasVisualizer;
+import MosaikObserverModule;
+
+
+channel MyEth10M extends EtherLink
+{
+    datarate = 10Mbps;
+}
+
+network WinzentNetwork
+{
+    submodules:
+        
+        observerModule : MosaikObserverModule {
+             @display("p=200,100");
+        }
+        
+        configurator: Ipv4NetworkConfigurator {
+            @display("p=100,100");
+        }
+
+        client0: StandardHost {
+            @display("p=721,100");
+
+        }
+        client2: StandardHost {
+            @display("p=1016.6,659.1");
+        }
+        client1: StandardHost {
+            @display("p=799.5,379.6");
+        }
+        router0: Router {
+            @display("p=577.2,638.3");
+        }
+        router1: Router {
+            @display("p=300.3,452.4");
+        }
+        switch0: EtherSwitch {
+            @display("p=800.8,657.8");
+        }
+        switch1: EtherSwitch {
+            @display("p=495.3,109.2");
+        }
+
+        visualizer: IntegratedCanvasVisualizer {
+            @display("p=98,209");
+        }
+
+        router2: Router {
+            @display("p=208,279.5");
+        }
+        router3: Router {
+            @display("p=422.5,301.6");
+        }
+        router4: Router {
+            @display("p=284.69998,128.7");
+        }
+        switch2: EtherSwitch {
+            @display("p=613.6,315.9");
+        }
+    connections:
+        switch0.ethg++ <--> Eth10M {  length = 1000km; } <--> client2.ethg++;
+        switch0.ethg++ <--> Eth10M {  length = 1000km; } <--> router0.ethg++;
+        router0.ethg++ <--> Eth10M {  length = 1000km; } <--> router1.ethg++;
+        router1.ethg++ <--> Eth10M {  length = 1000km; } <--> router2.ethg++;
+        client0.ethg++ <--> Eth10M {  length = 500km; } <--> switch1.ethg++;
+        router2.ethg++ <--> Eth10M {  length = 100km; } <--> router4.ethg++;
+        router2.ethg++ <--> Eth10M {  length = 500km; } <--> router1.ethg++;
+        router1.ethg++ <--> Eth10M {  length = 500km; } <--> router3.ethg++;
+        router3.ethg++ <--> Eth10M {  length = 50km; } <--> router4.ethg++;
+        router4.ethg++ <--> Eth10M {  length = 50km; } <--> switch1.ethg++;
+        router2.ethg++ <--> Eth10M {  length = 50km; } <--> router3.ethg++;
+        switch2.ethg++ <--> Eth10M {  length = 50km; } <--> client1.ethg++;
+        switch2.ethg++ <--> Eth10M {  length = 50km; } <--> router3.ethg++;
+}
+
+network MinimalNetwork
+{
+    submodules:
+        configurator: Ipv4NetworkConfigurator {
+            @display("p=100,100");
+        }
+
+        host0: StandardHost {
+            @display("p=580,233");
+
+        }
+        host1: StandardHost {
+            @display("p=98,384");
+        }
+
+    connections:
+        host0.ethg++ <--> Eth10M <--> host1.ethg++;
+
+}

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+message CosimaMsgGroup{
+
+    message CosimaMsg{
+    enum MsgType {
+        CMD = 0;
+        INFO = 1;
+        MAX_ADVANCE = 2;
+        WAITING = 3;
+    }
+    MsgType type = 1;
+    string sender = 2;
+    string receiver = 3;
+    int32 max_advance = 4;
+    int32 size = 5;
+    string content = 6;
+    double delay = 7;
+    int32 simTime = 8;
+    int32 stepSize = 9;
+}
+    repeated CosimaMsg msg = 10;
+
+}
+
+message TicTocMsg{
+    string content = 1;
+}
