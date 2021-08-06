@@ -63,27 +63,28 @@ template<> ::TicTocMsg* Arena::CreateMaybeMessage<::TicTocMsg>(Arena*);
 }  // namespace protobuf
 }  // namespace google
 
-enum CosimaMsgGroup_CosimaMsg_Msg_Type {
-  CosimaMsgGroup_CosimaMsg_Msg_Type_CMD = 0,
-  CosimaMsgGroup_CosimaMsg_Msg_Type_INFO = 1,
-  CosimaMsgGroup_CosimaMsg_Msg_Type_MAX_ADVANCE = 2,
-  CosimaMsgGroup_CosimaMsg_Msg_Type_CosimaMsgGroup_CosimaMsg_Msg_Type_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
-  CosimaMsgGroup_CosimaMsg_Msg_Type_CosimaMsgGroup_CosimaMsg_Msg_Type_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+enum CosimaMsgGroup_CosimaMsg_MsgType {
+  CosimaMsgGroup_CosimaMsg_MsgType_CMD = 0,
+  CosimaMsgGroup_CosimaMsg_MsgType_INFO = 1,
+  CosimaMsgGroup_CosimaMsg_MsgType_MAX_ADVANCE = 2,
+  CosimaMsgGroup_CosimaMsg_MsgType_WAITING = 3,
+  CosimaMsgGroup_CosimaMsg_MsgType_CosimaMsgGroup_CosimaMsg_MsgType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  CosimaMsgGroup_CosimaMsg_MsgType_CosimaMsgGroup_CosimaMsg_MsgType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };
-bool CosimaMsgGroup_CosimaMsg_Msg_Type_IsValid(int value);
-const CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg_Msg_Type_Msg_Type_MIN = CosimaMsgGroup_CosimaMsg_Msg_Type_CMD;
-const CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg_Msg_Type_Msg_Type_MAX = CosimaMsgGroup_CosimaMsg_Msg_Type_MAX_ADVANCE;
-const int CosimaMsgGroup_CosimaMsg_Msg_Type_Msg_Type_ARRAYSIZE = CosimaMsgGroup_CosimaMsg_Msg_Type_Msg_Type_MAX + 1;
+bool CosimaMsgGroup_CosimaMsg_MsgType_IsValid(int value);
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg_MsgType_MsgType_MIN = CosimaMsgGroup_CosimaMsg_MsgType_CMD;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg_MsgType_MsgType_MAX = CosimaMsgGroup_CosimaMsg_MsgType_WAITING;
+const int CosimaMsgGroup_CosimaMsg_MsgType_MsgType_ARRAYSIZE = CosimaMsgGroup_CosimaMsg_MsgType_MsgType_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* CosimaMsgGroup_CosimaMsg_Msg_Type_descriptor();
-inline const ::std::string& CosimaMsgGroup_CosimaMsg_Msg_Type_Name(CosimaMsgGroup_CosimaMsg_Msg_Type value) {
+const ::google::protobuf::EnumDescriptor* CosimaMsgGroup_CosimaMsg_MsgType_descriptor();
+inline const ::std::string& CosimaMsgGroup_CosimaMsg_MsgType_Name(CosimaMsgGroup_CosimaMsg_MsgType value) {
   return ::google::protobuf::internal::NameOfEnum(
-    CosimaMsgGroup_CosimaMsg_Msg_Type_descriptor(), value);
+    CosimaMsgGroup_CosimaMsg_MsgType_descriptor(), value);
 }
-inline bool CosimaMsgGroup_CosimaMsg_Msg_Type_Parse(
-    const ::std::string& name, CosimaMsgGroup_CosimaMsg_Msg_Type* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<CosimaMsgGroup_CosimaMsg_Msg_Type>(
-    CosimaMsgGroup_CosimaMsg_Msg_Type_descriptor(), name, value);
+inline bool CosimaMsgGroup_CosimaMsg_MsgType_Parse(
+    const ::std::string& name, CosimaMsgGroup_CosimaMsg_MsgType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<CosimaMsgGroup_CosimaMsg_MsgType>(
+    CosimaMsgGroup_CosimaMsg_MsgType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -172,32 +173,34 @@ class CosimaMsgGroup_CosimaMsg : public ::google::protobuf::Message /* @@protoc_
 
   // nested types ----------------------------------------------------
 
-  typedef CosimaMsgGroup_CosimaMsg_Msg_Type Msg_Type;
-  static const Msg_Type CMD =
-    CosimaMsgGroup_CosimaMsg_Msg_Type_CMD;
-  static const Msg_Type INFO =
-    CosimaMsgGroup_CosimaMsg_Msg_Type_INFO;
-  static const Msg_Type MAX_ADVANCE =
-    CosimaMsgGroup_CosimaMsg_Msg_Type_MAX_ADVANCE;
-  static inline bool Msg_Type_IsValid(int value) {
-    return CosimaMsgGroup_CosimaMsg_Msg_Type_IsValid(value);
+  typedef CosimaMsgGroup_CosimaMsg_MsgType MsgType;
+  static const MsgType CMD =
+    CosimaMsgGroup_CosimaMsg_MsgType_CMD;
+  static const MsgType INFO =
+    CosimaMsgGroup_CosimaMsg_MsgType_INFO;
+  static const MsgType MAX_ADVANCE =
+    CosimaMsgGroup_CosimaMsg_MsgType_MAX_ADVANCE;
+  static const MsgType WAITING =
+    CosimaMsgGroup_CosimaMsg_MsgType_WAITING;
+  static inline bool MsgType_IsValid(int value) {
+    return CosimaMsgGroup_CosimaMsg_MsgType_IsValid(value);
   }
-  static const Msg_Type Msg_Type_MIN =
-    CosimaMsgGroup_CosimaMsg_Msg_Type_Msg_Type_MIN;
-  static const Msg_Type Msg_Type_MAX =
-    CosimaMsgGroup_CosimaMsg_Msg_Type_Msg_Type_MAX;
-  static const int Msg_Type_ARRAYSIZE =
-    CosimaMsgGroup_CosimaMsg_Msg_Type_Msg_Type_ARRAYSIZE;
+  static const MsgType MsgType_MIN =
+    CosimaMsgGroup_CosimaMsg_MsgType_MsgType_MIN;
+  static const MsgType MsgType_MAX =
+    CosimaMsgGroup_CosimaMsg_MsgType_MsgType_MAX;
+  static const int MsgType_ARRAYSIZE =
+    CosimaMsgGroup_CosimaMsg_MsgType_MsgType_ARRAYSIZE;
   static inline const ::google::protobuf::EnumDescriptor*
-  Msg_Type_descriptor() {
-    return CosimaMsgGroup_CosimaMsg_Msg_Type_descriptor();
+  MsgType_descriptor() {
+    return CosimaMsgGroup_CosimaMsg_MsgType_descriptor();
   }
-  static inline const ::std::string& Msg_Type_Name(Msg_Type value) {
-    return CosimaMsgGroup_CosimaMsg_Msg_Type_Name(value);
+  static inline const ::std::string& MsgType_Name(MsgType value) {
+    return CosimaMsgGroup_CosimaMsg_MsgType_Name(value);
   }
-  static inline bool Msg_Type_Parse(const ::std::string& name,
-      Msg_Type* value) {
-    return CosimaMsgGroup_CosimaMsg_Msg_Type_Parse(name, value);
+  static inline bool MsgType_Parse(const ::std::string& name,
+      MsgType* value) {
+    return CosimaMsgGroup_CosimaMsg_MsgType_Parse(name, value);
   }
 
   // accessors -------------------------------------------------------
@@ -244,11 +247,11 @@ class CosimaMsgGroup_CosimaMsg : public ::google::protobuf::Message /* @@protoc_
   ::std::string* release_content();
   void set_allocated_content(::std::string* content);
 
-  // .CosimaMsgGroup.CosimaMsg.Msg_Type type = 1;
+  // .CosimaMsgGroup.CosimaMsg.MsgType type = 1;
   void clear_type();
   static const int kTypeFieldNumber = 1;
-  ::CosimaMsgGroup_CosimaMsg_Msg_Type type() const;
-  void set_type(::CosimaMsgGroup_CosimaMsg_Msg_Type value);
+  ::CosimaMsgGroup_CosimaMsg_MsgType type() const;
+  void set_type(::CosimaMsgGroup_CosimaMsg_MsgType value);
 
   // int32 max_advance = 4;
   void clear_max_advance();
@@ -529,15 +532,15 @@ class TicTocMsg : public ::google::protobuf::Message /* @@protoc_insertion_point
 #endif  // __GNUC__
 // CosimaMsgGroup_CosimaMsg
 
-// .CosimaMsgGroup.CosimaMsg.Msg_Type type = 1;
+// .CosimaMsgGroup.CosimaMsg.MsgType type = 1;
 inline void CosimaMsgGroup_CosimaMsg::clear_type() {
   type_ = 0;
 }
-inline ::CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg::type() const {
+inline ::CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::type() const {
   // @@protoc_insertion_point(field_get:CosimaMsgGroup.CosimaMsg.type)
-  return static_cast< ::CosimaMsgGroup_CosimaMsg_Msg_Type >(type_);
+  return static_cast< ::CosimaMsgGroup_CosimaMsg_MsgType >(type_);
 }
-inline void CosimaMsgGroup_CosimaMsg::set_type(::CosimaMsgGroup_CosimaMsg_Msg_Type value) {
+inline void CosimaMsgGroup_CosimaMsg::set_type(::CosimaMsgGroup_CosimaMsg_MsgType value) {
   
   type_ = value;
   // @@protoc_insertion_point(field_set:CosimaMsgGroup.CosimaMsg.type)
@@ -877,10 +880,10 @@ inline void TicTocMsg::set_allocated_content(::std::string* content) {
 namespace google {
 namespace protobuf {
 
-template <> struct is_proto_enum< ::CosimaMsgGroup_CosimaMsg_Msg_Type> : ::std::true_type {};
+template <> struct is_proto_enum< ::CosimaMsgGroup_CosimaMsg_MsgType> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::CosimaMsgGroup_CosimaMsg_Msg_Type>() {
-  return ::CosimaMsgGroup_CosimaMsg_Msg_Type_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::CosimaMsgGroup_CosimaMsg_MsgType>() {
+  return ::CosimaMsgGroup_CosimaMsg_MsgType_descriptor();
 }
 
 }  // namespace protobuf

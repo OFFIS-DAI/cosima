@@ -151,18 +151,19 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\rmessage.proto\"\260\002\n\016CosimaMsgGroup\022&\n\003ms"
-      "g\030\n \003(\0132\031.CosimaMsgGroup.CosimaMsg\032\365\001\n\tC"
-      "osimaMsg\0220\n\004type\030\001 \001(\0162\".CosimaMsgGroup."
-      "CosimaMsg.Msg_Type\022\016\n\006sender\030\002 \001(\t\022\020\n\010re"
-      "ceiver\030\003 \001(\t\022\023\n\013max_advance\030\004 \001(\005\022\014\n\004siz"
-      "e\030\005 \001(\005\022\017\n\007content\030\006 \001(\t\022\r\n\005delay\030\007 \001(\001\022"
-      "\017\n\007simTime\030\010 \001(\005\022\020\n\010stepSize\030\t \001(\005\".\n\010Ms"
-      "g_Type\022\007\n\003CMD\020\000\022\010\n\004INFO\020\001\022\017\n\013MAX_ADVANCE"
-      "\020\002\"\034\n\tTicTocMsg\022\017\n\007content\030\001 \001(\tb\006proto3"
+      "\n\rmessage.proto\"\273\002\n\016CosimaMsgGroup\022&\n\003ms"
+      "g\030\n \003(\0132\031.CosimaMsgGroup.CosimaMsg\032\200\002\n\tC"
+      "osimaMsg\022/\n\004type\030\001 \001(\0162!.CosimaMsgGroup."
+      "CosimaMsg.MsgType\022\016\n\006sender\030\002 \001(\t\022\020\n\010rec"
+      "eiver\030\003 \001(\t\022\023\n\013max_advance\030\004 \001(\005\022\014\n\004size"
+      "\030\005 \001(\005\022\017\n\007content\030\006 \001(\t\022\r\n\005delay\030\007 \001(\001\022\017"
+      "\n\007simTime\030\010 \001(\005\022\020\n\010stepSize\030\t \001(\005\":\n\007Msg"
+      "Type\022\007\n\003CMD\020\000\022\010\n\004INFO\020\001\022\017\n\013MAX_ADVANCE\020\002"
+      "\022\013\n\007WAITING\020\003\"\034\n\tTicTocMsg\022\017\n\007content\030\001 "
+      "\001(\tb\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 360);
+      descriptor, 371);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "message.proto", &protobuf_RegisterTypes);
 }
@@ -178,15 +179,16 @@ struct StaticDescriptorInitializer {
   }
 } static_descriptor_initializer;
 }  // namespace protobuf_message_2eproto
-const ::google::protobuf::EnumDescriptor* CosimaMsgGroup_CosimaMsg_Msg_Type_descriptor() {
+const ::google::protobuf::EnumDescriptor* CosimaMsgGroup_CosimaMsg_MsgType_descriptor() {
   protobuf_message_2eproto::protobuf_AssignDescriptorsOnce();
   return protobuf_message_2eproto::file_level_enum_descriptors[0];
 }
-bool CosimaMsgGroup_CosimaMsg_Msg_Type_IsValid(int value) {
+bool CosimaMsgGroup_CosimaMsg_MsgType_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
     case 2:
+    case 3:
       return true;
     default:
       return false;
@@ -194,12 +196,13 @@ bool CosimaMsgGroup_CosimaMsg_Msg_Type_IsValid(int value) {
 }
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg::CMD;
-const CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg::INFO;
-const CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg::MAX_ADVANCE;
-const CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg::Msg_Type_MIN;
-const CosimaMsgGroup_CosimaMsg_Msg_Type CosimaMsgGroup_CosimaMsg::Msg_Type_MAX;
-const int CosimaMsgGroup_CosimaMsg::Msg_Type_ARRAYSIZE;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::CMD;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::INFO;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::MAX_ADVANCE;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::WAITING;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::MsgType_MIN;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::MsgType_MAX;
+const int CosimaMsgGroup_CosimaMsg::MsgType_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 // ===================================================================
@@ -306,7 +309,7 @@ bool CosimaMsgGroup_CosimaMsg::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // .CosimaMsgGroup.CosimaMsg.Msg_Type type = 1;
+      // .CosimaMsgGroup.CosimaMsg.MsgType type = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
@@ -314,7 +317,7 @@ bool CosimaMsgGroup_CosimaMsg::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
-          set_type(static_cast< ::CosimaMsgGroup_CosimaMsg_Msg_Type >(value));
+          set_type(static_cast< ::CosimaMsgGroup_CosimaMsg_MsgType >(value));
         } else {
           goto handle_unusual;
         }
@@ -465,7 +468,7 @@ void CosimaMsgGroup_CosimaMsg::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .CosimaMsgGroup.CosimaMsg.Msg_Type type = 1;
+  // .CosimaMsgGroup.CosimaMsg.MsgType type = 1;
   if (this->type() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       1, this->type(), output);
@@ -540,7 +543,7 @@ void CosimaMsgGroup_CosimaMsg::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .CosimaMsgGroup.CosimaMsg.Msg_Type type = 1;
+  // .CosimaMsgGroup.CosimaMsg.MsgType type = 1;
   if (this->type() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       1, this->type(), target);
@@ -642,7 +645,7 @@ size_t CosimaMsgGroup_CosimaMsg::ByteSizeLong() const {
         this->content());
   }
 
-  // .CosimaMsgGroup.CosimaMsg.Msg_Type type = 1;
+  // .CosimaMsgGroup.CosimaMsg.MsgType type = 1;
   if (this->type() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());

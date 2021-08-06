@@ -18,25 +18,6 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the req
 pip install -r requirements.txt
 ```
 
-### Installation and configuration of OMNeT++
-
-* Install OMNeT++ version 5.6.2 from their website [OMNeT++](https://omnetpp.org/).
-    - import the OMNeT++ files of this project [OMNeT++ files](mosaik_omnetpp_observer) as an Existing Project in
-      OMNeT++
-    - build the project
-* Install INET 4.2.2 from the OMNeT++ website [OMNeT++ INET](https://omnetpp.org/).
-    - set the INET installation under Project Properties -> Project References in this project
-* (optional if you want to use LTE networks) install SimuLTE 1.1.0
-    - set the SimuLTE installation under Project Properties -> Project References in this project
-* adjust Makefile
-    - under Project Properties -> OMNeT++ -> MakeMake adjust the Makemakefile of the source folder ("src:makemake")
-      -- under Target: set "Executable"
-      -- under Scope: set "Deep Compile", "Recourive make"
-      -- under Compile: add path to INET installation and set "Add include Paths exported from referenced Projects"
-      -- under Link: set both ticks. User interface libraries to link with: "all"
-    - you should get a MakeMake option like --deep -I"C:\Users\user\Omnet-Projekt\inet" --meta:recurse --meta:
-      use-exported-include-paths --meta:export-library --meta:use-exported-libs --meta:feature-ldflags
-
 ### Installation of protobuf
 
 Install the protobuf compiler version 3.6.1 (on Ubuntu) via
@@ -67,8 +48,26 @@ and in C++ via
 #include "message.pb.h"
 ```
 
-Now add the protobuf installation to your project in OMNeT++ under Project Properties -> OMNeT++ -> MakeMake -> Options
--> Link -> more -> additional objects to link with add "-lprotobuf".
+### Installation and configuration of OMNeT++
+
+* Install OMNeT++ version 5.6.2 from their website [OMNeT++](https://omnetpp.org/).
+    - import the OMNeT++ files of this project [OMNeT++ files](mosaik_omnetpp_observer) as an Existing Project in
+      OMNeT++
+    - build the project
+* Install INET 4.2.2 from the OMNeT++ website [OMNeT++ INET](https://omnetpp.org/).
+    - set the INET installation under Project Properties -> Project References in this project
+	- or install directly from OMNeT (versions other than 4.2.2 are not tested)
+* (optional if you want to use LTE networks) install SimuLTE 1.1.0
+    - set the SimuLTE installation under Project Properties -> Project References in this project
+* adjust Makefile
+    - under Project Properties -> OMNeT++ -> MakeMake adjust the Makemakefile of the source folder ("src:makemake")
+      -- under Target: set "Executable"
+      -- under Scope: set "Deep Compile", "Recourive make"
+      -- under Compile: add path to INET installation and set "Add include Paths exported from referenced Projects"
+      -- under Link: set both ticks. User interface libraries to link with: "all"
+	  -- under Link -> more -> additional objects to link with add "-lprotobuf"
+    - you should get a MakeMake option like --deep -O out -I. --meta:recurse --meta:export-include-path --meta:use-exported-include-paths --meta:export-library --meta:use-exported-libs --meta:feature-cflags --meta:feature-ldflags -- -lprotobuf
+
 
 ## Usage
 
