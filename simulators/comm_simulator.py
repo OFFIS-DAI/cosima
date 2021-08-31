@@ -33,7 +33,7 @@ class CommModel:
 
     def __init__(self, m_id):
         self._m_id = m_id
-        self._current_message = None
+        self._current_message = []
 
     @property
     def message(self):
@@ -45,12 +45,12 @@ class CommModel:
 
     def step(self, message):
         """step-method of the model"""
-        self._current_message = message
+        self._current_message.append(message)
 
     def get_data(self):
         """get_data-method of model"""
         output = self._current_message
-        self._current_message = None
+        self._current_message = []
         return output
 
 
@@ -70,14 +70,17 @@ class CommSimulator(mosaik_api.Simulator):
         self.event_queue = None
         self.data = None
         self.output_time = None
-        self._current_output = {}
         self._node_connections = {}
         self._models = {}
         self._model_names = []
         self._current_msg = False
-        self._delay_infos_expected = 0
+        self._step_size = None
+        self._received_answer = True
+        self._number_messages_sent = 0
+        self._number_messages_received = 0
+        self._servername = "127.0.0.1"
 
-    def init(self, sid, config_file):
+    def init(self, sid, config_file, step_size):
         self.sid = sid
 
         with open(config_file, "r") as jsonfile:
@@ -85,6 +88,8 @@ class CommSimulator(mosaik_api.Simulator):
 
         if 'observer_port' in config:
             self.observer_port = config['observer_port']
+
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         for name in config['connections']:
             src, dest = name.split('->')
@@ -94,6 +99,8 @@ class CommSimulator(mosaik_api.Simulator):
                 dest: {'delay': 2}}  # TODO: use setdefault?
 
         self._model_names = config['nodes']
+
+        self._step_size = step_size
 
         return self.meta
 
@@ -112,8 +119,7 @@ class CommSimulator(mosaik_api.Simulator):
 
         return [{'eid': m_id, 'type': model}]
 
-    @staticmethod
-    def create_protobuf_msg(messages, sim_time, step_size):
+    def create_protobuf_msg(self, messages, sim_time):
         """creates protobuf message from given dictionary"""
         msg_group = CosimaMsgGroup()
         for message, size in messages:
@@ -125,62 +131,82 @@ class CommSimulator(mosaik_api.Simulator):
             msg.size = size
             msg.content = message["message"]
             msg.simTime = sim_time
-            msg.stepSize = step_size
+            msg.stepSize = self._step_size
         return msg_group
 
-    def send_message_to_omnetpp(self, messages, simtime, step_size,
-                                max_advance=None):
-        """set up connection to OMNeT++"""
-        servername = "127.0.0.1"
-        dest_port = self.observer_port
-        with socket.socket(socket.AF_INET,
-                           socket.SOCK_STREAM) as self.client_socket:
-            self.client_socket.connect((servername, dest_port))
+    def receive_message_from_omnetpp(self, simtime, max_advance):
+        """
+        Method to connect to omnetpp to receive messages. If messages
+        are received, they are returned. If the CommunicationSimulator
+        is still waiting for further messages, this method also returns
+        the delay of the received message.
+        :param simtime:
+        :param max_advance:
+        :return:
+        """
+        try:
+            self.client_socket.connect((self._servername, self.observer_port))
+        except OSError:
+            # client is still connected
+            pass
+        self._received_answer = False
+        answers = []
+        default_delay = None
 
-            proto_message = CommSimulator.create_protobuf_msg(messages,
-                                                              simtime,
-                                                              step_size)
-            msg = proto_message.SerializeToString()
-            print('send msg to omnet')
-            self.client_socket.send(msg)
-            received_answer = False
-            answers = []
-            number_messages_sent = len(messages) + self._delay_infos_expected
-            self._delay_infos_expected = 0
-            number_messages_received = 0
+        timeout_count = 3
+        while not self._received_answer and timeout_count > 0:
+            try:
+                data = self.client_socket.recv(4096)
+                msg_group = CosimaMsgGroup()
+                msg_group.ParseFromString(data)
+                msg = msg_group.msg[0]
+                print('received msg', msg.type)
 
-            while not received_answer:
-                try:
-                    data = self.client_socket.recv(4096)
-                    msg_group = CosimaMsgGroup()
-                    msg_group.ParseFromString(data)
-                    msg = msg_group.msg[0]
-                    print('received msg', msg.type)
+                if msg.type == CosimaMsgGroup.CosimaMsg.MsgType.INFO:
+                    self._number_messages_received += 1
+                    if self._number_messages_received == \
+                            self._number_messages_sent:
+                        self._received_answer = True
+                        self._number_messages_received = 0
+                        self._number_messages_sent = 0
+                    default_delay = msg.delay
+                    answers.append(msg)
 
+                if not self._received_answer:
+                    self.send_waiting_msg(max_advance, simtime)
                     if msg.type == CosimaMsgGroup.CosimaMsg.MsgType.INFO:
-                        number_messages_received += 1
-                        if number_messages_received == number_messages_sent:
-                            received_answer = True
-                        answers.append({'sender': msg.sender,
-                                        'receiver': msg.receiver,
-                                        'message': msg.content,
-                                        'delay': msg.delay
-                                        })
-                        if self._delay_infos_expected > 0:
-                            self._delay_infos_expected -= 1
-                    else:
-                        self._delay_infos_expected += 1
-                    if not received_answer:
-                        self.send_waiting_msg(max_advance, simtime, step_size)
+                        return answers, default_delay
 
-                except Exception as current_exception:
-                    print(current_exception)
-                    print("Connection to OMNeT++ closed.")
-                    self.finalize()
+            except Exception as current_exception:
+                timeout_count -= 1
+                print(current_exception)
+                print("Connection to OMNeT++ closed.")
+                self.finalize()
 
-        return answers
+        return answers, default_delay
 
-    def send_waiting_msg(self, max_advance, simtime, step_size):
+    def send_message_to_omnetpp(self, messages, simtime):
+        """
+        Method to send message to omnetpp. Takes messages, simtime and
+        max_advance and transfers this information to omnetpp.
+
+        :param messages: messages to be send
+        :param simtime: current mosaik simtime
+        :param max_advance: current max advance according to mosaik
+        """
+        proto_message = self.create_protobuf_msg(messages, simtime)
+        msg = proto_message.SerializeToString()
+        self._number_messages_sent += len(messages)
+        print('send msg to omnet')
+        try:
+            self.client_socket.connect((self._servername, self.observer_port))
+        except OSError:
+            # client is still connected
+            pass
+
+        self.client_socket.send(msg)
+
+    def send_waiting_msg(self, max_advance, simtime):
         # send out waiting message
         waiting_msg = {
             'type': CosimaMsgGroup.CosimaMsg.MsgType.WAITING,
@@ -189,12 +215,11 @@ class CommSimulator(mosaik_api.Simulator):
             'max_advance': max_advance,
             'message': 'Waiting for another msg',
             'simTime': simtime,
-            'stepSize': step_size}
+            'stepSize': self._step_size}
         size = len(JSON().encode(waiting_msg))
-        proto_message = CommSimulator.create_protobuf_msg(
+        proto_message = self.create_protobuf_msg(
             [(waiting_msg, size)],
-            simtime,
-            step_size)
+            simtime)
         msg = proto_message.SerializeToString()
         print('send waiting msg to omnet')
         self.client_socket.send(msg)
@@ -208,75 +233,102 @@ class CommSimulator(mosaik_api.Simulator):
         return value
 
     def step(self, time, inputs, max_advance):
+        next_step = None
+        received_messages = []
+        if not self._received_answer:
+            print('still waiting for another message')
+            answers, delay = self.receive_message_from_omnetpp(time,
+                                                               max_advance)
+            received_messages.extend(answers)
+            if delay is not None:
+                delay = self.calculate_to_used_step_size(delay)
+                delay += time
+            next_step = delay
         messages_to_send = []
         for eid, attr_names in inputs.items():
             for attribute, sources_to_values in attr_names.items():
                 for values in sources_to_values.values():
-                    message_size = len(JSON().encode(values))
-                    messages_to_send.append((values, message_size))
+                    if type(values) is list:
+                        for value in values:
+                            message_size = len(JSON().encode(value))
+                            messages_to_send.append((value, message_size))
+                    else:
+                        message_size = len(JSON().encode(values))
+                        messages_to_send.append((values, message_size))
 
         print('Comm Sim steps in ', time, ' with input ', messages_to_send)
 
         if len(messages_to_send) > 0:
-            replys = self.send_message_to_omnetpp(messages_to_send, time,
-                                                  STEP_SIZE_1_MS, max_advance)
-            if replys:
-                for reply in replys:
-                    self.process_msg_from_omnet(reply, inputs, time)
+            self.send_message_to_omnetpp(messages_to_send, time)
+            # TODO: do we even want to call receive_message. Maybe its
+            #  the second time (see l 238)
+            answers, delay = self.receive_message_from_omnetpp(time,
+                                                               max_advance)
+            received_messages.extend(answers)
+            if delay is not None:
+                delay = self.calculate_to_used_step_size(delay)
+                delay += time
+                if next_step is None:
+                    next_step = delay
+                elif delay < next_step:
+                    next_step = delay
+        if received_messages:
+            for reply in received_messages:
+                self.process_msg_from_omnet(reply, time)
 
         self.data = {}
 
         # If there are events left, request a new step:
         if self.event_queue:
-            next_step = self.event_queue[0][0]
-            _, eid, attr, value = hq.heappop(self.event_queue)
-        else:
-            next_step = None
-
+            for event in self.event_queue:
+                if event[0] > time:
+                    possible_next_step = event[0]
+                    if possible_next_step is not None:
+                        if possible_next_step < next_step:
+                            next_step = possible_next_step
+                            self.event_queue.pop()
+                            break
         print('next step', next_step)
-
+        if next_step == time:
+            next_step = None
         return next_step
 
-    def process_msg_from_omnet(self, reply, inputs, time):
+    def process_msg_from_omnet(self, reply, time):
         """processes answer messages from omnet, distinguishes between
         scheduler synchronization (FES) and communication delay """
         if type(reply) is dict:
+            print('type of message is dict. This should not be the case')
+        elif type(reply) is CosimaMsgGroup.CosimaMsg:
+            if time > reply.simTime:
+                raise RuntimeError(
+                    'Simulation time in OMNeT++ is is behind the simulation time in mosaik.')
             # determine delay in milliseconds for mosaik
             omnetpp_delay = CommSimulator.calculate_to_used_step_size(
-                reply['delay'])
-            print('delay ', str(omnetpp_delay))
+                reply.delay)
+            print('delay ', omnetpp_delay)
 
-            reply['delay'] = omnetpp_delay
-            reply['output_time'] = time + omnetpp_delay
-            if 'receiver' in reply:
-                self._current_output[reply['receiver']] = reply
-                self._models[reply['sender']].step(reply)
-            for eid, attrs in inputs.items():
-                for attr, value_dict in attrs.items():
-                    for src_full_id, value in value_dict.items():
-                        for dest, props in self.connections[eid].items():
-                            factor = props.get('factor', None)
-                            if factor is not None:
-                                value = value * factor
-                            offset = props.get('offset', None)
-                            if offset is not None:
-                                value = value + offset
-                            if omnetpp_delay >= 0:
-                                arrival_time = time + omnetpp_delay
-                                if not self.event_queue or self.event_queue[0][
-                                    0] != arrival_time:
-                                    hq.heappush(self.event_queue,
-                                                (arrival_time, dest, attr,
-                                                 value))
+            msg_as_dict = {'sender': reply.sender,
+                           'receiver': reply.receiver,
+                           'message': reply.content,
+                           'delay': omnetpp_delay,
+                           'output_time': reply.simTime
+                           }
+
+            self._models[reply.sender].step(msg_as_dict)
+        else:
+            print('message has type: ', type(reply))
 
     def get_data(self, outputs):
         """gets data of entities for mosaik core"""
         data = {}
         for eid, value in outputs.items():
             model_data = self._models[eid].get_data()
-            if model_data is not None:
+            if len(model_data) > 0:
+                # TODO wenn Nachrichten unterschiedliche Delays haben
                 data[eid] = {'message_with_delay': model_data}
-                data['time'] = int(model_data['output_time'])
+                if 'time' not in data.keys() or int(model_data[0]['output_time']) < data['time']:
+                    data['time'] = int(model_data[0]['output_time'])
+                    print(f'set output time to {data["time"]}')
 
         return data
 

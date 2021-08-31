@@ -122,8 +122,8 @@ void MosaikObserver::setInterfaceModule(cModule *mod, char *buf, int bufSize,
         observerModule = mod;
     } else {
         if (!mod || !buf || !bufSize || !nBytesPtr)
-                throw cRuntimeError(
-                        "MosaikObserver: setInterfaceModule(): arguments must be non-nullptr");
+            throw cRuntimeError(
+                    "MosaikObserver: setInterfaceModule(): arguments must be non-nullptr");
         module = mod;
         recvBuffer = buf;
         recvBufferSize = bufSize;
@@ -141,6 +141,15 @@ void MosaikObserver::addModule(cModule *mod) {
 int MosaikObserver::getPortForModule(std::string text) {
     cModule *submod = getReceiverModule(text);
     return (submod->par("localPort"));
+}
+
+std::string MosaikObserver::getModuleNameFromPort(int port) {
+    for (int i = 0; i < numModules; i++) {
+        if(modules[i]->par("localPort").intValue() == port) {
+            return modules[i]->getParentModule()->getName();
+        }
+    }
+    return "";
 }
 
 cModule *MosaikObserver::getReceiverModule(std::string text) {
@@ -253,7 +262,7 @@ bool MosaikObserver::handleCmsg() {
             int maxAdvance = pmsg_group.msg().Get(i).max_advance();
             std::cout << "max advance: " << maxAdvance << endl;
             double mosaikSimTime = pmsg_group.msg().Get(i).simtime() * 1.0;
-            double stepSize = pmsg_group.msg().Get(i).stepsize() * 1.0;
+            stepSize = pmsg_group.msg().Get(i).stepsize() * 1.0;
             std::cout << "stepSize is " << stepSize << endl;
             std::cout << "simTime is " << mosaikSimTime << endl;
             double adjustedMosaikSimTime = mosaikSimTime/1000 * stepSize;
@@ -438,6 +447,7 @@ void MosaikObserver::sendBytes(cMessage *reply) {
         pmsg->set_receiver(receiver);
         pmsg->set_content(content);
         pmsg->set_delay(delay);
+        pmsg->set_simtime(round((simTime()).dbl()*1000)/stepSize);
         pmsg->set_type(CosimaMsgGroup::CosimaMsg::INFO);
 
         std::string msg;

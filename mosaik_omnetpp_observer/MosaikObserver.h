@@ -34,6 +34,7 @@ protected:
     char outputMsg[500];
     size_t numOfBytes;
     double simulationTimeOffset;
+    double stepSize;
 
 
     // state
@@ -87,6 +88,13 @@ public:
      * To be called within the scheduler to add module to list of modules.
      */
     virtual void addModule(omnetpp::cModule *module);
+
+    /**
+     * Searches in registered modules for module with given port and returns name of module.
+     * Otherwise returns nullptr.
+     *
+     */
+    virtual std::string getModuleNameFromPort(int port);
 
     /**
      * To be called to get receiver module from message.

@@ -23,3 +23,9 @@ mosaik_omnetpp_files/src/results/**
 /mosaik_omnetpp_observer/mosaik_omnetpp_observer_dbg
 /mosaik_omnetpp_observer/out/clang-debug/mosaik_omnetpp_observer_dbg
 /mosaik_omnetpp_observer/out/clang-debug/.last-copts
+venv/
+mosaik_omnetpp_observer/out/
+mosaik_omnetpp_observer/northwestroutes.xml
+mosaik_omnetpp_observer/MultiCell_Mesh.ned
+mosaik_omnetpp_observer/MultiCell_Mesh_mini.ned
+*.exe

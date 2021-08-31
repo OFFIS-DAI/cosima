@@ -28,282 +28,346 @@
 
 Define_Module(SocketAgentAppTcp);
 
-#define MSGKIND_CONNECT 1
-#define MSGKIND_SEND 2
-#define MSGKIND_CLOSE 3
-#define MSGKIND_RENEW 4
-
 SocketAgentAppTcp::SocketAgentAppTcp() {
-  numRecvBytes = 0;
-  observer = nullptr;
+    numRecvBytes = 0;
+    observer = nullptr;
 }
 
 SocketAgentAppTcp::~SocketAgentAppTcp() {
-   cancelAndDelete(timeoutMsg);
-   cancelAndDelete(timeoutMsgAlternative);
+    //delete and cancel all timers used
+    auto iter = timer.begin();
+
+    while (iter != timer.end()) {
+        std::cout << "Cancel timer for client" << iter->first << "\n";
+        cancelAndDelete(iter->second);
+        ++iter;
+    }
 }
 
 void SocketAgentAppTcp::initialize(int stage) {
-  TcpAppBase::initialize(stage);
-  if (stage == inet::INITSTAGE_LOCAL) {
-    timeoutMsg = new cMessage("timer");
-    timeoutMsgAlternative = new cMessage("second timer");
-  } else if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
-    // get intern socket scheduler from simulation and cast to MosaikObserver
-    observer =
-        check_and_cast<MosaikObserver *>(getSimulation()->getScheduler());
-    // register module at scheduler
-    observer->setInterfaceModule(this, recvBuffer, 4000, &numRecvBytes);
-  }
+    TcpAppBase::initialize(stage);
+    if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
+        // get intern socket scheduler from simulation and cast to MosaikObserver
+        observer =
+                check_and_cast<MosaikObserver *>(getSimulation()->getScheduler());
+        // register module at scheduler
+        observer->setInterfaceModule(this, recvBuffer, 4000, &numRecvBytes);
+    }
 }
 
 void SocketAgentAppTcp::putMessage(cMessage *msg, double mosaikSimTime) {
-  // message can be socket event -> call handleSocketEvent()
-  // or message from network -> handle message
-  std::cout << "SocketAgentAppTcp of " << this->getParentModule()->getName()
-            << " received message " << msg << endl;
+    // message can be socket event -> call handleSocketEvent()
+    // or message from network -> handle message
+    std::cout << "SocketAgentAppTcp of " << this->getParentModule()->getName()
+                                                                                                                                                            << " received message " << msg << endl;
 
-  if (msg->getKind() == 0) {
-    if (msg->getArrivalGate() != gate("socketIn")) {
-      // message is placed from observer
-      handleSocketEvent(msg, mosaikSimTime);
+    if (msg->getKind() == 0) {
+        if (msg->getArrivalGate() != gate("socketIn")) {
+            // message is placed from observer
+            handleSocketEvent(msg, mosaikSimTime);
+        }
+    }else{
+        delete msg;
     }
-  }else{
-      delete msg;
-  }
 }
 
 void SocketAgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
-  std::cout << "handle Socket Event" << endl;
-  // make packet
-  if (typeid(*msg) == typeid(TikTokPacket)) {
-    std::cout << "Message is TikTokPacket" << endl;
-    TikTokPacket *tmsg = dynamic_cast<TikTokPacket *>(msg);
-    std::cout << "successful cast" << endl;
-    const char *content = tmsg->getContent();
-    std::cout << "print content " << content << endl;
+    // make packet
+    if (typeid(*msg) == typeid(TikTokPacket)) {
+        std::cout << "Message is TikTokPacket" << endl;
+        TikTokPacket *tmsg = dynamic_cast<TikTokPacket *>(msg);
+        const char *content = tmsg->getContent();
 
-    std::cout << "handle socket event, msg: " << content << endl;
+        std::cout << "SocketAgentAppTcp: Handle socket event, msg: " << content << endl;
 
-    std::string receiverName = tmsg->getReceiver();
-    std::cout << "receiver: " << receiverName << endl;
-    std::string senderName = tmsg->getSender();
-    std::cout << "sender: " << senderName << endl;
-    int msgSize = tmsg->getSize();
-    std::cout << "size: " << msgSize << endl;
+        std::string receiverName = tmsg->getReceiver();
+        std::string senderName = tmsg->getSender();
+        int msgSize = tmsg->getSize();
 
-    // get corresponding Port for receiver name
-    int receiverPort = observer->getPortForModule(receiverName.c_str());
+        // get corresponding Port for receiver name
+        int receiverPort = observer->getPortForModule(receiverName.c_str());
 
-    std::cout << "Message receiver: " << receiverName
-              << ", msgSize: " << msgSize << ", receiverPort: " << receiverPort
-              << endl;
+        std::cout << "SocketAgentAppTcp: Message receiver: " << receiverName << ", message sender: " << senderName
+                << ", msgSize: " << msgSize << ", receiverPort: " << receiverPort
+                << endl;
 
-    packet = new inet::Packet();
-    const auto &payload = inet::makeShared<MosaikMessage>();
-    payload->setContent(content);
-    payload->setReceiver(receiverName.c_str());
-    payload->setSender(senderName.c_str());
-    payload->setChunkLength(inet::B(msgSize));
-    std::cout << "set CreationTime to " << observer->getSimulation()->getSimTime() << endl;
-    payload->setCreationTime(mosaikSimTime);
-    packet->insertAtBack(payload);
+        packet = new inet::Packet();
+        const auto &payload = inet::makeShared<MosaikMessage>();
+        payload->setContent(content);
+        payload->setReceiver(receiverName.c_str());
+        payload->setSender(senderName.c_str());
+        payload->setChunkLength(inet::B(msgSize));
+        std::cout << "SocketAgentAppTcp: set CreationTime to " << observer->getSimulation()->getSimTime() << endl;
+        payload->setCreationTime(mosaikSimTime);
+        packet->insertAtBack(payload);
+        packet->setTimestamp(mosaikSimTime);
+        packets.push_back(packet);
 
-    // get destination
-    par("connectAddress") = receiverName.c_str();
-    connSend = (connSend + 1) % 1000;
-    par("connectPort") = receiverPort + connSend;
-    if(timeoutMsg->isScheduled()) {
-              timeoutMsgAlternative->setKind(MSGKIND_CONNECT);
-              scheduleAt(simTime(), timeoutMsgAlternative);
-          } else {
-              timeoutMsg->setKind(MSGKIND_CONNECT);
-              scheduleAt(simTime(), timeoutMsg);
-          }
+        int clientId = atoi(&receiverName[6]);
 
-    packet->setTimestamp(mosaikSimTime);
+        Timer *timerMsg = getTimerForModuleId(clientId);
+        // type 0 means connect
+        timerMsg->setTimerType(0);
+        timerMsg->setReceiverName(receiverName.c_str());
+        timerMsg->setReceiverPort(receiverPort);
+        timerMsg->setArrival(this->getId(), -1, simTime());
+        observer->getSimulation()->getFES()->insert(timerMsg);
 
-    std::cout << "send packet " << packet << " to port " << receiverPort
-              << endl;
-    delete msg;
-  }
+        std::cout << "SocketAgentAppTcp: send packet " << packet << " to port " << receiverPort
+                << endl;
+        delete msg;
+    }
+}
+
+Timer *SocketAgentAppTcp::getTimerForModuleId(int clientId) {
+    auto iter = timer.begin();
+
+    // if timer is already created for client id, return it
+    while (iter != timer.end()) {
+        if(iter->first == clientId) {
+            return iter->second;
+        }
+        iter++;
+    }
+
+    // else create new timer and add it to the timer map
+    std::cout << "creating new timer" << endl;
+    Timer *newTimer = new Timer();
+    timer[clientId] = newTimer;
+    return newTimer;
 }
 
 void SocketAgentAppTcp::handleReply(TikTokPacket *reply) {
-  std::cout << "Set message for observer " << reply << endl;
-  observer->sendBytes(reply);
+    std::cout << "Set message for observer " << reply << endl;
+    observer->sendBytes(reply);
 }
 
 void SocketAgentAppTcp::handleTimer(cMessage *msg) {
-  switch (msg->getKind()) {
-    case MSGKIND_CONNECT:
-      connect();
-      break;
+    if(typeid(*msg) == typeid(Timer)) {
+        Timer *recvtimer = dynamic_cast<Timer *>(msg);
+        switch (recvtimer->getTimerType()) {
+        case -1:
+            break;
 
-    case MSGKIND_SEND:
-      sendData();
-      break;
+        case 0:
+            connect(recvtimer->getReceiverName(), recvtimer->getReceiverPort());
+            break;
 
-    case MSGKIND_CLOSE:
-      close();
-      break;
+        case 1:
+            sendData(recvtimer->getReceiverName());
+            break;
 
-    case MSGKIND_RENEW:
-      renew();
-      break;
-  }
+        case 2:
+            close();
+            break;
+
+        case 3:
+            renew(recvtimer->getReceiverName());
+            break;
+        }
+    }
 }
 
-void SocketAgentAppTcp::renew() {
-  std::cout << "in renew" << endl;
-  serverSocket.renewSocket();
-  serverSocket.setOutputGate(gate("socketOut"));
-  serverSocket.setCallback(this);
-  const char *localAddress = par("localAddress");
-  int localPort = par("localPort");
-  connRecv = (connRecv + 1) % 1000;
-  serverSocket.bind(
-      localAddress[0] ? inet::L3Address(localAddress) : inet::L3Address(),
-      localPort + connRecv);
-  serverSocket.listen();
+
+void SocketAgentAppTcp::connect(const char *receiver_name, int receiver_port)
+{
+    std::cout << "SocketAgentAppTcp: connect " << this->getParentModule()->getName() << " to " << receiver_name << endl;
+    inet::TcpSocket clientSocket;
+    int clientId = atoi(&receiver_name[6]);
+    if(clientSockets.find(clientId) != clientSockets.end()) {
+        clientSocket = clientSockets[clientId];
+    } else {
+        const char *localAddress = par("localAddress");
+        int localPort = par("localPort");
+
+        clientSocket.setOutputGate(gate("socketOut"));
+        clientSocket.setCallback(this);
+        clientSocket.bind(
+                localAddress[0] ? inet::L3Address(localAddress) : inet::L3Address(),
+                        localPort);
+        int clientId = atoi(&receiver_name[6]);
+        clientSockets[clientId] = clientSocket;
+    }
+    // we need a new connId if this is not the first connection
+    clientSocket.renewSocket();
+
+    int timeToLive = par("timeToLive");
+    if (timeToLive != -1)
+        clientSocket.setTimeToLive(timeToLive);
+
+    int dscp = par("dscp");
+    if (dscp != -1)
+        clientSocket.setDscp(dscp);
+
+    int tos = par("tos");
+    if (tos != -1)
+        clientSocket.setTos(tos);
+
+
+    inet::L3Address destination;
+    inet::L3AddressResolver().tryResolve(receiver_name, destination);
+    if (destination.isUnspecified()) {
+        std::cout << "SocketAgentAppTcp: Connecting to " << receiver_name << " port=" << receiver_port << ": cannot resolve destination address\n";
+    }
+    else {
+        std::cout << "SocketAgentAppTcp: Connecting to " << receiver_name << "(" << destination << ") port=" << receiver_port << endl;
+
+        clientSocket.connect(destination, receiver_port);
+
+        numSessions++;
+        emit(connectSignal, 1L);
+    }
+    clientSockets[clientId] = clientSocket;
+
+}
+
+void SocketAgentAppTcp::renew(const char *receiver_name) {
+    int clientId = atoi(&receiver_name[6]);
+    inet::TcpSocket clientSocket = clientSockets[clientId];
+    clientSocket.renewSocket();
+    clientSocket.setOutputGate(gate("socketOut"));
+    clientSocket.setCallback(this);
+    const char *localAddress = par("localAddress");
+    int localPort = par("localPort");
+
+    clientSocket.bind(
+            localAddress[0] ? inet::L3Address(localAddress) : inet::L3Address(),
+                    localPort);
+    clientSocket.listen();
 }
 
 void SocketAgentAppTcp::socketEstablished(inet::TcpSocket *socket) {
-    std::cout << "socket established" << endl;
-  inet::TcpAppBase::socketEstablished(socket);
-  if(timeoutMsg->isScheduled()) {
-            timeoutMsgAlternative->setKind(MSGKIND_SEND);
-            scheduleAt(simTime(), timeoutMsgAlternative);
-        } else {
-            timeoutMsg->setKind(MSGKIND_SEND);
-            std::cout << "schedule for renew" << endl;
-            scheduleAt(simTime(), timeoutMsg);
-        }
+    std::string moduleName = observer->getModuleNameFromPort(socket->getRemotePort());
+    if(moduleName != "") {
+        Timer *timerMsg = getTimerForModuleId(atoi(&moduleName[6]));
+        // type 1 means send
+        timerMsg->setTimerType(1);
+        timerMsg->setReceiverName(moduleName.c_str());
+        timerMsg->setArrival(this->getId(), -1, simTime());
+        observer->getSimulation()->getFES()->insert(timerMsg);
+    }
 }
 
 void SocketAgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
-                                          inet::Packet *msg, bool urgent) {
-  std::cout << "socket data arrived: " << msg << endl;
-  inet::Packet *copy = msg->dup();
-  simtime_t delay;
-  double delay_d = 0;
+        inet::Packet *msg, bool urgent) {
+    std::cout << "SocketAgentAppTcp: socket data " << msg << "arrived at " << this->getParentModule()->getName() << endl;
+    inet::Packet *copy = msg->dup();
+    simtime_t delay;
+    double delay_d = 0;
+    std::string reply_receiver = "";
 
-  packetsRcvd++;
-  bytesRcvd += msg->getByteLength();
-  emit(inet::packetReceivedSignal, msg);
+    packetsRcvd++;
+    bytesRcvd += msg->getByteLength();
+    emit(inet::packetReceivedSignal, msg);
 
-  if (msg->getArrivalGate() == gate("socketIn")) {
-    std::cout << "message is inet packet from network" << endl;
+    if (msg->getArrivalGate() == gate("socketIn")) {
 
-    inet::Packet *recv_packet = dynamic_cast<inet::Packet *>(copy);
-    if (recv_packet != nullptr) {
-      std::string reply_content = "0";
-      TikTokPacket *answer = new TikTokPacket();
+        inet::Packet *recv_packet = dynamic_cast<inet::Packet *>(copy);
+        if (recv_packet != nullptr) {
+            std::string reply_content = "0";
+            TikTokPacket *answer = new TikTokPacket();
 
-      // message is ACL message from other node in simulation over UDP socket
-      // now handle reply to Mango
-      inet::b offset = inet::b(0);  // start from the beginning
-      bool found_acl_part = false;
+            // message is ACL message from other node in simulation over UDP socket
+            // now handle reply to Mango
+            inet::b offset = inet::b(0);  // start from the beginning
+            bool found_acl_part = false;
 
-      while (auto chunk = recv_packet->peekAt(offset)->dupShared()) {  // for each chunk
-        if (found_acl_part) {
-          delete recv_packet;
-          break;
+            while (auto chunk = recv_packet->peekAt(offset)->dupShared()) {  // for each chunk
+                if (found_acl_part) {
+                    delete recv_packet;
+                    break;
+                }
+                auto length = chunk->getChunkLength();
+
+                if (chunk->getClassName() == std::string("MosaikMessage")) {
+                    reply_content =
+                            recv_packet->peekAt<MosaikMessage>(offset, length)->getContent();
+                    simtime_t delay =
+                            observer->getSimulation()->getSimTime() - recv_packet->peekAt<MosaikMessage>(offset, length)->getCreationTime();
+                    double delay_d = round((delay).dbl()*1000)/1000;
+                    reply_receiver =
+                            recv_packet->peekAt<MosaikMessage>(offset, length)->getReceiver();
+                    std::string reply_sender =
+                            recv_packet->peekAt<MosaikMessage>(offset, length)->getSender();
+                    answer->setContent(reply_content.c_str());
+                    answer->setReceiver(reply_receiver.c_str());
+                    answer->setDelay(delay_d);
+                    answer->setSender(reply_sender.c_str());
+                    found_acl_part = true;
+                    handleReply(answer);
+
+                } else {
+                    offset += chunk->getChunkLength();
+                    answer->setDelay(delay_d);
+                }
+            }
+            delete answer;
+            delete msg;
         }
-        auto length = chunk->getChunkLength();
-
-        if (chunk->getClassName() == std::string("MosaikMessage")) {
-          reply_content =
-              recv_packet->peekAt<MosaikMessage>(offset, length)->getContent();
-          std::cout << "Observer SimTime " << observer->getSimulation()->getSimTime()
-                              << endl;
-          std::cout << "Creation time " << recv_packet->peekAt<MosaikMessage>(offset, length)->getCreationTime() << endl;
-          simtime_t delay =
-          observer->getSimulation()->getSimTime() - recv_packet->peekAt<MosaikMessage>(offset, length)->getCreationTime();
-          double delay_d = round((delay).dbl()*1000)/1000;
-          std::cout << "Delay " << delay << endl;
-          std::cout << "Delay rounded " << delay_d << endl;
-          std::cout << "reply content " << reply_content << endl;
-          std::string reply_receiver =
-              recv_packet->peekAt<MosaikMessage>(offset, length)->getReceiver();
-          std::string reply_sender =
-              recv_packet->peekAt<MosaikMessage>(offset, length)->getSender();
-          answer->setContent(reply_content.c_str());
-          answer->setReceiver(reply_receiver.c_str());
-          answer->setDelay(delay_d);
-          answer->setSender(reply_sender.c_str());
-          found_acl_part = true;
-          handleReply(answer);
-
-        } else {
-          offset += chunk->getChunkLength();
-          answer->setDelay(delay_d);
-        }
-      }
-      delete answer;
-      delete msg;
-      std::cout << "try to cancel event" << endl;
-      if(timeoutMsg->isScheduled()) {
-          timeoutMsgAlternative->setKind(MSGKIND_RENEW);
-          scheduleAt(simTime(), timeoutMsgAlternative);
-      } else {
-          timeoutMsg->setKind(MSGKIND_RENEW);
-          std::cout << "schedule for renew" << endl;
-          scheduleAt(simTime(), timeoutMsg);
-      }
     }
-  }
 }
 
-void SocketAgentAppTcp::sendData() {
-  if (packet != nullptr) {
-    inet::Packet *sending = packet->dup();
-    sending->setTimestamp(packet->getTimestamp());
-    sendPacket(sending);
-    packet = nullptr;
-  } else {
-    std::cout << "no packet to send" << endl;
-  }
+void SocketAgentAppTcp::sendData(const char *receiver_name) {
+    int clientId = atoi(&receiver_name[6]);
+    if(clientSockets.find(clientId) != clientSockets.end()) {
+        inet::TcpSocket clientSocket;
+        clientSocket = clientSockets[clientId];
+
+        if (packets.size() > 0) {
+            packet = packets.front();
+            packets.pop_front();
+            inet::Packet *sending = packet->dup();
+            sending->setTimestamp(packet->getTimestamp());
+            int numBytes = sending->getByteLength();
+            emit(inet::packetSentSignal, sending);
+            clientSocket.send(sending);
+
+            packetsSent++;
+            bytesSent += numBytes;
+            delete packet;
+        } else {
+            std::cout << "SocketAgentAppTcp: no packet to send" << endl;
+        }
+    } else {
+        std::cout << "SocketAgentAppTcp: socket not connected to " << receiver_name << endl;
+        connect(receiver_name, observer->getPortForModule(receiver_name));
+    }
+
 }
 
 void SocketAgentAppTcp::socketClosed(inet::TcpSocket *socket) {
-  std::cout << "socket closed " << endl;
-  TcpAppBase::socketClosed(socket);
-  cancelEvent(timeoutMsg);
-  if (operationalState == State::STOPPING_OPERATION && !this->socket.isOpen())
-    startActiveOperationExtraTimeOrFinish(par("stopOperationExtraTime"));
+    std::cout << "SocketAgentAppTcp: socket closed " << endl;
+    TcpAppBase::socketClosed(socket);
+    if (operationalState == State::STOPPING_OPERATION && !this->socket.isOpen())
+        startActiveOperationExtraTimeOrFinish(par("stopOperationExtraTime"));
 }
 
 void SocketAgentAppTcp::socketFailure(inet::TcpSocket *socket, int code) {
-  std::cout << "socket failure" << endl;
-  TcpAppBase::socketFailure(socket, code);
-  cancelEvent(timeoutMsg);
+    std::cout << "SocketAgentAppTcp: socket failure" << endl;
+    TcpAppBase::socketFailure(socket, code);
 }
 
 void SocketAgentAppTcp::handleStartOperation(
-    inet::LifecycleOperation *operation) {
-  const char *localAddress = par("localAddress");
-  int localPort = par("localPort");
-  connRecv = (connRecv + 1) % 1000;
+        inet::LifecycleOperation *operation) {
+    const char *localAddress = par("localAddress");
+    int localPort = par("localPort");
 
-  serverSocket.setOutputGate(gate("socketOut"));
-  serverSocket.setCallback(this);
-  serverSocket.bind(
-      localAddress[0] ? inet::L3Address(localAddress) : inet::L3Address(),
-      localPort + connRecv);
-  serverSocket.listen();
+    serverSocket.setOutputGate(gate("socketOut"));
+    serverSocket.setCallback(this);
+    serverSocket.bind(
+            localAddress[0] ? inet::L3Address(localAddress) : inet::L3Address(),
+                    localPort);
+    serverSocket.listen();
 }
 
 void SocketAgentAppTcp::handleStopOperation(
-  inet::LifecycleOperation *operation) {
-  cancelEvent(timeoutMsg);
-  if (socket.isOpen()) close();
-  delayActiveOperationFinish(par("stopOperationTimeout"));
+        inet::LifecycleOperation *operation) {
+    if (socket.isOpen()) close();
+    delayActiveOperationFinish(par("stopOperationTimeout"));
 }
 
 void SocketAgentAppTcp::handleCrashOperation(
-  inet::LifecycleOperation *operation) {
-  cancelEvent(timeoutMsg);
+        inet::LifecycleOperation *operation) {
 }
 
 void SocketAgentAppTcp::finish() {

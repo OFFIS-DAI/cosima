@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include "MosaikObserver.h"
+#include "Timer_m.h"
 #include "inet/applications/tcpapp/TcpAppBase.h"
 #include "inet/common/lifecycle/LifecycleOperation.h"
 #include "inet/common/lifecycle/NodeStatus.h"
@@ -24,6 +25,8 @@ private:
 
     int numRecvBytes;
     inet::TcpSocket serverSocket;
+    std::map<int, inet::TcpSocket> clientSockets;
+    std::map<int, Timer *> timer;
 
 public:
     SocketAgentAppTcp();
@@ -32,10 +35,7 @@ public:
     void putMessage(cMessage *msg, double mosaikSimTime);
 
 protected:
-    int connRecv = 0;
-    int connSend = 0;
-    cMessage *timeoutMsg = nullptr;
-    cMessage *timeoutMsgAlternative = nullptr;
+    std::list<inet::Packet *> packets;
     inet::Packet *packet = nullptr;
 
     /**
@@ -54,6 +54,10 @@ protected:
      * Handle reply with delay to mosaik.
      */
     void handleReply(TikTokPacket *reply);  // const char *reply
+    /**
+     * Timer objects are saved in a map, this method returns the timer for a given client id
+     */
+    Timer *getTimerForModuleId(int clientId);
     /**
      * Handle timer for TCP connection.
      */
@@ -90,16 +94,23 @@ protected:
     /**
      * Send data over inet network.
      */
-    virtual void sendData();
+    virtual void sendData(const char *receiver_name);
     /**
      * Renew server socket for new incoming connections.
      */
-    void renew();
+    void renew(const char *receiver_name);
+
+    /**
+     * Is called to connect to another client.
+     */
+    void connect(const char *receiver_name, int receiver_port);
 
     /**
      * Is to be called at the end of the simulation.
      */
     virtual void finish() override;
+
+
 };
 
 

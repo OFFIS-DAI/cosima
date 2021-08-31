@@ -14,4 +14,10 @@ ROOT_PATH = Path(abspath(__file__)).parent
 CONTENT_PATH = ROOT_PATH / 'content.csv'
 
 # config file
-CONFIG_FILE = 'network_config_basic.json'
+if NUMBER_OF_AGENTS == 2:
+    CONFIG_FILE = 'network_config_basic_2_agents.json'
+elif NUMBER_OF_AGENTS == 3:
+    CONFIG_FILE = 'network_config_basic_3_agents.json'
+
+# agents send messages parallel
+PARALLEL = False
