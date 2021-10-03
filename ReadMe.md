@@ -146,3 +146,8 @@ For further information see:
 * [Catch2 Tutorial](https://mariusbancila.ro/blog/2018/03/29/writing-cpp-unit-tests-with-catch2/)
 * [Catch2 Tutorial](https://www.jetbrains.com/help/clion/unit-testing-tutorial.html#catch-framework)
 * [Fakeit Tutorial](https://github.com/eranpeer/FakeIt)
+
+# Development Team
+Frauke Oest (frauke.oest@offis.de)
+Emilie Frost (emilie.frost@offis.de)
+Malin Radtke (malin.radtke@offis.de)
