@@ -1,3 +1,4 @@
+package networks;
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +17,7 @@ import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.inet.INetworkNode;
 import inet.physicallayer.contract.packetlevel.IRadioMedium;
 import inet.visualizer.contract.IIntegratedVisualizer;
+import MosaikSchedulerModule;
 
 network WifiNetwork
 {
@@ -24,6 +26,10 @@ network WifiNetwork
         @figure[title](type=label; pos=0,-1; anchor=sw; color=darkblue);
 
     submodules:
+        schedulerModule: MosaikSchedulerModule {
+            @display("p=200,100");
+        }
+
         visualizer: <default(firstAvailableOrEmpty("IntegratedCanvasVisualizer"))> like IIntegratedVisualizer if typename != "" {
             @display("p=948.8606,54.512634");
         }
@@ -38,5 +44,8 @@ network WifiNetwork
         }
         client1: <default("WirelessHost")> like INetworkNode {
             @display("p=650,325");
+        }
+        client2: <default("WirelessHost")> like INetworkNode {
+            @display("p=334.23126,428.825");
         }
 }

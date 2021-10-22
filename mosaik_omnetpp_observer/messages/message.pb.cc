@@ -105,12 +105,14 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup_CosimaMsg, delay_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup_CosimaMsg, simtime_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup_CosimaMsg, stepsize_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup_CosimaMsg, msgid_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, msg_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, current_mosaik_step_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::TicTocMsg, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -120,8 +122,8 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::CosimaMsgGroup_CosimaMsg)},
-  { 14, -1, sizeof(::CosimaMsgGroup)},
-  { 20, -1, sizeof(::TicTocMsg)},
+  { 15, -1, sizeof(::CosimaMsgGroup)},
+  { 22, -1, sizeof(::TicTocMsg)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -151,19 +153,20 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\rmessage.proto\"\273\002\n\016CosimaMsgGroup\022&\n\003ms"
-      "g\030\n \003(\0132\031.CosimaMsgGroup.CosimaMsg\032\200\002\n\tC"
-      "osimaMsg\022/\n\004type\030\001 \001(\0162!.CosimaMsgGroup."
-      "CosimaMsg.MsgType\022\016\n\006sender\030\002 \001(\t\022\020\n\010rec"
-      "eiver\030\003 \001(\t\022\023\n\013max_advance\030\004 \001(\005\022\014\n\004size"
-      "\030\005 \001(\005\022\017\n\007content\030\006 \001(\t\022\r\n\005delay\030\007 \001(\001\022\017"
-      "\n\007simTime\030\010 \001(\005\022\020\n\010stepSize\030\t \001(\005\":\n\007Msg"
-      "Type\022\007\n\003CMD\020\000\022\010\n\004INFO\020\001\022\017\n\013MAX_ADVANCE\020\002"
-      "\022\013\n\007WAITING\020\003\"\034\n\tTicTocMsg\022\017\n\007content\030\001 "
-      "\001(\tb\006proto3"
+      "\n\rmessage.proto\"\377\002\n\016CosimaMsgGroup\022&\n\003ms"
+      "g\030\n \003(\0132\031.CosimaMsgGroup.CosimaMsg\022\033\n\023cu"
+      "rrent_mosaik_step\030\013 \001(\005\032\247\002\n\tCosimaMsg\022/\n"
+      "\004type\030\001 \001(\0162!.CosimaMsgGroup.CosimaMsg.M"
+      "sgType\022\016\n\006sender\030\002 \001(\t\022\020\n\010receiver\030\003 \001(\t"
+      "\022\023\n\013max_advance\030\004 \001(\005\022\014\n\004size\030\005 \001(\005\022\017\n\007c"
+      "ontent\030\006 \001(\t\022\r\n\005delay\030\007 \001(\001\022\017\n\007simTime\030\010"
+      " \001(\005\022\020\n\010stepSize\030\t \001(\005\022\r\n\005msgId\030\n \001(\t\"R\n"
+      "\007MsgType\022\007\n\003CMD\020\000\022\010\n\004INFO\020\001\022\017\n\013MAX_ADVAN"
+      "CE\020\002\022\013\n\007WAITING\020\003\022\026\n\022TRANSMISSION_ERROR\020"
+      "\004\"\034\n\tTicTocMsg\022\017\n\007content\030\001 \001(\tb\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 371);
+      descriptor, 439);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "message.proto", &protobuf_RegisterTypes);
 }
@@ -189,6 +192,7 @@ bool CosimaMsgGroup_CosimaMsg_MsgType_IsValid(int value) {
     case 1:
     case 2:
     case 3:
+    case 4:
       return true;
     default:
       return false;
@@ -200,6 +204,7 @@ const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::CMD;
 const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::INFO;
 const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::MAX_ADVANCE;
 const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::WAITING;
+const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::TRANSMISSION_ERROR;
 const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::MsgType_MIN;
 const CosimaMsgGroup_CosimaMsg_MsgType CosimaMsgGroup_CosimaMsg::MsgType_MAX;
 const int CosimaMsgGroup_CosimaMsg::MsgType_ARRAYSIZE;
@@ -219,6 +224,7 @@ const int CosimaMsgGroup_CosimaMsg::kContentFieldNumber;
 const int CosimaMsgGroup_CosimaMsg::kDelayFieldNumber;
 const int CosimaMsgGroup_CosimaMsg::kSimTimeFieldNumber;
 const int CosimaMsgGroup_CosimaMsg::kStepSizeFieldNumber;
+const int CosimaMsgGroup_CosimaMsg::kMsgIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 CosimaMsgGroup_CosimaMsg::CosimaMsgGroup_CosimaMsg()
@@ -244,6 +250,10 @@ CosimaMsgGroup_CosimaMsg::CosimaMsgGroup_CosimaMsg(const CosimaMsgGroup_CosimaMs
   if (from.content().size() > 0) {
     content_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.content_);
   }
+  msgid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.msgid().size() > 0) {
+    msgid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.msgid_);
+  }
   ::memcpy(&type_, &from.type_,
     static_cast<size_t>(reinterpret_cast<char*>(&stepsize_) -
     reinterpret_cast<char*>(&type_)) + sizeof(stepsize_));
@@ -254,6 +264,7 @@ void CosimaMsgGroup_CosimaMsg::SharedCtor() {
   sender_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   receiver_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   content_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  msgid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&type_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&stepsize_) -
       reinterpret_cast<char*>(&type_)) + sizeof(stepsize_));
@@ -268,6 +279,7 @@ void CosimaMsgGroup_CosimaMsg::SharedDtor() {
   sender_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   receiver_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   content_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  msgid_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void CosimaMsgGroup_CosimaMsg::SetCachedSize(int size) const {
@@ -293,6 +305,7 @@ void CosimaMsgGroup_CosimaMsg::Clear() {
   sender_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   receiver_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  msgid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&type_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&stepsize_) -
       reinterpret_cast<char*>(&type_)) + sizeof(stepsize_));
@@ -442,6 +455,22 @@ bool CosimaMsgGroup_CosimaMsg::MergePartialFromCodedStream(
         break;
       }
 
+      // string msgId = 10;
+      case 10: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(82u /* 82 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_msgid()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->msgid().data(), static_cast<int>(this->msgid().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "CosimaMsgGroup.CosimaMsg.msgId"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -529,6 +558,16 @@ void CosimaMsgGroup_CosimaMsg::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(9, this->stepsize(), output);
   }
 
+  // string msgId = 10;
+  if (this->msgid().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->msgid().data(), static_cast<int>(this->msgid().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "CosimaMsgGroup.CosimaMsg.msgId");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      10, this->msgid(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -607,6 +646,17 @@ void CosimaMsgGroup_CosimaMsg::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(9, this->stepsize(), target);
   }
 
+  // string msgId = 10;
+  if (this->msgid().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->msgid().data(), static_cast<int>(this->msgid().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "CosimaMsgGroup.CosimaMsg.msgId");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        10, this->msgid(), target);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
@@ -643,6 +693,13 @@ size_t CosimaMsgGroup_CosimaMsg::ByteSizeLong() const {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->content());
+  }
+
+  // string msgId = 10;
+  if (this->msgid().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->msgid());
   }
 
   // .CosimaMsgGroup.CosimaMsg.MsgType type = 1;
@@ -723,6 +780,10 @@ void CosimaMsgGroup_CosimaMsg::MergeFrom(const CosimaMsgGroup_CosimaMsg& from) {
 
     content_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.content_);
   }
+  if (from.msgid().size() > 0) {
+
+    msgid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.msgid_);
+  }
   if (from.type() != 0) {
     set_type(from.type());
   }
@@ -773,6 +834,8 @@ void CosimaMsgGroup_CosimaMsg::InternalSwap(CosimaMsgGroup_CosimaMsg* other) {
     GetArenaNoVirtual());
   content_.Swap(&other->content_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
+  msgid_.Swap(&other->msgid_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
   swap(type_, other->type_);
   swap(max_advance_, other->max_advance_);
   swap(size_, other->size_);
@@ -794,6 +857,7 @@ void CosimaMsgGroup::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int CosimaMsgGroup::kMsgFieldNumber;
+const int CosimaMsgGroup::kCurrentMosaikStepFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 CosimaMsgGroup::CosimaMsgGroup()
@@ -808,10 +872,12 @@ CosimaMsgGroup::CosimaMsgGroup(const CosimaMsgGroup& from)
       _internal_metadata_(NULL),
       msg_(from.msg_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
+  current_mosaik_step_ = from.current_mosaik_step_;
   // @@protoc_insertion_point(copy_constructor:CosimaMsgGroup)
 }
 
 void CosimaMsgGroup::SharedCtor() {
+  current_mosaik_step_ = 0;
 }
 
 CosimaMsgGroup::~CosimaMsgGroup() {
@@ -843,6 +909,7 @@ void CosimaMsgGroup::Clear() {
   (void) cached_has_bits;
 
   msg_.Clear();
+  current_mosaik_step_ = 0;
   _internal_metadata_.Clear();
 }
 
@@ -862,6 +929,20 @@ bool CosimaMsgGroup::MergePartialFromCodedStream(
             static_cast< ::google::protobuf::uint8>(82u /* 82 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                 input, add_msg()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 current_mosaik_step = 11;
+      case 11: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(88u /* 88 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &current_mosaik_step_)));
         } else {
           goto handle_unusual;
         }
@@ -903,6 +984,11 @@ void CosimaMsgGroup::SerializeWithCachedSizes(
       output);
   }
 
+  // int32 current_mosaik_step = 11;
+  if (this->current_mosaik_step() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(11, this->current_mosaik_step(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -923,6 +1009,11 @@ void CosimaMsgGroup::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
         10, this->msg(static_cast<int>(i)), deterministic, target);
+  }
+
+  // int32 current_mosaik_step = 11;
+  if (this->current_mosaik_step() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(11, this->current_mosaik_step(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -953,6 +1044,13 @@ size_t CosimaMsgGroup::ByteSizeLong() const {
     }
   }
 
+  // int32 current_mosaik_step = 11;
+  if (this->current_mosaik_step() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->current_mosaik_step());
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -981,6 +1079,9 @@ void CosimaMsgGroup::MergeFrom(const CosimaMsgGroup& from) {
   (void) cached_has_bits;
 
   msg_.MergeFrom(from.msg_);
+  if (from.current_mosaik_step() != 0) {
+    set_current_mosaik_step(from.current_mosaik_step());
+  }
 }
 
 void CosimaMsgGroup::CopyFrom(const ::google::protobuf::Message& from) {
@@ -1008,6 +1109,7 @@ void CosimaMsgGroup::Swap(CosimaMsgGroup* other) {
 void CosimaMsgGroup::InternalSwap(CosimaMsgGroup* other) {
   using std::swap;
   CastToBase(&msg_)->InternalSwap(CastToBase(&other->msg_));
+  swap(current_mosaik_step_, other->current_mosaik_step_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 

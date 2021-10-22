@@ -3,6 +3,10 @@
  *
  *  Created on: May 25, 2021
  *      Author: malin
+ *
+ *  The SocketAgentAppTCP represents the implementation of the application layer (and transport layer)
+ *  of the end devices, which represent the agents in mosaik on the OMNeT++ side.
+ *  The SocketAgentAppTCP sends messages in OMNeT++ over TCP.
  */
 
 #ifndef SOCKETAGENTAPPTCP_H_
@@ -10,8 +14,8 @@
 
 #include <vector>
 #include <algorithm>
-#include "MosaikObserver.h"
-#include "Timer_m.h"
+#include "MosaikScheduler.h"
+#include "messages/Timer_m.h"
 #include "inet/applications/tcpapp/TcpAppBase.h"
 #include "inet/common/lifecycle/LifecycleOperation.h"
 #include "inet/common/lifecycle/NodeStatus.h"
@@ -21,25 +25,20 @@ using namespace omnetpp;
 
 class SocketAgentAppTcp : public inet::TcpAppBase {
 private:
-    MosaikObserver *observer;
-
-    int numRecvBytes;
+    MosaikScheduler *scheduler;
     inet::TcpSocket serverSocket;
     std::map<int, inet::TcpSocket> clientSockets;
-    std::map<int, Timer *> timer;
+    std::map<int,std::list<Timer *>> timer;
 
 public:
     SocketAgentAppTcp();
     virtual ~SocketAgentAppTcp();
-    char recvBuffer[4000];
-    void putMessage(cMessage *msg, double mosaikSimTime);
 
 protected:
-    std::list<inet::Packet *> packets;
-    inet::Packet *packet = nullptr;
+    std::map<int, inet::Packet *> packetToClient;
 
     /**
-     * Initialize module and register at observer.
+     * Initialize module and register at Scheduler.
      */
     void initialize(int stage) override;
     /**
@@ -47,17 +46,37 @@ protected:
      */
     int numInitStages() const override { return (inet::NUM_INIT_STAGES); }
     /**
+     * Overwrites message of TcpAppBase to be able to receive messages from MosaikScheduler
+     */
+    void handleMessageWhenUp(cMessage *msg);
+    /**
      * Handle event from socket to mosaik.
      */
     void handleSocketEvent(cMessage *msg, double mosaikSimTime);
     /**
      * Handle reply with delay to mosaik.
      */
-    void handleReply(TikTokPacket *reply);  // const char *reply
+    void sendReply(MosaikSchedulerMessage *reply);  // const char *reply
     /**
      * Timer objects are saved in a map, this method returns the timer for a given client id
      */
     Timer *getTimerForModuleId(int clientId);
+    /**
+     * Packets are saved in a map, this method returns the packet for a given client id.
+     * If no packet is saved for that id, the method returns nullptr.
+     */
+    void setPacketForModuleId(int clientId, inet::Packet*);
+    /**
+     * Packets are saved in a map, this method saves the packet for a given client id.
+     * If no packet is saved for that id, the method returns nullptr.
+     */
+    inet::Packet *getPacketForModuleId(int clientId);
+    /**
+     * Convenience method to get id of module by module name.
+     * Returns ID of module if module can be found as a registered module at the MosaikObserver,
+     * otherwise returns -1.
+     */
+    int getModuleIdByName(const char *module_name);
     /**
      * Handle timer for TCP connection.
      */

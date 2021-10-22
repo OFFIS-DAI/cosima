@@ -1,5 +1,5 @@
 from simulators.agent_simulator_tictoc import Agent
-from util import CONFIG_FILE, ROOT_PATH, CONTENT_PATH, STEP_SIZE_1_MS
+from config import CONFIG_FILE, ROOT_PATH, CONTENT_PATH, STEP_SIZE_1_MS
 
 
 def test_agent_get_data_client0():

@@ -1,0 +1,9 @@
+./mosaik -h : Aufzeigen aller Optionen
+
+-f mosaik.ini (Angabe des Ini-Files)
+-n nedpath: bei Ausführen per commandline notwendig.
+-c configuration for execution (General is default), z.B. EventBasedWinzent
+-u  user interface (Cmdenv oder Qtenv)
+
+
+./mosaik -n ../inet/src/inet -f mosaik.ini -c EventBasedWinzent -u Cmdenv

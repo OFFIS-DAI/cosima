@@ -148,6 +148,6 @@ For further information see:
 * [Fakeit Tutorial](https://github.com/eranpeer/FakeIt)
 
 # Development Team
-Frauke Oest (frauke.oest@offis.de)
-Emilie Frost (emilie.frost@offis.de)
-Malin Radtke (malin.radtke@offis.de)
+* Frauke Oest (frauke.oest@offis.de)
+* Emilie Frost (emilie.frost@offis.de)
+* Malin Radtke (malin.radtke@offis.de)

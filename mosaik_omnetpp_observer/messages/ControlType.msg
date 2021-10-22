@@ -11,19 +11,11 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-//
-import inet.common.INETDefs;
-import inet.common.packet.chunk.Chunk;
+// 
 
-cplusplus{{
-    const inet::B CHUNK_LENGTH; 
-}}
-
-class MosaikMessage extends inet::FieldsChunk
+enum ControlType
 {
-    chunkLength = CHUNK_LENGTH; 
-    simtime_t creationTime;
-    string content;
-   	string receiver;
-   	string sender;
-};
+    None = -1; // mode is undefined
+    MaxAdvance = 0; 
+    EndOfStep = 1; 
+}

@@ -11,13 +11,20 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
-cplusplus {{
-#include "ControlType_m.h"
+//
+import inet.common.INETDefs;
+import inet.common.packet.chunk.Chunk;
+
+cplusplus{{
+    const inet::B CHUNK_LENGTH; 
 }}
 
-enum ControlType;
-
-packet MosaikCtrlMsg {
-    int ctrlType @enum(ControlType);
+class MosaikApplicationChunk extends inet::FieldsChunk
+{
+    chunkLength = CHUNK_LENGTH; 
+    simtime_t creationTime;
+    string content;
+   	string receiver;
+   	string sender;
+   	string msgId;
 };

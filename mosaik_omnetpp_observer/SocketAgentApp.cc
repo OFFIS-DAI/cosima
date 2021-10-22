@@ -3,176 +3,197 @@
  *
  *  Created on: 11 Apr 2021
  *      Author: malin
+ *
+ *  The SocketAgentApp represents the implementation of the application layer (and transport layer)
+ *  of the end devices, which represent the agents in mosaik on the OMNeT++ side.
+ *  The SocketAgentApp sends messages in OMNeT++ over UDP.
+ *
  */
 #include <string.h>
 #include <omnetpp.h>
+#include <algorithm>
 #include <omnetpp/platdep/sockets.h>
-#include "MosaikObserver.h"
+#include "MosaikScheduler.h"
 #include "inet/transportlayer/contract/udp/UdpSocket.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/common/packet/chunk/ByteCountChunk.h"
 #include "inet/common/packet/chunk/BytesChunk.h"
-#include "MosaikMessage_m.h"
-#include "TikTokPacket_m.h"
-#include <algorithm>
+#include "messages/MosaikApplicationChunk_m.h"
+#include "messages/MosaikSchedulerMessage_m.h"
+
 
 using namespace omnetpp;
 
 class SocketAgentApp : public cSimpleModule {
- private:
-  MosaikObserver *observer;
+private:
+    MosaikScheduler *scheduler;
 
-  inet::UdpSocket socketudp;
+    inet::UdpSocket socketudp;
 
-  int numRecvBytes;
 
- public:
-  SocketAgentApp();
-  virtual ~SocketAgentApp();
-  char recvBuffer[4000];
+public:
+    SocketAgentApp();
+    virtual ~SocketAgentApp();
 
- protected:
-  void initialize(int stage) override;
-  int numInitStages() const override { return (inet::NUM_INIT_STAGES); }
-  void handleMessage(cMessage *msg) override;
-  void handleSocketEvent(cMessage *msg);
-  void handleReply(TikTokPacket *reply);  // const char *reply
+protected:
+    /**
+     * Initializes the app when called in the stage of application layer.
+     */
+    void initialize(int stage) override;
+    /**
+     * Returns the number of init stages.
+     */
+    int numInitStages() const override { return (inet::NUM_INIT_STAGES); }
+    /**
+     * Handles incoming messages.
+     * Messages can either be from scheduler (from mosaik) or
+     * they can be received via the inet network.
+     */
+    void handleMessage(cMessage *msg) override;
+    /**
+     * This method is called whenever an incoming message is
+     * a message from the scheduler. In that case the message is now
+     * forwarded over the network in OMNeT++.
+     */
+    void handleSocketEvent(cMessage *msg);
+    /**
+     * Send a reply to the scheduler after sending a message
+     * over the network.
+     */
+    void sendReply(MosaikSchedulerMessage *reply);
 };
 
 Define_Module(SocketAgentApp);
 
 SocketAgentApp::SocketAgentApp() {
-  numRecvBytes = 0;
-  observer = nullptr;
+    scheduler = nullptr;
 }
 
 SocketAgentApp::~SocketAgentApp() = default;
 
 void SocketAgentApp::initialize(int stage) {
-  cSimpleModule::initialize(stage);
-  if (stage != inet::INITSTAGE_APPLICATION_LAYER) return;
+    cSimpleModule::initialize(stage);
+    if (stage != inet::INITSTAGE_APPLICATION_LAYER) return;
 
-  // get intern socket scheduler from simulation and cast to cSocketobserver
-  observer = check_and_cast<MosaikObserver *>(getSimulation()->getScheduler());
-  // register module at scheduler
-  observer->setInterfaceModule(this, recvBuffer, 4000, &numRecvBytes);
-  // initialize socket in simulation in OMNeT++ and bind to local port
-  // local port can be set in .ini file
-  socketudp.setOutputGate(gate("socketOut"));
-  int localPort = par("localPort");
-  socketudp.bind(localPort);
+    // get intern socket scheduler from simulation and cast to MosaikScheduler
+    scheduler = check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
+    // register module at scheduler
+    scheduler->setInterfaceModule(this, false);
+    // initialize socket in simulation in OMNeT++ and bind to local port
+    // local port can be set in .ini file
+    socketudp.setOutputGate(gate("socketOut"));
+    int localPort = par("localPort");
+    socketudp.bind(localPort);
 }
 
 void SocketAgentApp::handleMessage(cMessage *msg) {
-  // message can be socket event -> call handleSocketEvent()
-  // or message from network -> handle message
-  std::cout << "SocketAgentApp of " << this->getParentModule()->getName()
-            << " received message " << msg << endl;
+    // message can be socket event -> call handleSocketEvent()
+    // or message from network -> handle message
 
-  if (msg->getArrivalGate() == gate("socketIn")) {
-    std::cout << "message is inet packet from network" << endl;
+    if (msg->getArrivalGate() == gate("socketIn")) {
+        inet::Packet *packet = dynamic_cast<inet::Packet *>(msg);
+        if (packet != nullptr) {
+            std::string reply_content = "0";
+            MosaikSchedulerMessage *answer = new MosaikSchedulerMessage();
 
-    inet::Packet *packet = dynamic_cast<inet::Packet *>(msg);
-    if (packet != nullptr) {
-      std::string reply_content = "0";
-      TikTokPacket *answer = new TikTokPacket();
+            // calculate delay
+            simtime_t delay =
+                    scheduler->getSimulation()->getSimTime() - msg->getCreationTime();
+            std::cout << this->getParentModule()->getName() << ": received message at time " << simTime() << " with delay " << delay << endl;
+            int delay_i = ceil(delay.dbl()*1000);
 
-      std::cout << "Observer SimTime "
-                << observer->getSimulation()->getSimTime() << endl;
-      std::cout << "Creation time " << msg->getCreationTime() << endl;
-      simtime_t delay =
-          observer->getSimulation()->getSimTime() - msg->getCreationTime();
-      std::cout << "Delay " << delay << endl;
-      double delay_d = (delay).dbl();
+            // handle reply to scheduler
+            inet::b offset = inet::b(0);  // start from the beginning
+            bool found_acl_part = false;
 
-      // message is ACL message from other node in simulation over UDP socket
-      // now handle reply to Mango
-      inet::b offset = inet::b(0);  // start from the beginning
-      bool found_acl_part = false;
+            while (auto chunk =
+                    packet->peekAt(offset)->dupShared()) {  // for each chunk
+                if (found_acl_part) {
+                    // message is from other SocketAgent
+                    delete packet;
+                    break;
+                }
+                auto length = chunk->getChunkLength();
 
-      while (auto chunk =
-                 packet->peekAt(offset)->dupShared()) {  // for each chunk
-        if (found_acl_part) {
-          // message is from other SocketAgent
-          delete packet;
-          break;
+                if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
+                    reply_content =
+                            packet->peekAt<MosaikApplicationChunk>(offset, length)->getContent();
+                    std::string reply_receiver =
+                            packet->peekAt<MosaikApplicationChunk>(offset, length)->getReceiver();
+                    std::string reply_sender =
+                            packet->peekAt<MosaikApplicationChunk>(offset, length)->getSender();
+                    std::string msgId =
+                            packet->peekAt<MosaikApplicationChunk>(offset, length)->getMsgId();
+                    answer->setContent(reply_content.c_str());
+                    answer->setReceiver(reply_receiver.c_str());
+                    answer->setDelay(delay_i);
+                    answer->setSender(reply_sender.c_str());
+                    answer->setMsgId(msgId.c_str());
+                    found_acl_part = true;
+                } else {
+                    offset += chunk->getChunkLength();
+                    answer->setDelay(delay_i);
+                }
+            }
+            sendReply(answer);
+            delete answer;
         }
-        auto length = chunk->getChunkLength();
 
-        if (chunk->getClassName() == std::string("MosaikMessage")) {
-          reply_content =
-              packet->peekAt<MosaikMessage>(offset, length)->getContent();
-          std::cout << "reply content " << reply_content << endl;
-          // reply.pop_back();
-          std::string reply_receiver =
-              packet->peekAt<MosaikMessage>(offset, length)->getReceiver();
-          std::string reply_sender =
-              packet->peekAt<MosaikMessage>(offset, length)->getSender();
-          answer->setContent(reply_content.c_str());
-          answer->setReceiver(reply_receiver.c_str());
-          answer->setDelay(delay_d);
-          answer->setSender(reply_sender.c_str());
-          found_acl_part = true;
-
-
-        } else {
-          offset += chunk->getChunkLength();
-          answer->setDelay(delay_d);
-        }
-      }
-      handleReply(answer);
+    } else {
+        // message is placed from scheduler
+        handleSocketEvent(msg);
     }
-
-  } else {
-    // message is placed from observer
-    handleSocketEvent(msg);
-  }
 }
 
 void SocketAgentApp::handleSocketEvent(cMessage *msg) {
-  std::cout << "handle Socket Event" << endl;
-  // make packet
-  if (typeid(*msg) == typeid(TikTokPacket)) {
-    std::cout << "Message is TikTokPacket" << endl;
-    TikTokPacket *tmsg = dynamic_cast<TikTokPacket *>(msg);
-    std::cout << "successful cast" << endl;
-    const char *content = tmsg->getContent();
-    std::cout << "print content " << content << endl;
+    // make packet
+    if (typeid(*msg) == typeid(MosaikSchedulerMessage)) {
+        MosaikSchedulerMessage *msg_casted = dynamic_cast<MosaikSchedulerMessage *>(msg);
 
-    std::cout << "handle socket event, msg: " << content << endl;
+        // get content from message
+        const char *content = msg_casted->getContent();
+        std::string receiverName = msg_casted->getReceiver();
+        std::string senderName = msg_casted->getSender();
+        std::string msgId = msg_casted->getMsgId();
+        int msgSize = msg_casted->getSize();
 
-    std::string receiverName = tmsg->getReceiver();
-    std::string senderName = tmsg->getSender();
-    int msgSize = tmsg->getSize();
+        // get corresponding port for receiver name
+        int receiverPort = scheduler->getPortForModule(receiverName.c_str());
 
-    // get corresponding Port for receiver name
-    int receiverPort = observer->getPortForModule(receiverName.c_str());
+        std::cout << this->getParentModule()->getName() << ": send message with content '" <<
+                content << "' to " << receiverName << " with port " << receiverPort << " at time " << simTime() << " with id " << msgId << endl;
 
-    std::cout << "Message receiver: " << receiverName
-              << ", msgSize: " << msgSize << ", receiverPort: " << receiverPort
-              << endl;
+        // make packet
+        inet::Packet *packet = new inet::Packet();
+        const auto &payload = inet::makeShared<MosaikApplicationChunk>();
+        payload->setContent(content);
+        payload->setReceiver(receiverName.c_str());
+        payload->setSender(senderName.c_str());
+        payload->setChunkLength(inet::B(msgSize));
+        payload->setCreationTime(simTime());
+        payload->setMsgId(msgId.c_str());
+        packet->insertAtBack(payload);
 
-    inet::Packet *packet = new inet::Packet();
-    const auto &payload = inet::makeShared<MosaikMessage>();
-    payload->setContent(content);
-    payload->setReceiver(receiverName.c_str());
-    payload->setSender(senderName.c_str());
-    payload->setChunkLength(inet::B(msgSize));
-    payload->setCreationTime(simTime());
-    packet->insertAtBack(payload);
-
-    // get destination
-    inet::L3Address destAddress;
-    destAddress = inet::L3AddressResolver().resolve(receiverName.c_str());
-
-    // send packet
-    socketudp.sendTo(packet, destAddress, receiverPort);
-    std::cout << "send packet " << packet << " to port " << receiverPort
-              << endl;
-  }
+        // get destination
+        inet::L3Address destAddress;
+        try {
+            destAddress = inet::L3AddressResolver().resolve(receiverName.c_str());
+            // send packet
+            socketudp.sendTo(packet, destAddress, receiverPort);
+        } catch(...) {
+            std::cout << this->getParentModule()->getName() << ": Error when trying to resolve L3 address" << endl;
+            MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+            notification_message->setTransmission_error(true);
+            notification_message->setSender(this->getParentModule()->getName());
+            notification_message->setReceiver(receiverName.c_str());
+            scheduler->sendToMosaik(notification_message);
+        }
+        delete msg_casted;
+    } else {
+        delete msg;
+    }
 }
 
-void SocketAgentApp::handleReply(TikTokPacket *reply) {
-  std::cout << "Set message for observer " << reply << endl;
-  observer->sendBytes(reply);
+void SocketAgentApp::sendReply(MosaikSchedulerMessage *reply) {
+    scheduler->sendToMosaik(reply);
 }

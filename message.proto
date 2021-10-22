@@ -8,6 +8,7 @@ message CosimaMsgGroup{
         INFO = 1;
         MAX_ADVANCE = 2;
         WAITING = 3;
+        TRANSMISSION_ERROR = 4;
     }
     MsgType type = 1;
     string sender = 2;
@@ -18,8 +19,10 @@ message CosimaMsgGroup{
     double delay = 7;
     int32 simTime = 8;
     int32 stepSize = 9;
+    string msgId = 10;
 }
     repeated CosimaMsg msg = 10;
+    int32 current_mosaik_step = 11;
 
 }
 

@@ -11,12 +11,14 @@
 // See the GNU Lesser General Public License for more details.
 //
 
+package networks;
 
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.ethernet.Eth100M;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
 import inet.node.internetcloud.InternetCloud;
+import MosaikSchedulerModule;
 
 
 network MosaikNetwork
@@ -24,9 +26,10 @@ network MosaikNetwork
     @display("bgb=998.7494,586.0717;bgg=1;bgi=background/streetmap");
 
     submodules:
-        server: StandardHost {
-            @display("p=117.90791,405.74194;i=device/server");
+        schedulerModule: MosaikSchedulerModule {
+            @display("p=68.8875,129.00749");
         }
+
         router4: Router {
             @display("p=690.1081,301.70554");
         }
@@ -45,11 +48,18 @@ network MosaikNetwork
         internetCloud: InternetCloud {
             @display("p=488.96347,215.90594");
         }
+        client2: StandardHost {
+            @display("p=513.52496,467.1825;i=device/pocketpc");
+        }
+        router1: Router {
+            @display("p=488.475,356.9625");
+        }
     connections:
         client0.ethg++ <--> Eth100M <--> router2.ethg++;
         client1.ethg++ <--> Eth100M <--> router4.ethg++;
-        server.ethg++ <--> Eth100M <--> router2.ethg++;
+        client2.ethg++ <--> Eth100M <--> router1.ethg++;
         router2.pppg++ <--> Eth100M <--> internetCloud.pppg++;
+        router1.pppg++ <--> Eth100M <--> internetCloud.pppg++;
         internetCloud.pppg++ <--> Eth100M <--> router4.pppg++;
 }
 

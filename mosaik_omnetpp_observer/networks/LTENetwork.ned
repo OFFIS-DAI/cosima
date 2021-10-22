@@ -7,6 +7,8 @@
 // and cannot be removed from it.
 // 
 
+package networks;
+
 import inet.networklayer.ipv4.RoutingTableRecorder;
 import inet.node.ethernet.Eth10G;
 import inet.node.inet.Router;
@@ -17,6 +19,7 @@ import lte.corenetwork.nodes.Ue;
 import lte.corenetwork.nodes.eNodeB;
 import lte.epc.PgwStandardSimplified;
 import lte.world.radio.LteChannelControl;
+import MosaikSchedulerModule;
 
 
 network LTENetwork
@@ -24,6 +27,10 @@ network LTENetwork
     parameters:
         @display("i=block/network2;bgb=600,600");
     submodules:
+        schedulerModule: MosaikSchedulerModule {
+            @display("p=200,100");
+        }
+
         channelControl: LteChannelControl {
             @display("p=50,25;is=s");
         }
@@ -35,9 +42,6 @@ network LTENetwork
         }
         binder: LteBinder {
             @display("p=50,175;is=s");
-        }
-        server: StandardHost {
-            @display("p=212,118;is=n;i=device/server");
         }
         router: Router {
             @display("p=321,136;i=device/smallrouter");
@@ -55,8 +59,10 @@ network LTENetwork
         client1: Ue {
             @display("p=522.1842,440.48193");
         }
+        client2: Ue {
+            @display("p=300.792,531.52");
+        }
     connections:
-        server.pppg++ <--> Eth10G <--> router.pppg++;
         router.pppg++ <--> Eth10G <--> pgw.filterGate;
         pgw.pppg++ <--> Eth10G <--> eNB.ppp;
 }

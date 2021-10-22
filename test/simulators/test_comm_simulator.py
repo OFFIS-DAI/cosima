@@ -1,7 +1,7 @@
 import pytest
 
 from simulators.comm_simulator import CommSimulator
-from util import CONFIG_FILE, ROOT_PATH
+from config import CONFIG_FILE, ROOT_PATH
 
 
 # test step()

@@ -12,32 +12,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
+cplusplus {{
+#include "ControlType_m.h"
+}}
 
-#ifndef MOSAIKOBSERVERMODULE_H_
-#define MOSAIKOBSERVERMODULE_H_
+enum ControlType;
 
-#include <string.h>
-#include <omnetpp.h>
-#include "MosaikObserver.h"
-#include "MosaikCtrlMsg_m.h"
-
-using namespace omnetpp;
-
-class MosaikObserverModule: public cSimpleModule {
-private:
- MosaikObserver *observer;
-
-public:
-    MosaikObserverModule();
-    virtual ~MosaikObserverModule();
-    MosaikCtrlMsg* max_adv_event;
-    virtual void cancelMaxAdvanceEvent();
-
-protected:
-  // The following redefined virtual function holds the algorithm.
-  virtual void initialize(int stage) override;
-  virtual void handleMessage(cMessage *msg) override;
-
+//TODO: maybe rename to event something
+packet MosaikCtrlEvent {
+    int ctrlType @enum(ControlType);
 };
-
-#endif /* MOSAIKOBSERVERMODULE_H_ */

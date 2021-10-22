@@ -13,8 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-enum ControlType
+simple MosaikSchedulerModule
 {
-    None = -1; // mode is undefined
-    MaxAdvance = 0; 
+//    gates:
+//	        input in;
+//	        output out;
 }
