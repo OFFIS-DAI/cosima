@@ -20,59 +20,22 @@
 #include "inet/common/packet/chunk/BytesChunk.h"
 #include "messages/MosaikApplicationChunk_m.h"
 #include "messages/MosaikSchedulerMessage_m.h"
+#include "SocketAgentApp.h"
+#include "messages/MosaikCtrlEvent_m.h"
 
-
+using namespace inet;
 using namespace omnetpp;
-
-class SocketAgentApp : public cSimpleModule {
-private:
-    MosaikScheduler *scheduler;
-
-    inet::UdpSocket socketudp;
-
-
-public:
-    SocketAgentApp();
-    virtual ~SocketAgentApp();
-
-protected:
-    /**
-     * Initializes the app when called in the stage of application layer.
-     */
-    void initialize(int stage) override;
-    /**
-     * Returns the number of init stages.
-     */
-    int numInitStages() const override { return (inet::NUM_INIT_STAGES); }
-    /**
-     * Handles incoming messages.
-     * Messages can either be from scheduler (from mosaik) or
-     * they can be received via the inet network.
-     */
-    void handleMessage(cMessage *msg) override;
-    /**
-     * This method is called whenever an incoming message is
-     * a message from the scheduler. In that case the message is now
-     * forwarded over the network in OMNeT++.
-     */
-    void handleSocketEvent(cMessage *msg);
-    /**
-     * Send a reply to the scheduler after sending a message
-     * over the network.
-     */
-    void sendReply(MosaikSchedulerMessage *reply);
-};
 
 Define_Module(SocketAgentApp);
 
-SocketAgentApp::SocketAgentApp() {
+SocketAgentApp::~SocketAgentApp() {
     scheduler = nullptr;
 }
 
-SocketAgentApp::~SocketAgentApp() = default;
-
 void SocketAgentApp::initialize(int stage) {
-    cSimpleModule::initialize(stage);
+    // get name of parent module as string for logging
+    nameStr = this->getParentModule()->getName();
+
     if (stage != inet::INITSTAGE_APPLICATION_LAYER) return;
 
     // get intern socket scheduler from simulation and cast to MosaikScheduler
@@ -84,6 +47,11 @@ void SocketAgentApp::initialize(int stage) {
     socketudp.setOutputGate(gate("socketOut"));
     int localPort = par("localPort");
     socketudp.bind(localPort);
+    socketudp.setCallback(this);
+}
+
+void SocketAgentApp::socketDataArrived(UdpSocket *socket, Packet *packet) {
+    scheduler->log("SocketAgentApp: socket data arrived");
 }
 
 void SocketAgentApp::handleMessage(cMessage *msg) {
@@ -99,7 +67,7 @@ void SocketAgentApp::handleMessage(cMessage *msg) {
             // calculate delay
             simtime_t delay =
                     scheduler->getSimulation()->getSimTime() - msg->getCreationTime();
-            std::cout << this->getParentModule()->getName() << ": received message at time " << simTime() << " with delay " << delay << endl;
+            scheduler->log(nameStr + ": received message at time " + simTime().str() + " with delay " + delay.str());
             int delay_i = ceil(delay.dbl()*1000);
 
             // handle reply to scheduler
@@ -124,11 +92,14 @@ void SocketAgentApp::handleMessage(cMessage *msg) {
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getSender();
                     std::string msgId =
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getMsgId();
+                    int creationTime =
+                            packet->peekAt<MosaikApplicationChunk>(offset, length)->getCreationTimeMosaik();
                     answer->setContent(reply_content.c_str());
                     answer->setReceiver(reply_receiver.c_str());
                     answer->setDelay(delay_i);
                     answer->setSender(reply_sender.c_str());
                     answer->setMsgId(msgId.c_str());
+                    answer->setCreationTime(creationTime);
                     found_acl_part = true;
                 } else {
                     offset += chunk->getChunkLength();
@@ -156,12 +127,13 @@ void SocketAgentApp::handleSocketEvent(cMessage *msg) {
         std::string senderName = msg_casted->getSender();
         std::string msgId = msg_casted->getMsgId();
         int msgSize = msg_casted->getSize();
+        int creation_time = msg_casted->getCreationTime();
 
         // get corresponding port for receiver name
         int receiverPort = scheduler->getPortForModule(receiverName.c_str());
 
-        std::cout << this->getParentModule()->getName() << ": send message with content '" <<
-                content << "' to " << receiverName << " with port " << receiverPort << " at time " << simTime() << " with id " << msgId << endl;
+        scheduler->log(nameStr + ": send message with content '" +
+                content + "' to " + receiverName + " with port " + std::to_string(receiverPort) + " at time " + simTime().str() + " with id " + msgId);
 
         // make packet
         inet::Packet *packet = new inet::Packet();
@@ -172,6 +144,7 @@ void SocketAgentApp::handleSocketEvent(cMessage *msg) {
         payload->setChunkLength(inet::B(msgSize));
         payload->setCreationTime(simTime());
         payload->setMsgId(msgId.c_str());
+        payload->setCreationTimeMosaik(creation_time);
         packet->insertAtBack(payload);
 
         // get destination
@@ -181,7 +154,7 @@ void SocketAgentApp::handleSocketEvent(cMessage *msg) {
             // send packet
             socketudp.sendTo(packet, destAddress, receiverPort);
         } catch(...) {
-            std::cout << this->getParentModule()->getName() << ": Error when trying to resolve L3 address" << endl;
+            scheduler->log(nameStr + ": Error when trying to resolve L3 address");
             MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
             notification_message->setTransmission_error(true);
             notification_message->setSender(this->getParentModule()->getName());
@@ -194,6 +167,19 @@ void SocketAgentApp::handleSocketEvent(cMessage *msg) {
     }
 }
 
+void SocketAgentApp::socketErrorArrived(UdpSocket *socket, Indication *indication){
+    scheduler->log("socketErrorArrived");
+    MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+    notification_message->setTransmission_error(true);
+    notification_message->setSender(this->getParentModule()->getName());
+    scheduler->sendToMosaik(notification_message);
+}
+
+void SocketAgentApp::socketClosed(UdpSocket *socket) {
+    scheduler->log("socketClosed");
+}
+
 void SocketAgentApp::sendReply(MosaikSchedulerMessage *reply) {
     scheduler->sendToMosaik(reply);
 }
+

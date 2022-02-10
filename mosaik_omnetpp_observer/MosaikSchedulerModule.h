@@ -25,7 +25,9 @@ public:
     MosaikSchedulerModule();
     virtual ~MosaikSchedulerModule();
     MosaikCtrlEvent* max_adv_event;
-    virtual void cancelMaxAdvanceEvent();
+    MosaikCtrlEvent* until_event;
+    void cancelMaxAdvanceEvent();
+    void cancelUntilEvent();
 
 protected:
   // The following redefined virtual function holds the algorithm.

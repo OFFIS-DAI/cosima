@@ -1,11 +1,12 @@
-import json
 import socket
+
 import mosaik_api
 from simpy.io.codec import JSON
 
-from config import STEP_SIZE_1_MS, CONNECT_ATTR
+from config import USED_STEP_SIZE, CONNECT_ATTR
 from message_pb2 import CosimaMsgGroup
 from simulators.omnetpp_connection import OmnetppConnection
+from util_functions import log
 
 META = {
     'type': 'event-based',
@@ -15,6 +16,7 @@ META = {
             'any_inputs': False,
             'params': [],
             'attrs': ['message',  # input
+                      'next_step',  # input
                       ],
         },
     },
@@ -69,40 +71,32 @@ class CommSimulator(mosaik_api.Simulator):
         self._number_messages_received = 0
         self._sid = None
         self._waining_msgs_counter = 0
+        self._is_first_step = True
+        self._next_agent_steps = []
+        self._is_in_waiting_modus = False
+        self._current_time = 0
 
-    def init(self, sid, config_file, step_size):
+    def init(self, sid, step_size, port, agent_names):
         self.sid = sid
 
-        with open(config_file, "r") as jsonfile:
-            config = json.load(jsonfile)
-
-        if 'observer_port' in config:
-            observer_port = config['observer_port']
-
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        connection_eids = set()
-        connections = {}
 
-        for name in config['connections']:
-            src, dest = name.split('->')
-
-            connection_eids.add(name)
-            connections[src] = {
-                dest: {'delay': 2}}  # TODO: use setdefault?
-
-        self._model_names = config['nodes']
+        self._model_names = agent_names
 
         self._step_size = step_size
-        self._omnetpp_connection = OmnetppConnection(observer_port,
-                                                     client_socket,
-                                                     connection_eids,
-                                                     connections)
+        self._omnetpp_connection = OmnetppConnection(port,
+                                                     client_socket)
+        self._omnetpp_connection.start_connection()
         # TODO only acc to connections
         for model_name, information in self.meta["models"].items():
             for agent_name in self._model_names:
                 self.meta["models"][model_name]['attrs'].append(
                     f'message_with_delay_for_{agent_name}')
                 self._models[agent_name] = CommModel(m_id=agent_name)
+
+        self.meta["models"][model_name]['attrs'].append(
+            f'ctrl_message')
+        self._models['ict_controller'] = CommModel(m_id='ict_controller')
 
         return self.meta
 
@@ -123,17 +117,51 @@ class CommSimulator(mosaik_api.Simulator):
         for message, size in messages:
             msg = msg_group.msg.add()
             msg.type = message["type"]
-            msg.sender = message["sender"]
-            msg.receiver = message["receiver"]
-            msg.max_advance = self.calculate_to_ms(message["max_advance"])
-            msg.size = size
-            msg.content = message["message"]
-            msg.simTime = self.calculate_to_ms(sim_time)
-            msg.stepSize = self._step_size
             msg.msgId = message['msgId']
+            msg.simTime = self.calculate_to_ms(sim_time)
+            msg.creation_time = self.calculate_to_ms(sim_time)
+            if message["type"] is CosimaMsgGroup.CosimaMsg.MsgType.DISCONNECT or message[
+                "type"] is CosimaMsgGroup.CosimaMsg.MsgType.RECONNECT:
+                msg.change_module = message["module_name"]
+                msg.simTime = self.calculate_to_ms(message["simTime"])
+                msg.creation_time = self.calculate_to_ms(sim_time)
+            else:
+                msg.simTime = self.calculate_to_ms(sim_time)
+                msg.creation_time = self.calculate_to_ms(sim_time)
+                msg.sender = message["sender"]
+                msg.receiver = message["receiver"]
+                msg.max_advance = self.calculate_to_ms(message["max_advance"])
+                msg.size = size
+                msg.content = message["message"]
+                msg.stepSize = self._step_size
+                msg.until = self.calculate_to_ms(self.mosaik.world.until)
+                msg.change_module = ""
         return msg_group
 
-    def receive_messages_from_omnetpp(self, simtime, max_advance):
+    @staticmethod
+    def calculate_correct_msg_size(msg):
+        if msg['type'] is not CosimaMsgGroup.CosimaMsg.MsgType.RECONNECT \
+                and msg['type'] \
+                is not CosimaMsgGroup.CosimaMsg.MsgType.DISCONNECT:
+            minimal_dict = {'receiver': msg['receiver'],
+                            'sender': msg['sender'],
+                            'message': msg['message']}
+            return len(JSON().encode(minimal_dict))
+        else:
+            return 0
+
+    def remove_old_steps(self, sim_time):
+        self._next_agent_steps = [x for x in self._next_agent_steps if
+                                  x >= sim_time]
+        self._next_agent_steps.sort()
+
+    def next_agent_step(self, sim_time):
+        self.remove_old_steps(sim_time)
+
+        return self._next_agent_steps[0] if len(
+            self._next_agent_steps) > 0 else None
+
+    def receive_messages_from_omnetpp(self, sim_time, max_advance):
         """
         Method to connect to omnetpp to receive messages. If messages
         are received, they are returned. If the CommunicationSimulator
@@ -146,25 +174,31 @@ class CommSimulator(mosaik_api.Simulator):
         answers = []
         waiting_for_msg = True
         waiting_msg_sent = False
+        next_step = None
+        next_agent_step = self.next_agent_step(sim_time)
 
         while waiting_for_msg:
             msgs = self._omnetpp_connection.return_messages()
             if len(msgs) == 0:
-                if not self._received_answer and (
-                        max_advance == self.mosaik.world.until):
-                    if not waiting_msg_sent and max_advance != \
-                            self.mosaik.world.until:
-                        self.send_waiting_msg(max_advance, simtime)
+                if self._received_answer:
+                    return answers, next_step
+                if max_advance == next_agent_step:
+                    # waiting msg?
+                    return answers, next_step
+                if max_advance == sim_time and self._is_in_waiting_modus:
+                    return answers, sim_time + 1
+                else:
+                    # wait
+                    self._is_in_waiting_modus = True
+                    if not waiting_msg_sent:
+                        self.send_waiting_msg(max_advance, sim_time)
                         waiting_msg_sent = True
-                elif not self._received_answer and not max_advance == \
-                                                       self.mosaik.world.until:
-                    return answers
-                elif self._received_answer:
-                    return answers
+
             else:
                 received_info_msg = False
-                for msg in msgs:
+                for idx, msg in enumerate(msgs):
                     if msg.type == CosimaMsgGroup.CosimaMsg.MsgType.INFO:
+                        self._is_in_waiting_modus = False
                         received_info_msg = True
                         self._number_messages_received += 1
                         if self._number_messages_received == \
@@ -172,41 +206,83 @@ class CommSimulator(mosaik_api.Simulator):
                             self._number_messages_received = 0
                             self._number_messages_sent = 0
                             self._received_answer = True
+                            next_step = msg.simTime + 1
                         answers.append(msg)
-                    elif msg.type == CosimaMsgGroup.CosimaMsg.MsgType.TRANSMISSION_ERROR:
-                        print('case received transmission error')
+                    elif msg.type == CosimaMsgGroup.CosimaMsg.MsgType. \
+                            TRANSMISSION_ERROR:
+                        log('case received transmission error')
                         self._number_messages_sent -= 1
                         if self._number_messages_received == \
                                 self._number_messages_sent:
                             self._number_messages_received = 0
                             self._number_messages_sent = 0
                             self._received_answer = True
-                        self.send_waiting_msg(max_advance, simtime + 1)
+                        self.send_waiting_msg(max_advance, sim_time + 1)
                         waiting_msg_sent = True
-                    else:
-                        self.send_waiting_msg(max_advance, simtime)
+                    elif msg.type == CosimaMsgGroup.CosimaMsg.MsgType. \
+                            DISCONNECT or msg.type == CosimaMsgGroup.CosimaMsg.MsgType. \
+                            RECONNECT:
+                        log('case received disconnect notification')
+                        self._number_messages_sent -= 1
+                        answers.append(msg)
+                        if idx == len(msgs) - 1:
+                            return answers, next_step
+                    elif msg.type == CosimaMsgGroup.CosimaMsg.MsgType.MAX_ADVANCE:
+                        # if max advance message is not the last message,
+                        # ignore it
+                        if idx == len(msgs) - 1:
+                            log(f'received max advance event at time {sim_time}'
+                                  f' and max_advance {max_advance}. Event contains'
+                                  f' time: {msg.simTime}')
+                            # do we need waiting modus?
+                            if sim_time < msg.simTime:
+                                # max advance already reached
+                                return answers, msg.simTime
+                            elif sim_time == msg.simTime:
+                                log('simtime == msg.simtime')
+                                return answers, msg.simTime + 1
+                            else:
+                                log(f'mosaik time: {sim_time}, max advance'
+                                      f' time from OMNeT: {msg.simTime}')
+                                raise ValueError
                 if received_info_msg:
-                    return answers
+                    return answers, next_step
 
-    def send_message_to_omnetpp(self, messages, simtime):
+    def send_message_to_omnetpp(self, messages, sim_time):
         """
-        Method to send message to omnetpp. Takes messages, simtime and
+        Method to send message to omnetpp. Takes messages, sim_time and
         max_advance and transfers this information to omnetpp.
 
         :param messages: messages to be send
-        :param simtime: current mosaik simtime
+        :param sim_time: current mosaik sim_time
         :param max_advance: current max advance according to mosaik
         """
-        proto_message = self.create_protobuf_msg(messages, simtime)
+        proto_message = self.create_protobuf_msg(messages, sim_time)
         msg = proto_message.SerializeToString()
 
         # send msg via omnetpp connection
         if self._omnetpp_connection.is_still_connected:
             self._omnetpp_connection.send_message(msg)
         else:
+            log('Error with omnet connection')
             self.finalize()
 
-    def send_waiting_msg(self, max_advance, simtime):
+    def send_initial_message(self, sim_time):
+        # send out waiting message
+        initial_msg = {
+            'type': CosimaMsgGroup.CosimaMsg.MsgType.CMD,
+            'sender': 'CommSim',
+            'receiver': '',
+            'max_advance': 0,
+            'message': 'Inform about simulation end time in mosaik',
+            'simTime': 0,
+            'stepSize': self._step_size,
+            'msgId': f'InitialMessage'}
+        size = len(JSON().encode(initial_msg))
+        log("send initial message")
+        self.send_message_to_omnetpp([(initial_msg, size)], sim_time)
+
+    def send_waiting_msg(self, max_advance, sim_time):
         # send out waiting message
         waiting_msg = {
             'type': CosimaMsgGroup.CosimaMsg.MsgType.WAITING,
@@ -214,28 +290,32 @@ class CommSimulator(mosaik_api.Simulator):
             'receiver': '',
             'max_advance': self.calculate_to_ms(max_advance),
             'message': 'Waiting for another msg',
-            'simTime': self.calculate_to_ms(simtime),
+            'simTime': self.calculate_to_ms(sim_time),
             'stepSize': self._step_size,
             'msgId': f'WaitingMessage_{self._waining_msgs_counter}'}
+        log(f'WaitingMessage_{self._waining_msgs_counter}')
         self._waining_msgs_counter += 1
-        size = len(JSON().encode(waiting_msg))
-        self.send_message_to_omnetpp([(waiting_msg, size)], simtime)
+        size = self.calculate_correct_msg_size(waiting_msg)
+        self.send_message_to_omnetpp([(waiting_msg, size)], sim_time)
 
     @staticmethod
     def calculate_to_used_step_size(value):
         """calculates step-size based on delay"""
         value = value * 1000
         # needs to be divisible by step size
-        value = int(value - (value % STEP_SIZE_1_MS))
+        value = int(value - (value % USED_STEP_SIZE))
         return value
 
     @staticmethod
     def calculate_to_ms(value):
         """calculates value to milliseconds for OMNeT++"""
-        value = value * STEP_SIZE_1_MS
-        return value
+        return value * USED_STEP_SIZE
 
     def step(self, time, inputs, max_advance):
+        self._current_time = time
+        if self._is_first_step:
+            self.send_initial_message(time)
+            self._is_first_step = False
         next_step = None
         received_messages = []
 
@@ -245,52 +325,77 @@ class CommSimulator(mosaik_api.Simulator):
                 for values in sources_to_values.values():
                     if type(values) is list:
                         for value in values:
-                            message_size = len(JSON().encode(value))
+                            message_size = self.calculate_correct_msg_size(
+                                value)
+                            value['max_advance'] = max_advance
                             messages_to_send.append((value, message_size))
                     else:
-                        message_size = len(JSON().encode(values))
-                        messages_to_send.append((values, message_size))
+                        raise ValueError(
+                            f'Type error of msgs! Received msg from mosaik'
+                            f'with type {type(values)}')
 
-        print('Comm Sim steps in ', time, ' with input ', messages_to_send)
+        log(f'Comm Sim steps in {time} with input {messages_to_send}')
 
         if len(messages_to_send) > 0:
             self.send_message_to_omnetpp(messages_to_send, time)
             self._number_messages_sent += len(messages_to_send)
             self._received_answer = False
-            answers = self.receive_messages_from_omnetpp(time, max_advance)
+            answers, next_step = self.receive_messages_from_omnetpp(
+                time, max_advance)
             received_messages.extend(answers)
+        elif not self._received_answer:
+            self.send_waiting_msg(max_advance, time)
+            answers, next_step = self.receive_messages_from_omnetpp(
+                time, max_advance)
+            received_messages.extend(answers)
+
         if received_messages:
             for reply in received_messages:
                 self.process_msg_from_omnet(reply, time)
 
         self.data = {}
 
+        if next_step and next_step >= self.mosaik.world.until:
+            log('call finalize.')
+            self.finalize()
         return next_step
 
     def process_msg_from_omnet(self, reply, time):
         """processes answer messages from omnet, distinguishes between
         scheduler synchronization (FES) and communication delay """
-        if type(reply) is dict:
-            print('type of message is dict. This should not be the case')
-        elif type(reply) is CosimaMsgGroup.CosimaMsg:
+        if type(reply) is CosimaMsgGroup.CosimaMsg:
             if time > reply.simTime:
                 raise RuntimeError(
                     'Simulation time in OMNeT++ is is behind the simulation '
                     'time in mosaik.')
-            # determine delay in milliseconds for mosaik
-            omnetpp_delay = CommSimulator.calculate_to_used_step_size(
-                reply.delay)
+            if reply.type is CosimaMsgGroup.CosimaMsg.RECONNECT or reply.type \
+                    is CosimaMsgGroup.CosimaMsg.DISCONNECT:
+                msg_as_dict = {'sender': reply.sender,
+                               'creation_time': reply.creation_time,
+                               'connection_change_successful':
+                                   reply.connection_change_successful,
+                               'connection_change_type': reply.type,
+                               'output_time': reply.simTime,
+                               'msgId': reply.msgId
+                               }
+                self._models['ict_controller'].step(msg_as_dict)
+            else:
+                # determine delay in milliseconds for mosaik
+                omnetpp_delay = CommSimulator.calculate_to_used_step_size(
+                    reply.delay)
 
-            msg_as_dict = {'sender': reply.sender,
-                           'receiver': reply.receiver,
-                           'message': reply.content,
-                           'delay': omnetpp_delay,
-                           'output_time': reply.simTime
-                           }
-
-            self._models[reply.receiver].step(msg_as_dict)
+                msg_as_dict = {'sender': reply.sender,
+                               'receiver': reply.receiver,
+                               'message': reply.content,
+                               'delay': omnetpp_delay,
+                               'creation_time': reply.creation_time,
+                               'output_time': reply.simTime,
+                               'msgId': reply.msgId
+                               }
+                self._models[reply.receiver].step(msg_as_dict)
         else:
-            print('message has type: ', type(reply))
+            raise ValueError(
+                f'Message from OMNeT has invalid type {type(reply)}')
 
     def get_data(self, outputs):
         """gets data of entities for mosaik core"""
@@ -299,14 +404,19 @@ class CommSimulator(mosaik_api.Simulator):
         for eid, model in self._models.items():
             model_data = model.get_data()
             if len(model_data) > 0:
-                data[f'{CONNECT_ATTR}{eid}'] = model_data
+                if eid == 'ict_controller':
+                    data['ctrl_message'] = model_data
+                else:
+                    data[f'{CONNECT_ATTR}{eid}'] = model_data
                 for msg in model_data:
                     if time is None:
                         time = msg['output_time']
+                        # if time == self._current_time:
+                        #     print('would be the same step again!')
                     elif time != msg['output_time']:
-                        print('There are messages with different output '
+                        log('There are messages with different output '
                               'times in det_data! ')
-                        if time < msg['output_time']:
+                        if time > msg['output_time']:
                             time = msg['output_time']
         # output time is the lowest value of all times in messages to
         # make sure the agents receive the messages in time

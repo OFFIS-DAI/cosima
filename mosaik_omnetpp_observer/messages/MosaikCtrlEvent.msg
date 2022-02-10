@@ -18,7 +18,7 @@ cplusplus {{
 
 enum ControlType;
 
-//TODO: maybe rename to event something
 packet MosaikCtrlEvent {
     int ctrlType @enum(ControlType);
+    string moduleName = ""; 
 };

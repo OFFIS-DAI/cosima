@@ -70,7 +70,7 @@ and in C++ via
 Now add the protobuf installation to your project in OMNeT++ under Project Properties -> OMNeT++ -> MakeMake -> Options
 -> Link -> more -> additional objects to link with add "-lprotobuf".
 
-## Usage
+## Scenario
 
 Two example scenarios are included in the project. These are structured very simply and are intended to illustrate the
 functionality of the integration. On the mosaik side, agent simulators,
@@ -81,7 +81,7 @@ TCP socket. The [SocketAgentApp](mosaik_omnetpp_observer/SocketAgentApp.cc) and
 [SocketAgentAppTcp](mosaik_omnetpp_observer/SocketAgentAppTcp.cc) represent the implementation of the application layer
 (and transport layer) of the end devices, which represent the agents from mosaik on the OMNeT++ side. Example networks
 can also be found in the project folder. The executable file in OMNeT++
-is [mosaik.ini](mosaik_omnetpp_observer/mosaik.ini). The integration is shown schematically in ![image](concept.png).
+is [mosaik.ini](mosaik_omnetpp_observer/mosaik.ini). The integration is shown schematically in: ![image](concept.png)
 When an agent in mosaik sends a message to another agent, it does so through the agent simulator entities. Thus,
 AgentEntityA sends a message to AgentEntityB at time t=x. However, this message is first received in the same step in
 mosaik by the CommSim, which sends the message as a Protobuf object to OMNeT++ over a TCP connection. When the message
@@ -92,12 +92,45 @@ from mosaik. In addition, the value of max_advance is also inserted as an event.
 dispatch from client0 to client1 over the INET network. The resulting delay time is sent back to the MosaikObserver and
 thus to mosaik. In mosaik the message is given to AgentEntityB after the determined end-to-end delay in OMNeT++.
 
-If you want to start a simulation do the following:
+It is possible to simulate the scenario with 2 - 20 agents. 
+Furthermore, it is possible to simulate non-parallel and parallel message
+sending behaviour. If parallel sending is simulated, two agents send messages simulaneously and time-shifted with 1 step difference.
+It is also possible to add a PV plant to the simulation. PV plants can be connected to agents and read their current power values from
+a given csv-file. Every 15 minutes, a new value is read and sent to the corresponding agent. The agent replies with an acknowledgement to 
+this value.
+Moreover, some changes in the infrastructure can be simulated. It is possible to set times for disconnects and reconnects for clients, routers
+and switches.
+In addition, long calculation times can be passed for the agents.
+Multiple networks are implemented, for example to simulate TCP or UDP connections.
 
-* start the simulation in OMNeT++ by running [mosaik.ini](mosaik_omnetpp_observer/mosaik.ini) with your prefered network
-* start the co-simulation in mosaik by running either the [parallel scenario](comm_scenario_parallel.py) where two
-  messages are sent parallel or the [tic-toc scenario](comm_scenario_tictoc.py) where messages are exchanged between two
-  clients until a max simulation time is reached
+## Setup
+Create a folder 'results' under mosaik-integration (mosaik-integration/results).
+Before starting a simulation, choose simulation parameters:
+- the used step size for the simulation (f.e. ms),
+- the end time of the simulation,
+- the number of agents,
+- paths to store the simulation results and to load the content of the agent messages,
+- the port to connect to OMNeT++,
+- parallel or not,
+- verbose or not to display information of the simulation run,
+- the start mode,
+- the simulated network, 
+- agents to be connected to pv plants,
+- infrastructure changes, 
+- calculating times.
+
+
+## Run simulation
+There exist different ways to run a simulation. In the [config](config.py), it is possible to choose from 'ide', 'qtenv' and 'cmd' as start mode.
+* Ide: start the simulation in OMNeT++ by running [mosaik.ini](mosaik_omnetpp_observer/mosaik.ini) with your preferred network and 
+  start the co-simulation in mosaik by running the [scenario](comm_scenario.py) 
+* Qtenv: start mosaik by running the [scenario](comm_scenario.py). From within python, OMNeT++ will be started and a window will pop up in which
+  the network can be chosen and the simulation can be started.
+* Cmd: start mosaik by running the [scenario](comm_scenario.py). OMNeT++ will be started automatically as a console application. 
+**(note: This only works properly if the project is compiled with clang)**
+
+Simulation results
+* The exchanged messages are stored in folder results with timestamp of the simulation start as name of the csv-file.
 
 ## Optional: PyTests
 
@@ -146,8 +179,3 @@ For further information see:
 * [Catch2 Tutorial](https://mariusbancila.ro/blog/2018/03/29/writing-cpp-unit-tests-with-catch2/)
 * [Catch2 Tutorial](https://www.jetbrains.com/help/clion/unit-testing-tutorial.html#catch-framework)
 * [Fakeit Tutorial](https://github.com/eranpeer/FakeIt)
-
-# Development Team
-* Frauke Oest (frauke.oest@offis.de)
-* Emilie Frost (emilie.frost@offis.de)
-* Malin Radtke (malin.radtke@offis.de)

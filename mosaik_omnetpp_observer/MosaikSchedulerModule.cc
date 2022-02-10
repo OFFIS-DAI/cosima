@@ -14,10 +14,15 @@ Define_Module(MosaikSchedulerModule);
 MosaikSchedulerModule::MosaikSchedulerModule() {
     scheduler = nullptr;
     max_adv_event = new MosaikCtrlEvent("hello max advanced");
+    until_event = new MosaikCtrlEvent("simulation end in mosaik");
+    until_event->setCtrlType(2);
 }
 
 MosaikSchedulerModule::~MosaikSchedulerModule() {
-    cancelAndDelete(max_adv_event);
+    cancelMaxAdvanceEvent();
+    delete(max_adv_event);
+    cancelUntilEvent();
+    delete(until_event);
 }
 
 
@@ -32,16 +37,20 @@ void MosaikSchedulerModule::handleMessage(cMessage *msg){
         MosaikCtrlEvent *event = dynamic_cast<MosaikCtrlEvent *>(msg);
         if (event->getCtrlType() == 0) {
             // is max advance event
-            std::cout << "MosaikSchedulerModule: received max advance event." << endl;
+            scheduler->log("MosaikSchedulerModule: received max advance event.");
             scheduler->sendToMosaik(msg);
+        } else if (event->getCtrlType() == 2) {
+            // is until event
+            scheduler->log("MosaikSchedulerModule: received until event.");
+            scheduler->until_reached = true;
         } else {
             // is message group event
-            std::cout << "MosaikSchedulerModule: received event in order to send info back to mosaik." << endl;
+            scheduler->log("MosaikSchedulerModule: received event in order to send info back to mosaik.");
             scheduler->sendMsgGroupToMosaik();
             delete msg;
         }
     } else {
-        std::cout << "MosaikSchedulerModule: received unknown message." << endl;
+        scheduler->log("MosaikSchedulerModule: received unknown message.");
         delete msg;
     }
 
@@ -50,5 +59,9 @@ void MosaikSchedulerModule::handleMessage(cMessage *msg){
 
 void MosaikSchedulerModule::cancelMaxAdvanceEvent() {
     cancelEvent(max_adv_event);
+}
+
+void MosaikSchedulerModule::cancelUntilEvent() {
+    cancelEvent(until_event);
 }
 

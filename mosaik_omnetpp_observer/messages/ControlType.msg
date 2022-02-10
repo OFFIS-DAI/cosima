@@ -18,4 +18,7 @@ enum ControlType
     None = -1; // mode is undefined
     MaxAdvance = 0; 
     EndOfStep = 1; 
+    Until = 2;
+    Disconnect = 3;
+    Reconnect = 4; 
 }

@@ -1,6 +1,3 @@
-import os
-import time
-import subprocess
 from os.path import abspath
 from pathlib import Path
 
@@ -9,21 +6,37 @@ STEP_SIZE_1_MS = 1
 STEP_SIZE_10_MS = 10
 STEP_SIZE_100_MS = 100
 
-# number of agents
-NUMBER_OF_AGENTS = 3
+USED_STEP_SIZE = STEP_SIZE_1_MS
 
-# path to load content from
+# end of simulation
+SIMULATION_END = 100000
+
+# number of agents (2-20 is possible)
+NUMBER_OF_AGENTS = 2
+
+# path to load content for agent messages from
 ROOT_PATH = Path(abspath(__file__)).parent
 CONTENT_PATH = ROOT_PATH / 'content.csv'
 
-# config file
-if NUMBER_OF_AGENTS == 2:
-    CONFIG_FILE = 'network_config_basic_2_agents.json'
-elif NUMBER_OF_AGENTS == 3:
-    CONFIG_FILE = 'network_config_basic_3_agents.json'
+# path to data for pv plant
+PV_DATA = 'data/pv_10kw.csv'
+START = '2014-01-01 00:00:00'
+
+# path to store results to
+RESULTS_FILENAME = 'results/result_'
+
+# port for OMNeT++ connection
+PORT = 4242
 
 # agents send messages parallel
 PARALLEL = True
+
+# Run simulation in verbose mode or not
+VERBOSE = True
+
+# name for mosaik attribute which is exchanged between CommSim and Agents,
+# containing the message from OMNeT++
+CONNECT_ATTR = 'message_with_delay_for_'
 
 # choose from: 'ide', 'qtenv', 'cmd'
 # ide: run OMNeT++ ide by starting it separately
@@ -35,10 +48,25 @@ START_MODE = 'ide'
 # Network to simulate
 # choose from EventBasedWinzentTCP, EventBasedWinzentUDP,
 # EventBasedUDP_SimulaneousMessageReceiving, RealTimeWinzent, EventBasedWifi,
-# EventBasedCloud, EventBasedLTE, EventBasedMultiCellMeshMini,
-# EventBasedMultiCellMesh
+# EventBasedCloud, LTENetwork_TCP, LTENetwork_UDP
 NETWORK = 'EventBasedWinzentTCP'
 
-# name for mosaik attribute which is exchanged between CommSim and Agents,
-# containing the message from OMNeT++
-CONNECT_ATTR = 'message_with_delay_for_'
+# connect pv plant to agent?
+AGENTS_WITH_PV_PLANT = ['client0']
+
+# each entry must contain values for type of infrastructure change
+# (Disconnect, Connect), time in ms and module. Module can be switch, client
+# or router. Also add the number of the certain module, f.e. client1
+INFRASTRUCTURE_CHANGES = [
+    #     {'type': 'Disconnect',
+    #      'time': 2,
+    #      'module': 'client1'}
+]
+
+# configure how long an agent "calculates" (->sleeps) in its get data method
+# (in seconds), default should be 0
+CALCULATING_TIMES = {
+    'client0': 0,
+    'client1': 0,
+    'client2': 0
+}

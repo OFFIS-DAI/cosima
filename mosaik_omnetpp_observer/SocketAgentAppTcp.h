@@ -29,6 +29,8 @@ private:
     inet::TcpSocket serverSocket;
     std::map<int, inet::TcpSocket> clientSockets;
     std::map<int,std::list<Timer *>> timer;
+    cGate *connectGate;
+    std::string nameStr;
 
 public:
     SocketAgentAppTcp();
@@ -48,7 +50,7 @@ protected:
     /**
      * Overwrites message of TcpAppBase to be able to receive messages from MosaikScheduler
      */
-    void handleMessageWhenUp(cMessage *msg);
+    void handleMessageWhenUp(cMessage *msg) override;
     /**
      * Handle event from socket to mosaik.
      */

@@ -9,6 +9,8 @@ message CosimaMsgGroup{
         MAX_ADVANCE = 2;
         WAITING = 3;
         TRANSMISSION_ERROR = 4;
+        DISCONNECT = 5;
+        RECONNECT = 6;
     }
     MsgType type = 1;
     string sender = 2;
@@ -20,12 +22,14 @@ message CosimaMsgGroup{
     int32 simTime = 8;
     int32 stepSize = 9;
     string msgId = 10;
+    int32 until = 11;
+    int32 creation_time = 12;
+    string change_module = 13;
+    bool connection_change_successful = 14;
 }
-    repeated CosimaMsg msg = 10;
-    int32 current_mosaik_step = 11;
+    repeated CosimaMsg msg = 15;
+    int32 current_mosaik_step = 16;
 
 }
 
-message TicTocMsg{
-    string content = 1;
-}
+

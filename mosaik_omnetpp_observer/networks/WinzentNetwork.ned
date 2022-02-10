@@ -14,6 +14,7 @@ package networks;
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+import inet.common.scenario.ScenarioManager;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.ethernet.Eth10M;
 import inet.node.ethernet.EtherLink;
@@ -22,6 +23,7 @@ import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
 import inet.visualizer.integrated.IntegratedCanvasVisualizer;
 import MosaikSchedulerModule;
+import MosaikScenarioManager;
 
 
 channel MyEth10M extends EtherLink
@@ -31,7 +33,13 @@ channel MyEth10M extends EtherLink
 
 network WinzentNetwork
 {
+    @display("bgb=1332.5,1063.4");
     submodules:
+
+        scenarioManager: MosaikScenarioManager {
+
+            @display("p=97.5,317.19998");
+        }
 
         schedulerModule: MosaikSchedulerModule {
             @display("p=200,100");
@@ -80,6 +88,12 @@ network WinzentNetwork
         switch2: EtherSwitch {
             @display("p=613.6,315.9");
         }
+        client3: StandardHost {
+            @display("p=1030.9,942.5");
+        }
+        switch3: EtherSwitch {
+            @display("p=688.32007,876.82263");
+        }
     connections:
         switch0.ethg++ <--> Eth10M {  length = 1000km; } <--> client2.ethg++;
         switch0.ethg++ <--> Eth10M {  length = 1000km; } <--> router0.ethg++;
@@ -93,6 +107,8 @@ network WinzentNetwork
         router2.ethg++ <--> Eth10M {  length = 50km; } <--> router3.ethg++;
         switch2.ethg++ <--> Eth10M {  length = 50km; } <--> client1.ethg++;
         switch2.ethg++ <--> Eth10M {  length = 50km; } <--> router3.ethg++;
+        switch3.ethg++ <--> Eth10M {  length = 50km; } <--> client3.ethg++;
+        router0.ethg++ <--> Eth10M {  length = 50km; }  <--> switch3.ethg++;
 }
 
 network DisconnectedClient2_WinzentNetwork

@@ -27,4 +27,5 @@ class MosaikApplicationChunk extends inet::FieldsChunk
    	string receiver;
    	string sender;
    	string msgId;
+   	int creationTimeMosaik; 
 };

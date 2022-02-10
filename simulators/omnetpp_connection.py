@@ -1,33 +1,39 @@
 import time
 
 from message_pb2 import CosimaMsgGroup
-import asyncio
 import threading
+
+from util_functions import log
 
 
 class OmnetppConnection:
 
-    def __init__(self, observer_port, client_socket, connection_eids,
-                 connections):
+    def __init__(self, observer_port, client_socket):
         self.observer_port = observer_port
         self.client_socket = client_socket
         self._servername = "127.0.0.1"
-        self.connections = connections
-        self.connection_eids = connection_eids
         self.stored_messages = []
         self._wait_for_messages = True
         self._closed_due_to_timeout = False
+        self.omnet_thread = None
+
+    def start_connection(self):
         self.client_socket.connect((self._servername, self.observer_port))
-        self.t = threading.Thread(target=self.wait_for_msgs)
-        self.t.daemon = False
-        self.t.start()
+        self.omnet_thread = threading.Thread(target=self.wait_for_msgs)
+        self.omnet_thread.daemon = False
+        self.omnet_thread.start()
 
     @property
     def is_still_connected(self):
         return self._wait_for_messages and not self._closed_due_to_timeout
 
     def close_connection(self):
+        log('close connection called')
         self._wait_for_messages = False
+        try:
+            self.omnet_thread.join()
+        except RuntimeError:
+            pass
 
     def wait_for_msgs(self):
         while self._wait_for_messages:
@@ -39,20 +45,18 @@ class OmnetppConnection:
                 for msg in msg_group.msg:
                     self.stored_messages.append(msg)
             except Exception as current_exception:
+                log(current_exception)
                 self._closed_due_to_timeout = False
-                print(current_exception)
-                print("Connection to OMNeT++ closed.")
+                log("Connection to OMNeT++ closed.")
                 self.close_connection()
 
     def send_message(self, msg):
-        self._wait_for_messages = False
         try:
             self.client_socket.connect((self._servername, self.observer_port))
-        except:
+        except Exception:
             pass
 
         self.client_socket.send(msg)
-        self._wait_for_messages = True
 
     def return_messages(self):
         msgs = self.stored_messages

@@ -10,6 +10,7 @@ mosaik_omnetpp_files/src/results/**
 /mosaik_omnetpp_observer/out/clang-release/mosaik_omnetpp_observer
 /mosaik_omnetpp_observer/out/clang-release/MosaikMessage_m.h.d
 /mosaik_omnetpp_observer/out/clang-release/MosaikMessage_m.o
+/mosaik_omnetpp_observer/.qtenvrc
 *.o.d
 *.o
 *.sca

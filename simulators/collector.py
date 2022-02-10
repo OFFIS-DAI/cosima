@@ -3,8 +3,14 @@ A simple data collector that prints all data when the simulation finishes.
 
 """
 import collections
+import time
+
+import pandas as pd
+import os.path
 
 import mosaik_api
+
+import config as cfg
 
 META = {
     'type': 'event-based',
@@ -50,10 +56,40 @@ class Collector(mosaik_api.Simulator):
 
     def finalize(self):
         print('Collected data:')
+        final_data = pd.DataFrame(
+            columns=["Network", "Number of agents", "Simulation end", "is parallel", "Simulator", "message id",
+                     "creation time", "output time", "sender", "receiver", "message", "delay", "infrastructure change",
+                     "changed module"])
+        if cfg.START_MODE == 'cmd':
+            new_row = {"Network": cfg.NETWORK, "Number of agents": cfg.NUMBER_OF_AGENTS,
+                       "Simulation end": cfg.SIMULATION_END, "is parallel": {cfg.PARALLEL}}
+        else:
+            new_row = {"Number of agents": cfg.NUMBER_OF_AGENTS,
+                       "Simulation end": cfg.SIMULATION_END, "is parallel": {cfg.PARALLEL}}
+        final_data = final_data.append(new_row, ignore_index=True)
         for sim, sim_data in sorted(self.data.items()):
             print('- %s:' % sim)
             for attr, values in sorted(sim_data.items()):
                 print('  - %s: %s' % (attr, values))
+                for value in values.values():
+                    if 'ICTController' in sim and len(value[0]) > 0:
+                        value = value[0][0]
+                        change_type = ""
+                        if value['type'] == 5:
+                            change_type = "DISCONNECT"
+                        elif value['type'] == 6:
+                            change_type = "RECONNECT"
+                        new_row = {"Simulator": sim, "message id": value['msgId'], "creation time": value['simTime'],
+                                   "infrastructure change": change_type, "changed module": value['module_name']}
+                        final_data = final_data.append(new_row, ignore_index=True)
+                    elif 'CommSim' in sim:
+                        value = value[0][0]
+                        new_row = {"Simulator": sim, "message id": value['msgId'],
+                                   "creation time": value['creation_time'], "output time": value['output_time'],
+                                   "sender": value['sender'], "receiver": value['receiver'],
+                                   "message": value['message'], "delay": value['delay']}
+                        final_data = final_data.append(new_row, ignore_index=True)
+        final_data.to_csv(cfg.RESULTS_FILENAME + str(time.time()) + ".csv", index=False)
 
 
 if __name__ == '__main__':

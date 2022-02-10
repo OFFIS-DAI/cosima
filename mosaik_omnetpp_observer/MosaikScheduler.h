@@ -23,6 +23,10 @@ class MosaikScheduler : public omnetpp::cScheduler
 {
 public:
     int port;
+    // indicates whether simulation end is reached in mosaik
+    bool until_reached = false;
+
+    bool initial_message_received = false;
     /**
      * Method can be called from modules in order to get matching port for module name.
      */
@@ -30,6 +34,8 @@ public:
 
 protected:
     omnetpp::cModule *schedulerModule;
+
+    omnetpp::cModule *scenarioManager;
 
     // save time of last event
     omnetpp::simtime_t lastEventTime;
@@ -42,8 +48,12 @@ protected:
     int recvBufferSize;
     int *numBytesPtr;
     size_t numOfBytes;
+
+    // counter for messages
     int maxAdvanceCounter = 0;
     int errorCounter = 0;
+    int disconnectCounter = 0;
+    int reconnectCounter = 0;
 
     // registered modules that represent agents in mosaik
     int numModules;
@@ -104,12 +114,21 @@ public:
      */
     virtual void executionResumed() override;
 
+    void printCurrentTime();
+
+    void log(std::string info);
+
     /**
      * To be called from the module which wishes to receive data from the
      * socket. The method must be called from the module's initialize()
      * function.
      */
     virtual void setInterfaceModule(omnetpp::cModule *module, bool isMosaikSchedulerModule);
+
+    /**
+     * Register scenario manager at scheduler module.
+     */
+    virtual void setScenarioManager(omnetpp::cModule *manager);
 
     /**
      * To be called within the scheduler to add module to list of modules.
@@ -143,8 +162,10 @@ public:
      * Undo takeNextEvent() -- it comes from the cScheduler interface.
      */
     virtual void putBackEvent(omnetpp::cEvent *event) override;
-
-
+    /**
+     * Is being called at the end of the simulation in mosaik in order to finish simulation in OMNeT++.
+     */
+    virtual void endSimulation();
     /**
      * Add message to message group in order to send message back to mosaik.
      */
