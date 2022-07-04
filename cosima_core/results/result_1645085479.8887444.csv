@@ -1,0 +1,4 @@
+Network,Number of agents,Simulation end,is parallel,Simulator,message id,creation time,output time,sender,receiver,message,delay,infrastructure change,changed module
+,2,100000,{True},,,,,,,,,,
+,,,,CommSim-0.CommSim,AgentMessage_client1_0,2,14,client1,client0,Sending other side of parallel message,12,,
+,,,,CommSim-0.CommSim,AgentMessage_client0_0,1,13,client0,client1,Tic Toc on the clock!,12,,

@@ -39,3 +39,8 @@ mosaik_omnetpp_observer/out/
 mosaik_omnetpp_observer/networks/MultiCell_Mesh.ned
 mosaik_omnetpp_observer/networks/MultiCell_Mesh_mini.ned
 mosaik_omnetpp_observer/networks/northwestroutes.xml
+.gitlab-ci.yml
+cosima_omnetpp_project/messages/TimerType_m.cc
+cosima_omnetpp_project/messages/TimerType_m.h
+cosima_omnetpp_project/messages/Timer_m.cc
+cosima_omnetpp_project/messages/Timer_m.h

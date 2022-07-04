@@ -46,7 +46,19 @@ RUN apt-get update && apt-get install -qq -y \
     graphviz \
     ssh \
     curl \
-    clang
+    clang \
+    libgtest-dev
+
+# install google test
+RUN git clone https://github.com/google/googletest.git -b release-1.11.0
+RUN cd googletest && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    make install && \
+    cd .. && \
+    cd ..
 
 RUN apt update && apt install  openssh-server sudo -y
 RUN  echo 'root:password' | chpasswd
@@ -82,7 +94,7 @@ ENV PATH $PATH:/usr/omnetpp/omnetpp-5.6.2/bin
 
 # Configure and compile
 RUN cd omnetpp-5.6.2 && \
-    xvfb-run ./configure PREFER_CLANG=yes && \
+    xvfb-run ./configure PREFER_CLANG=yes CXXFLAGS=-std=c++14 && \
     make
 
 # Cleanup
@@ -120,10 +132,8 @@ COPY . .
 RUN pip3 install -r requirements.txt
 
 # Build OMNeT++ files
-WORKDIR /root/models/mosaik_omnetpp_observer
+WORKDIR /root/models/cosima_omnetpp_project
 RUN make -f makemakefiles
 RUN make
 
-# Set final workdir
-WORKDIR /root/models
 
