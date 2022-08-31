@@ -130,7 +130,7 @@ def test_agent_get_data_unknown_agent():
 def test_agent_sim_w_o_inputs():
     agent_sim = Agent()
     mock_world(agent_sim)
-    agent_sim.init(sid='Agent-0',
+    agent_sim.init(sid='Agent-0', step_type='event-based',
                    agent_name='client0',
                    content_path=CONTENT_PATH,
                    step_size=USED_STEP_SIZE)
@@ -142,21 +142,22 @@ def test_agent_sim_w_o_inputs():
 
 def test_agent_sim_w_inputs():
     agent_sim = Agent()
-    agent_sim.init(sid='Agent-0',
+    agent_sim.init(sid='Agent-0', step_type='event-based',
                    agent_name='client0',
                    content_path=CONTENT_PATH,
                    step_size=USED_STEP_SIZE)
     agent_sim.create(num=1, model='A')
     agent_sim._output_time = 1
     inputs = {'client0': {'message_with_delay': {
-        'CommSim-0.client-0': [{'sender': 'client1', 'receiver': 'client0', 'content': 'Lets go through the alphabet!',
-                                'sim_time': 1}]}}}
+        'CommSim-0.client-0': [{'sender': 'client1', 'receiver': 'client0', 'message': 'Tic toc on the clock!',
+                                'output_time': 1}]}}}
     agent_sim.step(time=1, inputs=inputs, max_advance=0)
-    expected_answer = [{'content': 'The first letter is: A',
-                        'creation_time': 2,
-                        'max_advance': 0,
-                        'msg_id': 'AgentMessage_client0_0',
+    expected_answer = [{'max_advance': 0,
+                        'message': 'Dont stop, make it pop',
+                        'msgId': 'AgentMessage_client0_0',
                         'receiver': 'client1',
                         'sender': 'client0',
-                        'sim_time': 2}]
+                        'simTime': 2,
+                        'stepSize': 1,
+                        'type': 1}]
     assert agent_sim._msgs == expected_answer

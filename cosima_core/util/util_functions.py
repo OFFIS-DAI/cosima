@@ -4,11 +4,7 @@ import socket
 import subprocess
 import time
 from datetime import datetime
-import google.protobuf.json_format
-from simpy.io.codec import JSON
 
-from cosima_core.messages.message_pb2 import CosimaMsgGroup, InitialMessage, InfoMessage, SynchronisationMessage, \
-    InfrastructureMessage
 import cosima_core.config as cfg
 
 
@@ -60,43 +56,11 @@ def check_omnet_connection(port):
             continue
 
 
-def get_host_names(first_index=0, num_hosts=cfg.NUMBER_OF_AGENTS):
-    host_names = []
-    for index in range(first_index, num_hosts):
-        host_names.append(f'client{index}')
-    return host_names
-
-
-def get_protobuf_message_from_dict(dictionary, message):
-    protobuf = google.protobuf.json_format.ParseDict(dictionary, message, ignore_unknown_fields=False,
-                                                     descriptor_pool=None)
-    return protobuf
-
-
-def get_dict_from_protobuf_message(protobuf_message):
-    return google.protobuf.json_format.MessageToDict(protobuf_message, preserving_proto_field_name=True)
-
-
-def create_protobuf_msg(messages, current_step):
-    """creates protobuf message from given dictionary"""
-    msg_group = CosimaMsgGroup()
-    msg_group.current_mosaik_step = current_step
-    message_count = 0
-    for message_dict, message_type in messages:
-        if message_type == InitialMessage:
-            protobuf_msg = msg_group.initial_messages.add()
-        elif message_type == InfoMessage:
-            protobuf_msg = msg_group.info_messages.add()
-            message_dict['size'] = len(JSON().encode(message_dict))
-            message_count += 1
-        elif message_type == InfrastructureMessage:
-            protobuf_msg = msg_group.infrastructure_messages.add()
-        elif message_type == SynchronisationMessage:
-            protobuf_msg = msg_group.synchronisation_messages.add()
-        else:
-            raise RuntimeError("unknown message type")
-        get_protobuf_message_from_dict(message_dict, protobuf_msg)
-    return msg_group, message_count
+def get_agent_names(num_agents=cfg.NUMBER_OF_AGENTS):
+    agent_names = []
+    for agent_index in range(num_agents):
+        agent_names.append(f'client{agent_index}')
+    return agent_names
 
 
 def log(info):

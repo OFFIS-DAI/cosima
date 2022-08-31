@@ -60,22 +60,22 @@ void AgentAppUdp::handleMessage(cMessage *msg) {
     if (msg->getArrivalGate() == gate("socketIn")) {
         inet::Packet *packet = dynamic_cast<inet::Packet *>(msg);
         if (packet != nullptr) {
-            auto replyContent = "";
-            auto answer = new MosaikSchedulerMessage();
+            std::string reply_content = "0";
+            MosaikSchedulerMessage *answer = new MosaikSchedulerMessage();
 
             // calculate delay
             simtime_t delay =
                     scheduler->getSimulation()->getSimTime() - msg->getCreationTime();
             scheduler->log(nameStr + ": received message at time " + simTime().str() + " with delay " + delay.str());
-            auto delay_i = 0U;
-            delay_i = ceil(delay.dbl()*1000);
+            int delay_i = ceil(delay.dbl()*1000);
 
             // handle reply to scheduler
             inet::b offset = inet::b(0);  // start from the beginning
-            auto foundApplicationChunk = false;
+            bool found_acl_part = false;
 
-            while (auto chunk=packet->peekAt(offset)->dupShared()) {  // for each chunk
-                if (foundApplicationChunk) {
+            while (auto chunk =
+                    packet->peekAt(offset)->dupShared()) {  // for each chunk
+                if (found_acl_part) {
                     // message is from other SocketAgent
                     delete packet;
                     break;
@@ -83,23 +83,23 @@ void AgentAppUdp::handleMessage(cMessage *msg) {
                 auto length = chunk->getChunkLength();
 
                 if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
-                    replyContent =
+                    reply_content =
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getContent();
-                    auto replyReceiver =
+                    std::string reply_receiver =
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getReceiver();
-                    auto replySender =
+                    std::string reply_sender =
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getSender();
-                    auto msgId =
+                    std::string msgId =
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getMsgId();
-                    auto creationTime =
+                    int creationTime =
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getCreationTimeMosaik();
-                    answer->setContent(replyContent);
-                    answer->setReceiver(replyReceiver);
+                    answer->setContent(reply_content.c_str());
+                    answer->setReceiver(reply_receiver.c_str());
                     answer->setDelay(delay_i);
-                    answer->setSender(replySender);
-                    answer->setMsgId(msgId);
+                    answer->setSender(reply_sender.c_str());
+                    answer->setMsgId(msgId.c_str());
                     answer->setCreationTime(creationTime);
-                    foundApplicationChunk = true;
+                    found_acl_part = true;
                 } else {
                     offset += chunk->getChunkLength();
                     answer->setDelay(delay_i);
@@ -118,49 +118,49 @@ void AgentAppUdp::handleMessage(cMessage *msg) {
 void AgentAppUdp::handleSocketEvent(cMessage *msg) {
     // make packet
     if (typeid(*msg) == typeid(MosaikSchedulerMessage)) {
-        MosaikSchedulerMessage *msgCasted = dynamic_cast<MosaikSchedulerMessage *>(msg);
+        MosaikSchedulerMessage *msg_casted = dynamic_cast<MosaikSchedulerMessage *>(msg);
 
         // get content from message
-        auto content = msgCasted->getContent();
-        auto receiverName = msgCasted->getReceiver();
-        auto senderName = msgCasted->getSender();
-        auto msgId = msgCasted->getMsgId();
-        auto msgSize = msgCasted->getSize();
-        auto creationTime = msgCasted->getCreationTime();
+        const char *content = msg_casted->getContent();
+        std::string receiverName = msg_casted->getReceiver();
+        std::string senderName = msg_casted->getSender();
+        std::string msgId = msg_casted->getMsgId();
+        int msgSize = msg_casted->getSize();
+        int creation_time = msg_casted->getCreationTime();
 
         // get corresponding port for receiver name
-        int receiverPort = scheduler->getPortForModule(receiverName);
+        int receiverPort = scheduler->getPortForModule(receiverName.c_str());
 
         scheduler->log(nameStr + ": send message with content '" +
                 content + "' to " + receiverName + " with port " + std::to_string(receiverPort) + " at time " + simTime().str() + " with id " + msgId);
 
         // make packet
-        auto packet = new inet::Packet();
+        inet::Packet *packet = new inet::Packet();
         const auto &payload = inet::makeShared<MosaikApplicationChunk>();
         payload->setContent(content);
-        payload->setReceiver(receiverName);
-        payload->setSender(senderName);
+        payload->setReceiver(receiverName.c_str());
+        payload->setSender(senderName.c_str());
         payload->setChunkLength(inet::B(msgSize));
         payload->setCreationTime(simTime());
-        payload->setMsgId(msgId);
-        payload->setCreationTimeMosaik(creationTime);
+        payload->setMsgId(msgId.c_str());
+        payload->setCreationTimeMosaik(creation_time);
         packet->insertAtBack(payload);
 
         // get destination
         inet::L3Address destAddress;
         try {
-            destAddress = inet::L3AddressResolver().resolve(receiverName);
+            destAddress = inet::L3AddressResolver().resolve(receiverName.c_str());
             // send packet
             socketudp.sendTo(packet, destAddress, receiverPort);
         } catch(...) {
             scheduler->log(nameStr + ": Error when trying to resolve L3 address");
-            MosaikSchedulerMessage *notificationMessage = new MosaikSchedulerMessage();
-            notificationMessage->setTransmission_error(true);
-            notificationMessage->setSender(nameStr.c_str());
-            notificationMessage->setReceiver(receiverName);
-            scheduler->sendToMosaik(notificationMessage);
+            MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+            notification_message->setTransmission_error(true);
+            notification_message->setSender(nameStr.c_str());
+            notification_message->setReceiver(receiverName.c_str());
+            scheduler->sendToMosaik(notification_message);
         }
-        delete msgCasted;
+        delete msg_casted;
     } else {
         delete msg;
     }

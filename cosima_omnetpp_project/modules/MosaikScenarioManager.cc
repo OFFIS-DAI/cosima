@@ -67,20 +67,20 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
 
     scheduler->log("MosaikScenarioManager: disconnect " + nameStr);
 
-    auto connectedModule = moduleName;
-    auto thisName = getFullPath();
+    std::string connectedModule = moduleName;
+    std::string thisName = getFullPath();
     std::size_t pos = thisName.find(".");      // position of "." in string
-    auto moduleNameStr = thisName.substr(0, pos+1); // get name of network
+    std::string moduleNameStr = thisName.substr(0, pos+1); // get name of network
     moduleNameStr += moduleName; // concatenate network name with module name
-    auto module = getModuleByPath(moduleNameStr.c_str()); // get module object
+    cModule *module = getModuleByPath(moduleNameStr.c_str()); // get module object
 
     if (module == nullptr) {
         return nullptr;
     }
 
-    auto notificationMessage = new MosaikSchedulerMessage();
-    notificationMessage->setDisconnected_event(true);
-    notificationMessage->setSender(moduleName);
+    MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+    notification_message->setDisconnected_event(true);
+    notification_message->setSender(moduleName);
     bool disconnectedGate = false;
 
     try {
@@ -88,7 +88,7 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
         networkModule disconnectedModule;
         disconnectedModule.moduleName = moduleName;
         disconnectedModule.moduleObject = module;
-        for (auto i = 0; i < module->gateCount() / 2; i++) {
+        for (int i = 0; i < module->gateCount() / 2; i++) {
             // get gates of module
             if(not module->gate("ethg$i", i)->isConnectedOutside() or not module->gate("ethg$o", i)->isConnectedOutside()) {
                 continue;
@@ -104,7 +104,7 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
             cDatarateChannel *currentChannelOut = dynamic_cast<cDatarateChannel *> (out_gate->getChannel());
 
             if (currentChannelIn->getTransmissionFinishTime() != -1 or currentChannelOut->getTransmissionFinishTime() != -1) {
-                auto notification_message = new MosaikSchedulerMessage();
+                MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
                 notification_message->setTransmission_error(true);
                 notification_message->setSender(moduleName);
                 scheduler->sendToMosaik(notification_message);
@@ -140,9 +140,9 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
     } catch (...) {
         scheduler->log("MosaikScenarioManager: ERROR when trying to disconnect " + nameStr + ".");
     }
-    notificationMessage->setConnection_change_successful(disconnectedGate);
+    notification_message->setConnection_change_successful(disconnectedGate);
 
-    return notificationMessage;
+    return notification_message;
 }
 
 MosaikSchedulerMessage *MosaikScenarioManager::connect(const char *moduleName) {
@@ -150,14 +150,16 @@ MosaikSchedulerMessage *MosaikScenarioManager::connect(const char *moduleName) {
 
     scheduler->log("MosaikScenarioManager: connect " + nameStr);
 
-    auto notificationMessage = new MosaikSchedulerMessage();
-    notificationMessage->setReconnected_event(true);
-    notificationMessage->setSender(moduleName);
-    notificationMessage->setConnection_change_successful(false);
+    MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+    notification_message->setReconnected_event(true);
+    notification_message->setSender(moduleName);
+    notification_message->setConnection_change_successful(false);
+
+    std::string moduleNameStr = moduleName;
 
     std::list<networkModule>::iterator it;
     for (it = changedNetworkModules.begin(); it != changedNetworkModules.end(); ++it){
-        if (nameStr.compare(it->moduleName) == 0) {
+        if (moduleNameStr.compare(it->moduleName) == 0) {
             try {
                 while (it->out_gates.size()>0) {
                     it->out_gates.front()->connectTo(it->connected_to_out_gates.front(), it->connected_to_out_channels.front());
@@ -172,12 +174,12 @@ MosaikSchedulerMessage *MosaikScenarioManager::connect(const char *moduleName) {
                     it->connected_to_in_channels.pop_front();
                 }
 
-                notificationMessage->setConnection_change_successful(true);
+                notification_message->setConnection_change_successful(true);
             } catch(...) {
                 scheduler->log("MosaikScenarioManager: ERROR when trying to reconnect " + nameStr + ".");
             }
 
         }
     }
-    return notificationMessage;
+    return notification_message;
 }

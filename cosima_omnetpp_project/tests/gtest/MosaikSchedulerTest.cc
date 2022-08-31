@@ -224,7 +224,7 @@ TEST_F(MosaikSchedulerTest, TestTakeNextEvent) {
     schedulerMock.getSimulation()->getFES()->insert(eventMsg);
 
     // initial message must be received in order to take event from FES
-    schedulerMock.setInitialMessageReceived();
+    schedulerMock.initial_message_received = true;
     // should return message object
     ASSERT_EQ(eventMsg, schedulerMock.takeNextEvent());
     delete eventMsg;

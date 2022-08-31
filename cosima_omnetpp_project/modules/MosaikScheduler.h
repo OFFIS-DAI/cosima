@@ -22,7 +22,14 @@
 class MosaikScheduler : public omnetpp::cScheduler
 {
 public:
-     /**
+    int port;
+    // indicates whether simulation end is reached in mosaik
+    bool until_reached = false;
+
+    bool initial_message_received = false;
+    bool is_time_based = false;
+
+    /**
      * Method can be called from modules in order to get matching port for module name.
      */
     int getPortForModule(std::string module_name);
@@ -37,22 +44,27 @@ public:
 
 protected:
     omnetpp::cModule *schedulerModule;
+
     omnetpp::cModule *scenarioManager;
 
     // save time of last event
     omnetpp::simtime_t lastEventTime;
 
-    // TCP port to mosaik
-    auto static const PORT = 4242;
-
     // socket parameter
     int64_t baseTime; // in microseconds, as returned by opp_get_monotonic_clock_usecs()
     SOCKET listenerSocket;
     SOCKET connSocket;
-    char recvBuffer[10000];
+    char recvBuffer[4000];
     int recvBufferSize;
     int *numBytesPtr;
     size_t numOfBytes;
+
+    // counter for messages
+    int maxAdvanceCounter = 0;
+    int errorCounter = 0;
+    int disconnectCounter = 0;
+    int reconnectCounter = 0;
+    int messageCounter = 0;
 
     // registered modules that represent agents in mosaik
     int numModules;
@@ -61,6 +73,8 @@ protected:
     // event at socket
     omnetpp::cMessage *socketEvent;
 
+    // mosaik parameter
+    double stepSize;
 
     /**
      * Initialize socket in order to listen to incoming connections from mosaik.
@@ -180,15 +194,6 @@ public:
      * Handle message from mosaik
      */
     bool handleMsgFromMosaik();
-    /**
-     * Setter methods.
-     */
-    void setUntilReached(bool untilReachedValue);
-    void setInitialMessageReceived(bool value);
-    /**
-     * Getter method
-     */
-    bool getUntilReached();
 
 };
 

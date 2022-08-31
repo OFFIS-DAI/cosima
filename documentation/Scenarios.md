@@ -54,22 +54,3 @@ for the given calculation time and then send their answer. This affects subseque
 responses from other agents, as they receive the message to respond at a later time.
 Thus, changes in the simulation due to higher 
 calculation times can be investigated. 
-
-
-## Create own scenarios
-To create own scenarios, it is necessary to define the communication connections, which should be simulated in OMNeT++ and the hosts, 
-which should be represented in OMNeT++.
-To define the connections which should be considered in the simulation in OMNeT++, the implemented models or
-simulators need to be connected to the [Comm Sim](CommSim.md). The attribute for the connection via 
-mosaik can be set in the [config file](../cosima_core/config.py): *CONNECT_ATTR*. To create the entities
-which should be represented as hosts, the method *'get_host_names'* in [util functions](../cosima_core/util/util_functions.py)
-can be used. This method creates the corresponding names in OMNeT++ for the given number of hosts.
-For each host in OMNeT++, one CommModel is created, which represents this instance. It is necessary
-that these models know the name of the OMNeT++ host.
-When the CommSim is created, a mapping between the hosts and the connect attributes from
-mosaik is necessary (a dictionary like: *['host0': 'connect_attr_for_host0', ..]*) to create the CommModels. An example 
-to create this can be found in the [comm_scenario](../cosima_core/comm_scenario.py), where the *'client_attribute_mapping'* is created.
-Depending on the scenario, it could be necessary to create a separate attribute for each host, since each model 
-(or simulator) that is connected to the CommSim via the attribute receives all messages sent via this attribute. 
-In order to send messages only to one certain host, the name of the host could be included in the attribute 
-(this has been implemented in the same way in the [comm_scenario](../cosima_core/comm_scenario.py)).

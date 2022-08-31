@@ -1,4 +1,4 @@
-# CommunicationSimulator ([CommSimm](../cosima_core/simulators/comm_simulator.py))
+# CommunicationSimulator ([CommSimm](../cosima_core/simulators/core/comm_simulator.py))
 To understand the role of the CommSim, the meaning of the max advance
 value and the concept of the synchronization between OMNeT++ and mosaik is
 useful. Explanations of these can be found in ([Synchronisation](Synchronization.md)).
@@ -9,7 +9,7 @@ The CommSim is the interface to OMNeT++ for simulators from python and
 therefore the connection between mosaik and OMNeT++. It takes messages from
 mosaik simulators, sends them to OMNeT++ and receives messages from OMNeT++
 which it then forwards to the corresponding mosaik simulators.
-The CommSim saves an instance of the class ([OmnetppConnection](../cosima_core/simulators/omnetpp_connection.py)),
+The CommSim saves an instance of the class ([OmnetppConnection](../cosima_core/simulators/core/omnetpp_connection.py)),
 which opens up TCP-Connection to OMNeT++ and is used to send and receive messages to and from OMNeT++.
 This instance keeps an active connection to OMNeT++ and waits for messages independently of the step logic of mosaik.
 This way, messages that arrive while the CommSim is not in its step function (so while another simulator is in step function) will still be considered.

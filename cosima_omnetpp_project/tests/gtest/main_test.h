@@ -48,16 +48,6 @@ public:
     cEvent *takeNextEvent() {
         return MosaikScheduler::takeNextEvent();
     }
-
-    auto getUntilReached() {
-        auto untilReached = false;
-        untilReached = MosaikScheduler::getUntilReached();
-        return untilReached;
-    }
-
-    void setInitialMessageReceived() {
-        MosaikScheduler::setInitialMessageReceived(true);
-    }
 };
 
 class EmptyConfig : public cConfiguration {

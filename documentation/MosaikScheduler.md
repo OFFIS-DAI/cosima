@@ -7,7 +7,7 @@ sends messages from/ to the CommunicationSimulator (see [CommunicationSimulator]
 ## Using the *MosaikScheduler* 
 If the MosaikScheduler is used as the event scheduler during the simulation, its method ``startRun()`` is called in the
 beginning of the simulation in OMNeT++. By that, the listener TCP socket is initialized in order to wait for incoming 
-connections from the OmnetppConnection (see [OmnetppConnection](../cosima_core/simulators/omnetpp_connection.py)) on mosaik side.
+connections from the OmnetppConnection (see [OmnetppConnection](../cosima_core/simulators/core/omnetpp_connection.py)) on mosaik side.
 
 ## Operating Principle
 As soon as the connection to mosaik is established, messages between OMNeT++ and mosaik can be sent and received. 

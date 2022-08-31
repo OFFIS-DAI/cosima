@@ -9,7 +9,7 @@ import time
 
 
 def get_snapshot():
-    with open('../tests/integration_tests/snapshot.txt') as f:
+    with open('../snapshot.txt') as f:
         expected_data = f.readline().split(" ")
         if len(expected_data) < 7:
             return

@@ -1,3 +1,4 @@
+package networks;
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -24,7 +25,7 @@ import inet.visualizer.integrated.IntegratedCanvasVisualizer;
 import modules.MosaikSchedulerModule;
 import modules.MosaikScenarioManager;
 
-package networks;
+
 
 
 network ManyAgentNetwork
@@ -50,178 +51,178 @@ network ManyAgentNetwork
         }
 
         client0: StandardHost {
-            @display("p=1871.7528,1536.3519");
+            @display("p=1871.7528,1536.3519;i=abstract/pv;is=n");
         }
         client1: StandardHost {
-            @display("p=1092.7574,1777.9847");
+            @display("p=1092.7574,1777.9847;i=abstract/pv;is=n");
         }
         client2: StandardHost {
-            @display("p=429.16873,569.8207");
+            @display("p=429.16873,569.8207;i=abstract/pv;is=n");
         }
         client3: StandardHost {
-            @display("p=2254.0376,274.09097");
+            @display("p=2254.0376,274.09097;i=abstract/pv;is=n");
         }
         client4: StandardHost {
-            @display("p=1316.3579,97.37442");
+            @display("p=1316.3579,97.37442;i=abstract/pv;is=n");
         }
         client5: StandardHost {
-            @display("p=3285.485,1709.462");
+            @display("p=3285.485,1709.462;i=abstract/pv;is=n");
         }
         client6: StandardHost {
-            @display("p=3581.2148,1161.2802");
+            @display("p=3581.2148,1161.2802;i=abstract/pv;is=n");
         }
         client7: StandardHost {
-            @display("p=2564.193,400.31708");
+            @display("p=2564.193,400.31708;i=abstract/pv;is=n");
         }
         client8: StandardHost {
-            @display("p=3209.7495,274.09097");
+            @display("p=3209.7495,274.09097;i=abstract/pv;is=n");
         }
         client9: StandardHost {
-            @display("p=3447.776,811.4535");
+            @display("p=3447.776,811.4535;i=abstract/pv;is=n");
         }
         client10: StandardHost {
-            @display("p=3209.7495,1089.1509");
+            @display("p=3209.7495,1089.1509;i=abstract/pv;is=n");
         }
         client11: StandardHost {
-            @display("p=2730.0903,1709.462");
+            @display("p=2730.0903,1709.462;i=abstract/pv;is=n");
         }
         client12: StandardHost {
-            @display("p=2098.9597,1709.462");
+            @display("p=2098.9597,1709.462;i=abstract/pv;is=n");
         }
         client13: StandardHost {
-            @display("p=1045.8734,274.09097");
+            @display("p=1045.8734,274.09097;i=abstract/pv;is=n");
         }
         client14: StandardHost {
-            @display("p=1557.9907,1745.5266");
+            @display("p=1557.9907,1745.5266;i=abstract/pv;is=n");
         }
         client15: StandardHost {
-            @display("p=609.49176,1749.133");
+            @display("p=609.49176,1749.133;i=abstract/pv;is=n");
         }
         client16: StandardHost {
-            @display("p=147.86487,706.86615");
+            @display("p=147.86487,706.86615;i=abstract/pv;is=n");
         }
         client17: StandardHost {
-            @display("p=652.7693,569.8207");
+            @display("p=652.7693,569.8207;i=abstract/pv;is=n");
         }
         client18: StandardHost {
-            @display("p=147.86487,1561.5972");
+            @display("p=147.86487,1561.5972;i=abstract/pv;is=n");
         }
         client19: StandardHost {
-            @display("p=1987.1594,162.2907");
+            @display("p=1987.1594,162.2907;i=abstract/pv;is=n");
         }
 
 
         router10: Router {
-            @display("p=2874.3486,1237.0157");
+            @display("p=2874.3486,1237.0157;is=l");
         }
         router14: Router {
-            @display("p=1045.8734,966.5313");
+            @display("p=1045.8734,966.5313;is=l");
         }
         router16: Router {
-            @display("p=497.6915,937.6796");
+            @display("p=497.6915,937.6796;is=l");
         }
         router17: Router {
-            @display("p=2506.4897,1237.0157");
+            @display("p=2506.4897,1237.0157;is=l");
         }
         router18: Router {
-            @display("p=2647.1416,966.5313");
+            @display("p=2647.1416,966.5313;is=l");
         }
         router19: Router {
-            @display("p=2423.5413,703.2597");
+            @display("p=2423.5413,703.2597;is=l");
         }
         router20: Router {
-            @display("p=2142.2373,1193.7383");
+            @display("p=2142.2373,1193.7383;is=l");
         }
         router21: Router {
-            @display("p=2142.2373,703.2597");
+            @display("p=2142.2373,703.2597;is=l");
         }
         router23: Router {
-            @display("p=1557.9907,1356.0289");
+            @display("p=1557.9907,1356.0289;is=l");
         }
         router24: Router {
-            @display("p=1936.6691,966.5313");
+            @display("p=1936.6691,966.5313;is=l");
         }
         router25: Router {
-            @display("p=1557.9907,566.21423");
+            @display("p=1557.9907,566.21423;is=l");
         }
         router27: Router {
-            @display("p=768.17596,937.6796");
+            @display("p=768.17596,937.6796;is=l");
         }
         router28: Router {
-            @display("p=1601.2683,966.5313");
+            @display("p=1601.2683,966.5313;is=l");
         }
         router29: Router {
-            @display("p=1446.1904,1107.1832");
+            @display("p=1446.1904,1107.1832;is=l");
         }
         router30: Router {
-            @display("p=1204.5576,1085.5444");
+            @display("p=1204.5576,1085.5444;is=l");
         }
         router31: Router {
-            @display("p=1446.1904,807.84705");
+            @display("p=1446.1904,807.84705;is=l");
         }
         router32: Router {
-            @display("p=1204.5576,807.84705");
+            @display("p=1204.5576,807.84705;is=l");
         }
 
         switch0: EtherSwitch {
-            @display("p=1871.7528,1316.3579");
+            @display("p=1871.7528,1316.3579;is=l");
         }
         switch1: EtherSwitch {
-            @display("p=450.8075,757.3566");
+            @display("p=450.8075,757.3566;is=l");
         }
         switch2: EtherSwitch {
-            @display("p=1269.4739,1557.9907");
+            @display("p=1269.4739,1557.9907;is=l");
         }
         switch3: EtherSwitch {
-            @display("p=2098.9597,454.41397");
+            @display("p=2098.9597,454.41397;is=l");
         }
         switch4: EtherSwitch {
-            @display("p=1420.9453,270.4845");
+            @display("p=1420.9453,270.4845;is=l");
         }
         switch5: EtherSwitch {
-            @display("p=3072.7039,1651.7587");
+            @display("p=3072.7039,1651.7587;is=l");
         }
         switch6: EtherSwitch {
-            @display("p=3469.4146,1316.3579");
+            @display("p=3469.4146,1316.3579;is=l");
         }
         switch7: EtherSwitch {
-            @display("p=429.16873,1435.3711");
+            @display("p=429.16873,1435.3711;is=l");
         }
         switch8: EtherSwitch {
-            @display("p=2935.6584,703.2597");
+            @display("p=2935.6584,703.2597;is=l");
         }
         switch9: EtherSwitch {
-            @display("p=710.47266,757.3566");
+            @display("p=710.47266,757.3566;is=l");
         }
         switch10: EtherSwitch {
-            @display("p=2311.741,548.18195");
+            @display("p=2311.741,548.18195;is=l");
         }
         switch11: EtherSwitch {
-            @display("p=2935.6584,364.25247");
+            @display("p=2935.6584,364.25247;is=l");
         }
         switch12: EtherSwitch {
-            @display("p=2986.149,937.6796");
+            @display("p=2986.149,937.6796;is=l");
         }
         switch13: EtherSwitch {
-            @display("p=2647.1416,1507.5002");
+            @display("p=2647.1416,1507.5002;is=l");
         }
         switch14: EtherSwitch {
-            @display("p=2142.2373,1507.5002");
+            @display("p=2142.2373,1507.5002;is=l");
         }
         switch15: EtherSwitch {
-            @display("p=1759.9525,310.15555");
+            @display("p=1759.9525,310.15555;is=l");
         }
         switch16: EtherSwitch {
-            @display("p=908.82794,454.41397");
+            @display("p=908.82794,454.41397;is=l");
         }
         switch17: EtherSwitch {
-            @display("p=198.3553,937.6796");
+            @display("p=198.3553,937.6796;is=l");
         }
         switch18: EtherSwitch {
-            @display("p=822.2729,1579.6295");
+            @display("p=822.2729,1579.6295;is=l");
         }
         switch19: EtherSwitch {
-            @display("p=1691.4298,1579.6295");
+            @display("p=1691.4298,1579.6295;is=l");
         }
 
 

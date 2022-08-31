@@ -29,8 +29,7 @@ private:
     std::map<int, inet::TcpSocket> clientSockets;
     std::map<int,std::list<Timer *>> timer;
     cGate *connectGate;
-
-    std::string nameStr = "";
+    std::string nameStr;
 
 public:
     AgentAppTcp();

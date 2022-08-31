@@ -19,185 +19,162 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x16messages/message.proto\"n\n\x0eInitialMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\r\n\x05until\x18\x03 \x01(\x05\x12\x15\n\ris_time_based\x18\x04 \x01(\x08\x12\x11\n\tstep_size\x18\x05 \x01(\x05\"\xae\x01\n\x0bInfoMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x0e\n\x06sender\x18\x04 \x01(\t\x12\x10\n\x08receiver\x18\x05 \x01(\t\x12\x0c\n\x04size\x18\x06 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x07 \x01(\t\x12\x15\n\rcreation_time\x18\x08 \x01(\x05\x12\x10\n\x08is_valid\x18\t \x01(\x08\"\xae\x01\n\x16SynchronisationMessage\x12\x31\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1f.SynchronisationMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\"?\n\x07MsgType\x12\x0f\n\x0bMAX_ADVANCE\x10\x00\x12\x0b\n\x07WAITING\x10\x01\x12\x16\n\x12TRANSMISSION_ERROR\x10\x02\"\xd2\x01\n\x15InfrastructureMessage\x12\x30\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1e.InfrastructureMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x15\n\rchange_module\x18\x04 \x01(\t\x12$\n\x1c\x63onnection_change_successful\x18\x05 \x01(\x08\"(\n\x07MsgType\x12\x0e\n\nDISCONNECT\x10\x00\x12\r\n\tRECONNECT\x10\x01\"\xf1\x01\n\x0e\x43osimaMsgGroup\x12)\n\x10initial_messages\x18\x01 \x03(\x0b\x32\x0f.InitialMessage\x12#\n\rinfo_messages\x18\x02 \x03(\x0b\x32\x0c.InfoMessage\x12\x39\n\x18synchronisation_messages\x18\x03 \x03(\x0b\x32\x17.SynchronisationMessage\x12\x37\n\x17infrastructure_messages\x18\x04 \x03(\x0b\x32\x16.InfrastructureMessage\x12\x1b\n\x13\x63urrent_mosaik_step\x18\x05 \x01(\x05\x62\x06proto3')
+  serialized_pb=_b('\n\x16messages/message.proto\"\x98\x04\n\x0e\x43osimaMsgGroup\x12&\n\x03msg\x18\x0f \x03(\x0b\x32\x19.CosimaMsgGroup.CosimaMsg\x12\x1b\n\x13\x63urrent_mosaik_step\x18\x10 \x01(\x05\x1a\xc0\x03\n\tCosimaMsg\x12/\n\x04type\x18\x01 \x01(\x0e\x32!.CosimaMsgGroup.CosimaMsg.MsgType\x12\x0e\n\x06sender\x18\x02 \x01(\t\x12\x10\n\x08receiver\x18\x03 \x01(\t\x12\x13\n\x0bmax_advance\x18\x04 \x01(\x05\x12\x0c\n\x04size\x18\x05 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x06 \x01(\t\x12\r\n\x05\x64\x65lay\x18\x07 \x01(\x01\x12\x0f\n\x07simTime\x18\x08 \x01(\x05\x12\x10\n\x08stepSize\x18\t \x01(\x05\x12\r\n\x05msgId\x18\n \x01(\t\x12\r\n\x05until\x18\x0b \x01(\x05\x12\x15\n\rcreation_time\x18\x0c \x01(\x05\x12\x15\n\rchange_module\x18\r \x01(\t\x12$\n\x1c\x63onnection_change_successful\x18\x0e \x01(\x08\x12\x15\n\ris_time_based\x18\x0f \x01(\x08\"q\n\x07MsgType\x12\x07\n\x03\x43MD\x10\x00\x12\x08\n\x04INFO\x10\x01\x12\x0f\n\x0bMAX_ADVANCE\x10\x02\x12\x0b\n\x07WAITING\x10\x03\x12\x16\n\x12TRANSMISSION_ERROR\x10\x04\x12\x0e\n\nDISCONNECT\x10\x05\x12\r\n\tRECONNECT\x10\x06\x62\x06proto3')
 )
 
 
 
-_SYNCHRONISATIONMESSAGE_MSGTYPE = _descriptor.EnumDescriptor(
+_COSIMAMSGGROUP_COSIMAMSG_MSGTYPE = _descriptor.EnumDescriptor(
   name='MsgType',
-  full_name='SynchronisationMessage.MsgType',
+  full_name='CosimaMsgGroup.CosimaMsg.MsgType',
   filename=None,
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='MAX_ADVANCE', index=0, number=0,
+      name='CMD', index=0, number=0,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WAITING', index=1, number=1,
+      name='INFO', index=1, number=1,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TRANSMISSION_ERROR', index=2, number=2,
+      name='MAX_ADVANCE', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='WAITING', index=3, number=3,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='TRANSMISSION_ERROR', index=4, number=4,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='DISCONNECT', index=5, number=5,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='RECONNECT', index=6, number=6,
       serialized_options=None,
       type=None),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=427,
-  serialized_end=490,
+  serialized_start=450,
+  serialized_end=563,
 )
-_sym_db.RegisterEnumDescriptor(_SYNCHRONISATIONMESSAGE_MSGTYPE)
-
-_INFRASTRUCTUREMESSAGE_MSGTYPE = _descriptor.EnumDescriptor(
-  name='MsgType',
-  full_name='InfrastructureMessage.MsgType',
-  filename=None,
-  file=DESCRIPTOR,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='DISCONNECT', index=0, number=0,
-      serialized_options=None,
-      type=None),
-    _descriptor.EnumValueDescriptor(
-      name='RECONNECT', index=1, number=1,
-      serialized_options=None,
-      type=None),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=663,
-  serialized_end=703,
-)
-_sym_db.RegisterEnumDescriptor(_INFRASTRUCTUREMESSAGE_MSGTYPE)
+_sym_db.RegisterEnumDescriptor(_COSIMAMSGGROUP_COSIMAMSG_MSGTYPE)
 
 
-_INITIALMESSAGE = _descriptor.Descriptor(
-  name='InitialMessage',
-  full_name='InitialMessage',
+_COSIMAMSGGROUP_COSIMAMSG = _descriptor.Descriptor(
+  name='CosimaMsg',
+  full_name='CosimaMsgGroup.CosimaMsg',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='msg_id', full_name='InitialMessage.msg_id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      name='type', full_name='CosimaMsgGroup.CosimaMsg.type', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='sender', full_name='CosimaMsgGroup.CosimaMsg.sender', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='max_advance', full_name='InitialMessage.max_advance', index=1,
-      number=2, type=5, cpp_type=1, label=1,
+      name='receiver', full_name='CosimaMsgGroup.CosimaMsg.receiver', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_advance', full_name='CosimaMsgGroup.CosimaMsg.max_advance', index=3,
+      number=4, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='until', full_name='InitialMessage.until', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='is_time_based', full_name='InitialMessage.is_time_based', index=3,
-      number=4, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='step_size', full_name='InitialMessage.step_size', index=4,
+      name='size', full_name='CosimaMsgGroup.CosimaMsg.size', index=4,
       number=5, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=26,
-  serialized_end=136,
-)
-
-
-_INFOMESSAGE = _descriptor.Descriptor(
-  name='InfoMessage',
-  full_name='InfoMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
     _descriptor.FieldDescriptor(
-      name='msg_id', full_name='InfoMessage.msg_id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      name='content', full_name='CosimaMsgGroup.CosimaMsg.content', index=5,
+      number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='max_advance', full_name='InfoMessage.max_advance', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      name='delay', full_name='CosimaMsgGroup.CosimaMsg.delay', index=6,
+      number=7, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='sim_time', full_name='InfoMessage.sim_time', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='sender', full_name='InfoMessage.sender', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='receiver', full_name='InfoMessage.receiver', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='size', full_name='InfoMessage.size', index=5,
-      number=6, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='content', full_name='InfoMessage.content', index=6,
-      number=7, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='creation_time', full_name='InfoMessage.creation_time', index=7,
+      name='simTime', full_name='CosimaMsgGroup.CosimaMsg.simTime', index=7,
       number=8, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='is_valid', full_name='InfoMessage.is_valid', index=8,
-      number=9, type=8, cpp_type=7, label=1,
+      name='stepSize', full_name='CosimaMsgGroup.CosimaMsg.stepSize', index=8,
+      number=9, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='msgId', full_name='CosimaMsgGroup.CosimaMsg.msgId', index=9,
+      number=10, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='until', full_name='CosimaMsgGroup.CosimaMsg.until', index=10,
+      number=11, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='creation_time', full_name='CosimaMsgGroup.CosimaMsg.creation_time', index=11,
+      number=12, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='change_module', full_name='CosimaMsgGroup.CosimaMsg.change_module', index=12,
+      number=13, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='connection_change_successful', full_name='CosimaMsgGroup.CosimaMsg.connection_change_successful', index=13,
+      number=14, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='is_time_based', full_name='CosimaMsgGroup.CosimaMsg.is_time_based', index=14,
+      number=15, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -207,6 +184,7 @@ _INFOMESSAGE = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
+    _COSIMAMSGGROUP_COSIMAMSG_MSGTYPE,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -214,116 +192,9 @@ _INFOMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=139,
-  serialized_end=313,
+  serialized_start=115,
+  serialized_end=563,
 )
-
-
-_SYNCHRONISATIONMESSAGE = _descriptor.Descriptor(
-  name='SynchronisationMessage',
-  full_name='SynchronisationMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='msg_type', full_name='SynchronisationMessage.msg_type', index=0,
-      number=1, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='msg_id', full_name='SynchronisationMessage.msg_id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='sim_time', full_name='SynchronisationMessage.sim_time', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-    _SYNCHRONISATIONMESSAGE_MSGTYPE,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=316,
-  serialized_end=490,
-)
-
-
-_INFRASTRUCTUREMESSAGE = _descriptor.Descriptor(
-  name='InfrastructureMessage',
-  full_name='InfrastructureMessage',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='msg_type', full_name='InfrastructureMessage.msg_type', index=0,
-      number=1, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='msg_id', full_name='InfrastructureMessage.msg_id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='sim_time', full_name='InfrastructureMessage.sim_time', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='change_module', full_name='InfrastructureMessage.change_module', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='connection_change_successful', full_name='InfrastructureMessage.connection_change_successful', index=4,
-      number=5, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-    _INFRASTRUCTUREMESSAGE_MSGTYPE,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=493,
-  serialized_end=703,
-)
-
 
 _COSIMAMSGGROUP = _descriptor.Descriptor(
   name='CosimaMsgGroup',
@@ -333,36 +204,15 @@ _COSIMAMSGGROUP = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='initial_messages', full_name='CosimaMsgGroup.initial_messages', index=0,
-      number=1, type=11, cpp_type=10, label=3,
+      name='msg', full_name='CosimaMsgGroup.msg', index=0,
+      number=15, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='info_messages', full_name='CosimaMsgGroup.info_messages', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='synchronisation_messages', full_name='CosimaMsgGroup.synchronisation_messages', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='infrastructure_messages', full_name='CosimaMsgGroup.infrastructure_messages', index=3,
-      number=4, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='current_mosaik_step', full_name='CosimaMsgGroup.current_mosaik_step', index=4,
-      number=5, type=5, cpp_type=1, label=1,
+      name='current_mosaik_step', full_name='CosimaMsgGroup.current_mosaik_step', index=1,
+      number=16, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -370,7 +220,7 @@ _COSIMAMSGGROUP = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[],
+  nested_types=[_COSIMAMSGGROUP_COSIMAMSG, ],
   enum_types=[
   ],
   serialized_options=None,
@@ -379,59 +229,31 @@ _COSIMAMSGGROUP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=706,
-  serialized_end=947,
+  serialized_start=27,
+  serialized_end=563,
 )
 
-_SYNCHRONISATIONMESSAGE.fields_by_name['msg_type'].enum_type = _SYNCHRONISATIONMESSAGE_MSGTYPE
-_SYNCHRONISATIONMESSAGE_MSGTYPE.containing_type = _SYNCHRONISATIONMESSAGE
-_INFRASTRUCTUREMESSAGE.fields_by_name['msg_type'].enum_type = _INFRASTRUCTUREMESSAGE_MSGTYPE
-_INFRASTRUCTUREMESSAGE_MSGTYPE.containing_type = _INFRASTRUCTUREMESSAGE
-_COSIMAMSGGROUP.fields_by_name['initial_messages'].message_type = _INITIALMESSAGE
-_COSIMAMSGGROUP.fields_by_name['info_messages'].message_type = _INFOMESSAGE
-_COSIMAMSGGROUP.fields_by_name['synchronisation_messages'].message_type = _SYNCHRONISATIONMESSAGE
-_COSIMAMSGGROUP.fields_by_name['infrastructure_messages'].message_type = _INFRASTRUCTUREMESSAGE
-DESCRIPTOR.message_types_by_name['InitialMessage'] = _INITIALMESSAGE
-DESCRIPTOR.message_types_by_name['InfoMessage'] = _INFOMESSAGE
-DESCRIPTOR.message_types_by_name['SynchronisationMessage'] = _SYNCHRONISATIONMESSAGE
-DESCRIPTOR.message_types_by_name['InfrastructureMessage'] = _INFRASTRUCTUREMESSAGE
+_COSIMAMSGGROUP_COSIMAMSG.fields_by_name['type'].enum_type = _COSIMAMSGGROUP_COSIMAMSG_MSGTYPE
+_COSIMAMSGGROUP_COSIMAMSG.containing_type = _COSIMAMSGGROUP
+_COSIMAMSGGROUP_COSIMAMSG_MSGTYPE.containing_type = _COSIMAMSGGROUP_COSIMAMSG
+_COSIMAMSGGROUP.fields_by_name['msg'].message_type = _COSIMAMSGGROUP_COSIMAMSG
 DESCRIPTOR.message_types_by_name['CosimaMsgGroup'] = _COSIMAMSGGROUP
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-InitialMessage = _reflection.GeneratedProtocolMessageType('InitialMessage', (_message.Message,), dict(
-  DESCRIPTOR = _INITIALMESSAGE,
-  __module__ = 'messages.message_pb2'
-  # @@protoc_insertion_point(class_scope:InitialMessage)
-  ))
-_sym_db.RegisterMessage(InitialMessage)
-
-InfoMessage = _reflection.GeneratedProtocolMessageType('InfoMessage', (_message.Message,), dict(
-  DESCRIPTOR = _INFOMESSAGE,
-  __module__ = 'messages.message_pb2'
-  # @@protoc_insertion_point(class_scope:InfoMessage)
-  ))
-_sym_db.RegisterMessage(InfoMessage)
-
-SynchronisationMessage = _reflection.GeneratedProtocolMessageType('SynchronisationMessage', (_message.Message,), dict(
-  DESCRIPTOR = _SYNCHRONISATIONMESSAGE,
-  __module__ = 'messages.message_pb2'
-  # @@protoc_insertion_point(class_scope:SynchronisationMessage)
-  ))
-_sym_db.RegisterMessage(SynchronisationMessage)
-
-InfrastructureMessage = _reflection.GeneratedProtocolMessageType('InfrastructureMessage', (_message.Message,), dict(
-  DESCRIPTOR = _INFRASTRUCTUREMESSAGE,
-  __module__ = 'messages.message_pb2'
-  # @@protoc_insertion_point(class_scope:InfrastructureMessage)
-  ))
-_sym_db.RegisterMessage(InfrastructureMessage)
-
 CosimaMsgGroup = _reflection.GeneratedProtocolMessageType('CosimaMsgGroup', (_message.Message,), dict(
+
+  CosimaMsg = _reflection.GeneratedProtocolMessageType('CosimaMsg', (_message.Message,), dict(
+    DESCRIPTOR = _COSIMAMSGGROUP_COSIMAMSG,
+    __module__ = 'messages.message_pb2'
+    # @@protoc_insertion_point(class_scope:CosimaMsgGroup.CosimaMsg)
+    ))
+  ,
   DESCRIPTOR = _COSIMAMSGGROUP,
   __module__ = 'messages.message_pb2'
   # @@protoc_insertion_point(class_scope:CosimaMsgGroup)
   ))
 _sym_db.RegisterMessage(CosimaMsgGroup)
+_sym_db.RegisterMessage(CosimaMsgGroup.CosimaMsg)
 
 
 # @@protoc_insertion_point(module_scope)

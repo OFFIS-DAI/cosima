@@ -18,7 +18,7 @@ public:
         scheduler = &schedulerMock;
     }
     bool getUntilReachedValueFromSchedulerMock() {
-        return schedulerMock.getUntilReached();
+        return schedulerMock.until_reached;
     }
 };
 
@@ -41,8 +41,8 @@ public:
  * Asserted result: max advance event and until event should be initialized.
  */
 TEST_F(MosaikSchedulerModuleTest, TestConstructor) {
-    ASSERT_NE(schedulerModule->maxAdvEvent, nullptr);
-    ASSERT_NE(schedulerModule->untilEvent, nullptr);
+    ASSERT_NE(schedulerModule->max_adv_event, nullptr);
+    ASSERT_NE(schedulerModule->until_event, nullptr);
 }
 
 /**

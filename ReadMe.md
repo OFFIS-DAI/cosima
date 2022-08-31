@@ -3,8 +3,8 @@
 mosaik is a Smart Grid co-simulation framework developed by OFFIS e.V. in Oldenburg. For further information on mosaik
 see [mosaik](https://mosaik.offis.de). OMNeT++ is a simulation framework for (communication) network simulation. For
 further information on OMNeT++ see [OMNeT++](https://omnetpp.org/). In this project we integrated the communication
-simulator OMNeT++ into the co-simulation framework mosaik. This enables the simulation of realistic communication 
-technologies (such as 5G) and the analysis of dynamic communication characteristics in Smart Grid scenarios.  
+simulator OMNeT++ into the co-simulation framework mosaik in order to simulate communication delay in Smart Grid
+scenarios. 
 
 This ReadMe is structured as follows: 
 * [Installation](#installation)
@@ -38,15 +38,6 @@ This detailed documentation contains information about:
 
 To use the project, an installation of mosaik3.0, OMNeT++ and protobuf is required.
 
-If you use ubuntu: 
-You can use the [Installation Shell Script](install-requirements.sh) via
-```bash
-chmod +x install-requirements.sh
-sudo ./install-requirements.sh
-```
-for the installation tasks.
-Otherwise, follow the following instructions.
-
 ### Installation of python packages
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the requirements.txt file.
@@ -58,7 +49,6 @@ pip install -r requirements.txt
 ### Installation and configuration of OMNeT++
 
 * Install OMNeT++ version 5.6.2 from their website [OMNeT++](https://omnetpp.org/).
-    - call `.\configure` with `PREFER_CLANG=yes` and `CXXFLAGS=-std=c++14` for C++ version 14 
     - import the OMNeT++ files of this project [OMNeT++ files](cosima_omnetpp_project) as an Existing Project in
       OMNeT++
     - build the project
@@ -112,27 +102,25 @@ Now add the protobuf installation to your project in OMNeT++ under Project Prope
 
 Two example scenarios are included in the project. These are structured very simply and are intended to illustrate the
 functionality of the integration. On the mosaik side, agent simulators,
-a [communication simulator](cosima_core/simulators/comm_simulator.py) and a
-[collector](cosima_core/simulators/collector.py) are implemented. In OMNeT++ you find
-the [MosaikScheduler](cosima_omnetpp_project/modules/MosaikScheduler.h) which is responsible for message exchange with mosaik via
-TCP socket. The [AgentApp](cosima_omnetpp_project/modules/AgentAppUdp.cc) and
-[AgentAppTcp](cosima_omnetpp_project/modules/AgentAppTcp.cc) represent the implementation of the application layer
+a [communication simulator](simulators/core/comm_simulator.py) and a
+[collector](simulators/tic_toc_example/collector.py) are implemented. In OMNeT++ you find
+the [MosaikObserver](cosima_omnetpp_project/MosaikObserver.h) which is responsible for message exchange with mosaik via
+TCP socket. The [SocketAgentApp](cosima_omnetpp_project/SocketAgentApp.cc) and
+[SocketAgentAppTcp](cosima_omnetpp_project/SocketAgentAppTcp.cc) represent the implementation of the application layer
 (and transport layer) of the end devices, which represent the agents from mosaik on the OMNeT++ side. Example networks
 can also be found in the project folder. The executable file in OMNeT++
-is [mosaik.ini](cosima_omnetpp_project/mosaik.ini). The integration is shown schematically in: ![image](./documentation/images/architecture.png)
+is [mosaik.ini](cosima_omnetpp_project/mosaik.ini). The integration is shown schematically in: ![image](./documentation/images/concept.png)
 When an agent in mosaik sends a message to another agent, it does so through the agent simulator entities. Thus,
-client0 sends a message to client1 at time t1. However, this message is first received in the same step in
+AgentEntityA sends a message to AgentEntityB at time t=x. However, this message is first received in the same step in
 mosaik by the CommSim, which sends the message as a Protobuf object to OMNeT++ over a TCP connection. When the message
 is sent, the simTime in mosaik and the value max_advance is passed from mosaik to OMNeT++. This value specifies how far
 OMNeT++ may simulate until potentially new information could be available in mosaik. In OMNeT++ the message is received
-by the MosaikScheduler, which extracts the message content and inserts it as an event into the FES at the given simTime
+by the MosaikObserver, which extracts the message content and inserts it as an event into the FES at the given simTime
 from mosaik. In addition, the value of max_advance is also inserted as an event. Now OMNeT++ simulates the message
-dispatch from client0 to client1 over the INET network. The resulting delay time is sent back to the MosaikScheduler and
-thus to mosaik. In mosaik the message is given to client1 after the determined end-to-end delay in OMNeT++.
+dispatch from client0 to client1 over the INET network. The resulting delay time is sent back to the MosaikObserver and
+thus to mosaik. In mosaik the message is given to AgentEntityB after the determined end-to-end delay in OMNeT++.
 
-In the following, the simulations are described, which can be performed by adapting the [config file](cosima_core/config.py).
-From the given networks it is possible to simulate the scenario with 2 - 50 agents. If a correspondingly larger network 
-is modeled, larger agent numbers are also possible.  
+It is possible to simulate the scenario with 2 - 20 agents. 
 Furthermore, it is possible to simulate non-parallel and parallel message
 sending behaviour. If parallel sending is simulated, two agents send messages simultaneously and time-shifted with 1 step difference.
 It is also possible to add a PV plant to the simulation. PV plants can be connected to agents and read their current power values from
@@ -174,13 +162,8 @@ Simulation results
 * The exchanged messages are stored in folder results with timestamp of the simulation start as name of the csv-file.
 
 ## Modelling a new network in OMNeT++
-All of the provided [networks](cosima_omnetpp_project/networks) contain an instance of the 
-*[MosaikSchedulerModule](cosima_omnetpp_project/modules/MosaikSchedulerModule.h)*. 
-When modeling an additional network, this module must also be inserted into the network to enable the 
-*[MosaikScheduler](cosima_omnetpp_project/modules/MosaikScheduler.h)* to operate. \
-In addition, an instance of the *[MosaikScenarioManager](cosima_omnetpp_project/modules/MosaikScenarioManager.h)* 
-should be inserted into the network if changes on the infrastructure (for example disconnecting or reconnecting clients) 
-should be possible at simulation time. \
+All of the provided [networks](../cosima_omnetpp_project/networks) contain an instance of the *[MosaikSchedulerModule](../mosaik_omnetpp_observer/MosaikSchedulerModule.h)*. When modeling an additional network, this module must also be inserted into the network to enable the *[MosaikScheduler](../mosaik_omnetpp_observer/MosaikScheduler.h)* to operate. \
+In addition, an instance of the *[MosaikScenarioManager](../cosima_omnetpp_project/MosaikScenarioManager.h)* should be inserted into the network if changes on the infrastructure (for example disconnecting or reconnecting clients) should be possible at simulation time. \
 The network description file (.ned file) of a network in OMNeT++ should contain the following: 
 ```bash
 import MosaikSchedulerModule;
@@ -205,7 +188,7 @@ scheduler-class = "MosaikScheduler"
 To set up testing in python follow these steps:
 
 * in PyCharm under Settings -> Python Integrated Tools -> Testing set the Default Test Runner to PyTest
-* tests can be found in the [test folder](cosima_core/tests). The structure of the test folder should correspond to the structure of
+* tests can be found in the [test folder](test). The structure of the test folder should correspond to the structure of
   the project
 * test files start with "test_"
 * to run a test execute either a single file or the folder

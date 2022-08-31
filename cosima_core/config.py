@@ -16,7 +16,7 @@ NUMBER_OF_AGENTS = 2
 
 # path to load content for agent messages from
 ROOT_PATH = Path(abspath(__file__)).parent
-CONTENT_PATH = ROOT_PATH / 'simulators' / 'tic_toc_example' / 'content.csv'
+CONTENT_PATH = ROOT_PATH / 'util' / 'content.csv'
 
 # path to data for pv plant
 PV_DATA = '../data/pv_10kw.csv'

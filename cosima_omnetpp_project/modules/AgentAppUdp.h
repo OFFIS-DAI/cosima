@@ -1,8 +1,5 @@
 #ifndef AGENTAPPUDP_H
 #define AGENTAPPUDP_H
-
-#pragma once
-
 #include <omnetpp.h>
 #include "inet/transportlayer/contract/udp/UdpSocket.h"
 #include "../modules/MosaikScheduler.h"
@@ -17,6 +14,8 @@ private:
     cGate *connectGate;
 
     std::string nameStr;
+
+
 
 public:
     AgentAppUdp(){}

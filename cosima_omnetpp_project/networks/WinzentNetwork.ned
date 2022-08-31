@@ -31,68 +31,71 @@ channel MyEth10M extends EtherLink
     datarate = 10Mbps;
 }
 
-network WinzentNetwork
+network CosimaNetwork
 {
-    @display("bgb=1332.5,1063.4");
+    @display("bgb=1694.396,1062.732,#D3D7CF");
     submodules:
 
         scenarioManager: MosaikScenarioManager {
 
-            @display("p=97.5,317.19998");
+            @display("p=162.184,435.336");
         }
 
         schedulerModule: MosaikSchedulerModule {
-            @display("p=200,100");
+            @display("p=162.184,597.52");
         }
 
         configurator: Ipv4NetworkConfigurator {
-            @display("p=100,100");
+            @display("p=162.184,76.824005");
         }
 
         client0: StandardHost {
-            @display("p=721,100");
+            @display("p=1203.576,121.638;i=abstract/pv;is=n");
 
         }
         client2: StandardHost {
-            @display("p=1016.6,659.1");
+            @display("p=1500.202,680.74603;i=abstract/pv;is=n");
         }
         client1: StandardHost {
-            @display("p=799.5,379.6");
+            @display("p=1282.534,401.19202;i=abstract/pv;is=n");
         }
         router0: Router {
-            @display("p=577.2,638.3");
+            @display("p=1060.598,661.54004;is=l");
         }
         router1: Router {
-            @display("p=300.3,452.4");
+            @display("p=783.17804,473.74802;is=l");
         }
         switch0: EtherSwitch {
-            @display("p=800.8,657.8");
+            @display("p=1284.668,680.74603;is=l");
         }
         switch1: EtherSwitch {
-            @display("p=495.3,109.2");
+            @display("p=979.50604,132.308;is=l");
         }
 
         visualizer: IntegratedCanvasVisualizer {
-            @display("p=98,209");
+            @display("p=162.184,249.67801");
         }
 
         router2: Router {
-            @display("p=208,279.5");
+            @display("p=691.416,300.894;is=l");
         }
         router3: Router {
-            @display("p=422.5,301.6");
+            @display("p=904.81604,324.368;is=l");
         }
         router4: Router {
-            @display("p=284.69998,128.7");
+            @display("p=768.24,151.514;is=l");
         }
         switch2: EtherSwitch {
-            @display("p=613.6,315.9");
+            @display("p=1096.876,339.306;is=l");
         }
         client3: StandardHost {
-            @display("p=1030.9,942.5");
+            @display("p=1515.14,964.568;i=abstract/pv;is=n");
         }
         switch3: EtherSwitch {
-            @display("p=688.32007,876.82263");
+            @display("p=1171.566,898.414;is=l");
+        }
+        client4: StandardHost {
+            @display("p=428.93402,324.368;i=abstract/pv;is=n");
         }
     connections:
         switch0.ethg++ <--> Eth10M {  length = 1000km; } <--> client2.ethg++;
@@ -108,14 +111,15 @@ network WinzentNetwork
         switch2.ethg++ <--> Eth10M {  length = 50km; } <--> client1.ethg++;
         switch2.ethg++ <--> Eth10M {  length = 50km; } <--> router3.ethg++;
         switch3.ethg++ <--> Eth10M {  length = 50km; } <--> client3.ethg++;
-        router0.ethg++ <--> Eth10M {  length = 50km; }  <--> switch3.ethg++;
+        router0.ethg++ <--> Eth10M {  length = 50km; } <--> switch3.ethg++;
+        client4.ethg++ <--> Eth10M {  length = 50km; } <--> router2.ethg++;
 }
 
 network DisconnectedClient2_WinzentNetwork
 {
     submodules:
 
-		scenarioManager: MosaikScenarioManager {
+        scenarioManager: MosaikScenarioManager {
             @display("p=216.6825,136.52249");
         }
         schedulerModule: MosaikSchedulerModule {
@@ -182,10 +186,10 @@ network DisconnectedClient2_WinzentNetwork
 network DisconnectedClient1_WinzentNetwork
 {
     submodules:
-		scenarioManager: MosaikScenarioManager {
+        scenarioManager: MosaikScenarioManager {
             @display("p=216.6825,136.52249");
         }
-        
+
         schedulerModule: MosaikSchedulerModule {
             @display("p=200,100");
         }
@@ -309,11 +313,11 @@ network MinimalNetwork
         scenarioManager: MosaikScenarioManager {
             @display("p=216.6825,136.52249");
         }
-        
+
         schedulerModule: MosaikSchedulerModule {
             @display("p=200,100");
         }
-        
+
         configurator: Ipv4NetworkConfigurator {
             @display("p=100,100");
         }

@@ -7,7 +7,7 @@ from cosima_core.config import AGENTS_WITH_PV_PLANT, TIME_BASED
 import cosima_core.config as cfg
 from cosima_core.util.util_functions import start_omnet, \
     check_omnet_connection, stop_omnet, \
-    get_host_names, log
+    get_agent_names, log
 
 
 def main(num_agents=None, omnet_network=None, parallel=False, offset=0, sim_end=None,
@@ -25,14 +25,15 @@ def main(num_agents=None, omnet_network=None, parallel=False, offset=0, sim_end=
     if sim_end:
         cfg.SIMULATION_END = sim_end
 
+
     sim_config = {
         'Collector': {
-            'python': 'cosima_core.simulators.collector:Collector'},
-        'CommSim': {'python': 'cosima_core.simulators.comm_simulator:CommSimulator'},
+            'python': 'cosima_core.simulators.tic_toc_example.collector:Collector'},
+        'CommSim': {'python': 'cosima_core.simulators.core.comm_simulator:CommSimulator'},
         'Agent': {
             'python': 'cosima_core.simulators.tic_toc_example.agent_simulator:Agent'},
         'ICTController': {
-            'python': 'cosima_core.simulators.ict_controller_simulator:ICTController'},
+            'python': 'cosima_core.simulators.tic_toc_example.ict_controller_simulator:ICTController'},
         'CSV': {'python': 'cosima_core.simulators.tic_toc_example.mosaik_csv:CSV'}
 
     }
@@ -45,19 +46,14 @@ def main(num_agents=None, omnet_network=None, parallel=False, offset=0, sim_end=
     world = scenario.World(sim_config, debug=True, time_resolution=0.001,
                            cache=False)
 
-    agent_names = get_host_names(num_hosts=cfg.NUMBER_OF_AGENTS)
-    client_attribute_mapping = {}
-    # for each client in OMNeT++, save the connect-attribute for mosaik
-    for agent_name in agent_names:
-        client_attribute_mapping[agent_name] = cfg.CONNECT_ATTR + agent_name
-
     agents = {}
     collector = world.start('Collector').Monitor()
     agent_prefix = 'client'
     comm_sim = world.start('CommSim',
                            step_size=cfg.USED_STEP_SIZE,
                            port=cfg.PORT,
-                           client_attribute_mapping=client_attribute_mapping).CommModel()
+                           agent_names=get_agent_names(
+                               cfg.NUMBER_OF_AGENTS)).CommModel()
 
     if len(cfg.INFRASTRUCTURE_CHANGES) > 0:
         ict_controller = world.start('ICTController',
@@ -67,24 +63,28 @@ def main(num_agents=None, omnet_network=None, parallel=False, offset=0, sim_end=
     for idx in range(cfg.NUMBER_OF_AGENTS):
         current_agent_name = agent_prefix + str(idx)
         agents[current_agent_name] = world.start('Agent',
+                                                 step_type='event-based',
                                                  agent_name=current_agent_name,
                                                  content_path=cfg.CONTENT_PATH,
                                                  step_size=cfg.USED_STEP_SIZE,
                                                  agent_names=
-                                                 get_host_names(
-                                                     num_hosts=cfg.NUMBER_OF_AGENTS)).A()
-    for agent in agents.values():
-        if agent.eid in AGENTS_WITH_PV_PLANT:
+                                                 get_agent_names(
+                                                     cfg.NUMBER_OF_AGENTS)).A()
+
+    if AGENTS_WITH_PV_PLANT:
+        for counter, agent_name in enumerate(AGENTS_WITH_PV_PLANT):
             pv_sim = world.start('CSV', sim_start=cfg.START, datafile=cfg.PV_DATA,
                                  delimiter=',')
             pv = pv_sim.PV.create(1)[0]
-            world.connect(pv, agents[agent.eid], 'P', weak=True)
-            world.connect(agents[agent.eid], pv, 'ACK')
+            world.connect(pv, agents[agent_name], 'P', weak=True)
+            world.connect(agents[agent_name], pv, 'ACK')
 
             world.set_initial_event(pv.sid)
-        else:
+    else:
+        # TODO: discuss. If agents are connected with PV plants, they automatically step at 0. Why is this needed
+        #  here for all agents anyway?
+        for agent in agents.values():
             world.set_initial_event(agent.sid, time=0)
-
 
     if not TIME_BASED and len(cfg.INFRASTRUCTURE_CHANGES) > 0:
         world.set_initial_event(ict_controller.sid)
@@ -99,26 +99,26 @@ def main(num_agents=None, omnet_network=None, parallel=False, offset=0, sim_end=
         else:
             world.connect(agent, comm_sim, f'message', weak=True)
 
-    for client_name, attr in client_attribute_mapping.items():
+    for agent_name, agent in agents.items():
         # connect comm_models with agents
         if TIME_BASED:
-            world.connect(comm_sim, agents[client_name],
-                          attr, time_shifted=True,
-                          initial_data={attr: []})
+            world.connect(comm_sim, agents[agent_name],
+                          f'{cfg.CONNECT_ATTR}{agent_name}', time_shifted=True,
+                          initial_data={f'{cfg.CONNECT_ATTR}{agent_name}': []})
         else:
-            world.connect(comm_sim, agents[client_name],
-                          attr)
+            world.connect(comm_sim, agents[agent_name],
+                          f'{cfg.CONNECT_ATTR}{agent_name}')
         world.connect(comm_sim, collector,
-                      attr)
+                      f'{cfg.CONNECT_ATTR}{agent_name}')
     if len(cfg.INFRASTRUCTURE_CHANGES) > 0:
         # connect ict controller to collector
-        world.connect(ict_controller, collector, f'ict_message')
+        world.connect(ict_controller, collector, f'message')
         # connect ict controller with comm_sim
         if TIME_BASED:
-            world.connect(ict_controller, comm_sim, f'ict_message', time_shifted=True, initial_data={'message': []})
+            world.connect(ict_controller, comm_sim, f'message', time_shifted=True, initial_data={'message': []})
             world.connect(comm_sim, ict_controller, f'ctrl_message')
         else:
-            world.connect(ict_controller, comm_sim, f'ict_message')
+            world.connect(ict_controller, comm_sim, f'message')
             world.connect(comm_sim, ict_controller, f'ctrl_message', weak=True)
 
     until = cfg.SIMULATION_END * cfg.USED_STEP_SIZE

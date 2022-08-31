@@ -22,8 +22,8 @@ class MosaikSchedulerModule: public cSimpleModule {
 public:
     MosaikSchedulerModule();
     virtual ~MosaikSchedulerModule();
-    MosaikCtrlEvent* maxAdvEvent;
-    MosaikCtrlEvent* untilEvent;
+    MosaikCtrlEvent* max_adv_event;
+    MosaikCtrlEvent* until_event;
     void cancelMaxAdvanceEvent();
     void cancelUntilEvent();
 

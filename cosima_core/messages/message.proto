@@ -1,54 +1,36 @@
 syntax = "proto3";
 
-message InitialMessage {
-    string msg_id = 1;
-    int32 max_advance = 2;
-    int32 until = 3;
-    bool is_time_based = 4;
-    int32 step_size = 5;
-  }
+message CosimaMsgGroup{
 
-  message InfoMessage {
-    string msg_id = 1;
-    int32 max_advance = 2;
-    int32 sim_time = 3;
-    string sender = 4;
-    string receiver = 5;
-    int32 size = 6;
-    string content = 7;
-    int32 creation_time = 8;
-    bool is_valid = 9;
-  }
-
-  message SynchronisationMessage {
+    message CosimaMsg{
     enum MsgType {
-      MAX_ADVANCE = 0;
-      WAITING = 1;
-      TRANSMISSION_ERROR = 2;
+        CMD = 0;
+        INFO = 1;
+        MAX_ADVANCE = 2;
+        WAITING = 3;
+        TRANSMISSION_ERROR = 4;
+        DISCONNECT = 5;
+        RECONNECT = 6;
     }
-    MsgType msg_type = 1;
-    string msg_id = 2;
-    int32 sim_time = 3;
-  }
+    MsgType type = 1;
+    string sender = 2;
+    string receiver = 3;
+    int32 max_advance = 4;
+    int32 size = 5;
+    string content = 6;
+    double delay = 7;
+    int32 simTime = 8;
+    int32 stepSize = 9;
+    string msgId = 10;
+    int32 until = 11;
+    int32 creation_time = 12;
+    string change_module = 13;
+    bool connection_change_successful = 14;
+    bool is_time_based = 15;
+}
+    repeated CosimaMsg msg = 15;
+    int32 current_mosaik_step = 16;
 
-  message InfrastructureMessage {
-    enum MsgType {
-      DISCONNECT = 0;
-      RECONNECT = 1;
-    }
-    MsgType msg_type = 1;
-    string msg_id = 2;
-    int32 sim_time = 3;
-    string change_module = 4;
-    bool connection_change_successful = 5;
-  }
-
-message CosimaMsgGroup {
-  repeated InitialMessage initial_messages = 1;
-  repeated InfoMessage info_messages = 2;
-  repeated SynchronisationMessage synchronisation_messages = 3;
-  repeated InfrastructureMessage infrastructure_messages = 4;
-  int32 current_mosaik_step = 5;
 }
 
 

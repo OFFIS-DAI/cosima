@@ -94,7 +94,7 @@ ENV PATH $PATH:/usr/omnetpp/omnetpp-5.6.2/bin
 
 # Configure and compile
 RUN cd omnetpp-5.6.2 && \
-    xvfb-run ./configure PREFER_CLANG=yes CXXFLAGS=-std=c++14 && \
+    xvfb-run ./configure PREFER_CLANG=yes && \
     make
 
 # Cleanup
