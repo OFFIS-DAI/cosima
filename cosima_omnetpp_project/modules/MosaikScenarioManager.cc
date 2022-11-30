@@ -67,7 +67,6 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
 
     scheduler->log("MosaikScenarioManager: disconnect " + nameStr);
 
-    auto connectedModule = moduleName;
     auto thisName = getFullPath();
     std::size_t pos = thisName.find(".");      // position of "." in string
     auto moduleNameStr = thisName.substr(0, pos+1); // get name of network
@@ -90,6 +89,9 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
         disconnectedModule.moduleObject = module;
         for (auto i = 0; i < module->gateCount() / 2; i++) {
             // get gates of module
+            if (not module->hasGate("ethg$i", i) or not module->hasGate("ethg$o", i)) {
+                continue;
+            }
             if(not module->gate("ethg$i", i)->isConnectedOutside() or not module->gate("ethg$o", i)->isConnectedOutside()) {
                 continue;
             }

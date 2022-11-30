@@ -6,22 +6,14 @@ import mosaik_api
 
 from cosima_core.messages.message_pb2 import InfrastructureMessage
 from cosima_core.util.util_functions import log
-from cosima_core.config import TIME_BASED
 
-META = {
-    'models': {
-        'ICT': {
-            'public': True,
-            'params': [],
-            'attrs': ['ctrl_message'],
-        },
+META = {'models': {
+    'ICT': {
+        'public': True,
+        'params': [],
+        'attrs': ['ctrl_message'],
     },
-}
-
-if TIME_BASED:
-    META['type'] = 'time-based'
-else:
-    META['type'] = 'event-based'
+}, 'type': 'event-based'}
 
 
 class ICTController(mosaik_api.Simulator):
@@ -53,10 +45,7 @@ class ICTController(mosaik_api.Simulator):
             if (not next_step or infrastructure_change['time'] < next_step) and infrastructure_change['time'] > time:
                 next_step = infrastructure_change['time']
         self._next_step = next_step
-        if TIME_BASED:
-            return time + 1
-        else:
-            return None
+        return None
 
     def get_data(self, outputs):
         outputs = []

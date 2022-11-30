@@ -1,6 +1,9 @@
 import sys
 import time
 
+from socket import SHUT_RDWR
+import google.protobuf.message
+
 from cosima_core.messages.message_pb2 import CosimaMsgGroup
 import threading
 
@@ -32,8 +35,15 @@ class OmnetppConnection:
         log('close connection called')
         self._wait_for_messages = False
         try:
+            self.client_socket.shutdown(SHUT_RDWR)
+            self.client_socket.close()
+        except Exception as e:
+            print(f'Exception: {e}')
+            pass
+        try:
             self.omnet_thread.join()
-        except RuntimeError:
+        except Exception as e:
+            print(f'Exception: {e}')
             pass
 
     def wait_for_msgs(self):
@@ -41,19 +51,26 @@ class OmnetppConnection:
             time.sleep(1)
             try:
                 data = self.client_socket.recv(4096)
-                msg_group = CosimaMsgGroup()
-                msg_group.ParseFromString(data)
-                for msg in msg_group.info_messages:
-                    self.stored_messages.append(msg)
-                for msg in msg_group.infrastructure_messages:
-                    self.stored_messages.append(msg)
-                for msg in msg_group.synchronisation_messages:
-                    self.stored_messages.append(msg)
-            except Exception as current_exception:
-                log(current_exception)
-                self._closed_due_to_timeout = False
-                log("Connection to OMNeT++ closed.")
-                self.close_connection()
+            except OSError:
+                data = ''
+            while data != '':
+                try:
+                    msg_group = CosimaMsgGroup()
+                    msg_group.ParseFromString(data)
+                    data = ''
+                    for msg in msg_group.info_messages:
+                        self.stored_messages.append(msg)
+                    for msg in msg_group.infrastructure_messages:
+                        self.stored_messages.append(msg)
+                    for msg in msg_group.synchronisation_messages:
+                        self.stored_messages.append(msg)
+                except google.protobuf.message.DecodeError:
+                    data += self.client_socket.recv(4096)
+                except Exception as other_exception:
+                    log(other_exception)
+                    self._closed_due_to_timeout = False
+                    log("Connection to OMNeT++ closed.")
+                    self.close_connection()
 
     def send_message(self, msg):
         try:

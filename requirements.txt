@@ -2,6 +2,7 @@ arrow==1.2.1
 matplotlib==3.5.0
 mosaik==3.0.0
 mosaik_api==3.0.0
+mosaik-householdsim
 numpy==1.20.3
 pandas==1.2.4
 protobuf==3.20.1

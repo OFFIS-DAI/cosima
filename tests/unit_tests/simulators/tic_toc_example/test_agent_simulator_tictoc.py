@@ -97,13 +97,15 @@ def test_agent_get_data_client1():
     # and the agent should have no output if parallel_msg is False
     agent._send_msg = True
     agent._output_time = 2
-    agent.parallel_msg = True
+    agent.offset = 1
+    agent.parallel = True
     assert agent.get_data(outputs={}) != {}
 
     agent._send_msg = True
     agent._output_time = 2
-    agent.parallel_msg = False
-    assert len(agent.get_data({})) != 0
+    agent.offset = 1
+    agent.parallel = False
+    assert agent.get_data(outputs={}) == {}
 
 
 def test_agent_get_data_unknown_agent():
@@ -149,8 +151,9 @@ def test_agent_sim_w_inputs():
     agent_sim.create(num=1, model='A')
     agent_sim._output_time = 1
     inputs = {'client0': {'message_with_delay': {
-        'CommSim-0.client-0': [{'sender': 'client1', 'receiver': 'client0', 'content': 'Lets go through the alphabet!',
-                                'sim_time': 1}]}}}
+        'CommunicationSimulator-0.client-0': [
+            {'sender': 'client1', 'receiver': 'client0', 'content': 'Lets go through the alphabet!',
+             'sim_time': 1}]}}}
     agent_sim.step(time=1, inputs=inputs, max_advance=0)
     expected_answer = [{'content': 'The first letter is: A',
                         'creation_time': 2,

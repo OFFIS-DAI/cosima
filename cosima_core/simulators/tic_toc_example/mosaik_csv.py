@@ -43,7 +43,6 @@ class CSV(mosaik_api.Simulator):
             except ValueError:
                 pass
             attrs[i] = attr.strip()
-        attrs.append('ACK')
         self.attrs = attrs
 
         self.meta['type'] = 'event-based'

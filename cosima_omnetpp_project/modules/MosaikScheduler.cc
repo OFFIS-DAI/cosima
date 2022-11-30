@@ -54,9 +54,11 @@ auto messageCounter = 0U;
 
 // mosaik parameter
 auto stepSize = 1.0;
+auto until = 100.0;
 auto untilReached = false; // indicates whether simulation end is reached in mosaik
 auto initialMessageReceived = false;
-auto isTimeBased = false;
+
+auto receiveUntilLock = false;
 
 bool containsOnlyValidFields(std::string const &str) {
     auto it = std::find_if(str.begin(), str.end(), [](char const &c) {
@@ -69,7 +71,7 @@ MosaikScheduler::MosaikScheduler() : cScheduler() {
     // variables for socket connection to mosaik
     listenerSocket = INVALID_SOCKET;
     connSocket = INVALID_SOCKET;
-    recvBufferSize = 10000;
+    recvBufferSize = 1000000;
     numModules = 0;
     numOfBytes = 0;
     int numRecvBytes = 0;
@@ -307,7 +309,7 @@ bool MosaikScheduler::handleMsgFromMosaik() {
         InitialMessage initialMessage = pmsg_group.initial_messages(i);
         initialMessageReceived = true;
         // calculate from milliseconds to seconds
-        auto until = initialMessage.until()*1.0/1000;
+        until = initialMessage.until()*1.0/1000;
         // cancel until event
         schedulerModuleObject->cancelUntilEvent();
         // schedule until event
@@ -315,20 +317,7 @@ bool MosaikScheduler::handleMsgFromMosaik() {
         getSimulation()->getFES()->insert(schedulerModuleObject->untilEvent);
         log("MosaikScheduler: until event inserted for time " + std::to_string(until) + " at simtime " + simTime().str());
 
-        isTimeBased = initialMessage.is_time_based();
         stepSize = initialMessage.step_size();
-        if (isTimeBased) {
-            log("MosaikScheduler: is time based");
-            // initially send max advance message
-            auto maxAdvance = simTime().dbl() + 0.001;
-            MosaikCtrlEvent *max_advance = new MosaikCtrlEvent("max advance");
-            max_advance->setCtrlType(ControlType::MaxAdvance);
-            max_advance->setArrival(schedulerModule->getId(), -1, maxAdvance);
-            getSimulation()->getFES()->insert(max_advance);
-            log("MosaikScheduler: max advance event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
-        } else {
-            log("MosaikScheduler: is not time based");
-        }
     }
 
     // get info messages
@@ -375,19 +364,17 @@ bool MosaikScheduler::handleMsgFromMosaik() {
             getSimulation()->getFES()->insert(socketEvent);
             insertedEvent = true;
             log("MosaikScheduler: message with content '" + content + " and sender " + sender + " and id " + msgId + " inserted.");
-
-            if (!isTimeBased) {
-                // schedule max advance event
-                schedulerModuleObject->cancelMaxAdvanceEvent();
-                schedulerModuleObject->maxAdvEvent->setCtrlType(ControlType::MaxAdvance);
-                if (maxAdvance >= simTime().dbl()) {
-                    schedulerModuleObject->maxAdvEvent->setArrival(schedulerModule->getId(), -1, maxAdvance);
-                    getSimulation()->getFES()->insert(schedulerModuleObject->maxAdvEvent);
-                    log("MosaikScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
-                } else {
-                    log("max advance " + std::to_string(maxAdvance) + " at time " + simTime().str() + " not inserted");
-                }
+            // schedule max advance event
+            schedulerModuleObject->cancelMaxAdvanceEvent();
+            schedulerModuleObject->maxAdvEvent->setCtrlType(ControlType::MaxAdvance);
+            if (maxAdvance >= simTime().dbl()) {
+                schedulerModuleObject->maxAdvEvent->setArrival(schedulerModule->getId(), -1, maxAdvance);
+                getSimulation()->getFES()->insert(schedulerModuleObject->maxAdvEvent);
+                log("MosaikScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
+            } else {
+                log("max advance " + std::to_string(maxAdvance) + " at time " + simTime().str() + " not inserted");
             }
+
         } else {
             throw cRuntimeError("Can't find module in modules array.");
         }
@@ -402,15 +389,28 @@ bool MosaikScheduler::handleMsgFromMosaik() {
             // Pretend to have an inserted event to not longer wait for messages
             // Substract 1 because mosaik time is sim time + 1 since agents output time is always one step further.
             // TODO: check if we have to subtract 1
-            auto waitingMsgTime = ((syncMessage.sim_time()-1) * 1.0) / 1000;
-            log("waiting msg time " + std::to_string(waitingMsgTime) + " sim time " + simTime().str() );
+            auto waitingMsgTime = ((syncMessage.sim_time()) * 1.0) / 1000;
+            auto maxAdvance = ((syncMessage.max_advance()) * 1.0) / 1000;
+            log("waiting msg time " + std::to_string(waitingMsgTime) + " sim time " + simTime().str() + " max advance " + std::to_string(maxAdvance));
 
-            if(waitingMsgTime >= simTime().dbl() or untilReached) {
-                log("MosaikScheduler: continue simulation.");
-                insertedEvent = true;
+            // schedule max advance event
+            schedulerModuleObject->cancelMaxAdvanceEvent();
+            schedulerModuleObject->maxAdvEvent->setCtrlType(ControlType::MaxAdvance);
+            if (maxAdvance >= simTime().dbl()) {
+                schedulerModuleObject->maxAdvEvent->setArrival(schedulerModule->getId(), -1, maxAdvance);
+                getSimulation()->getFES()->insert(schedulerModuleObject->maxAdvEvent);
+                log("MosaikScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
+                if(waitingMsgTime >= simTime().dbl() or untilReached) {
+                    log("MosaikScheduler: continue simulation.");
+                    insertedEvent = true;
+                } else {
+                    log("MosaikScheduler: continue waiting at time " + simTime().str() );
+                    informMosaikAboutWaiting();
+                }
             } else {
+                log("max advance " + std::to_string(maxAdvance) + " at time " + simTime().str() + " not inserted");
                 log("MosaikScheduler: continue waiting at time " + simTime().str() );
-                //informMosaikAboutWaiting();
+                informMosaikAboutWaiting();
             }
         }
 
@@ -502,7 +502,6 @@ int MosaikScheduler::receiveUntil(int64_t targetTime) {
             return (1);
         }
     }
-
     return (0);
 }
 
@@ -514,11 +513,6 @@ cEvent *MosaikScheduler::takeNextEvent() {
     // calculate target time
     int64_t targetTime;
     cEvent *event = sim->getFES()->peekFirst();
-    if (isTimeBased and untilReached) {
-        log("MosaikScheduler: reached until time in mosaik." );
-        endSimulation();
-
-    }
     if (!event) {
         // if there are no events, wait until something comes from outside
         // TBD: obey simtimelimit, cpu-time-limit
@@ -634,9 +628,6 @@ void MosaikScheduler::writeSimulationSnapshot() {
 
 void MosaikScheduler::endSimulation() {
     writeSimulationSnapshot();
-    if (isTimeBased) {
-        getSimulation()->getFES()->clear();
-    }
     log("MosaikScheduler: end simulation" );
     getSimulation()->callFinish();
     // close socket connection to mosaik
@@ -646,6 +637,12 @@ void MosaikScheduler::endSimulation() {
 }
 
 void MosaikScheduler::sendMsgGroupToMosaik() {
+    if (getNumberOfMessagesInPMSGGroup() == 0) {
+        log("MosaikScheduler: Don't send any message group back, because it contains no messages.");
+        // initialize new message group
+        pmsg_group.Clear();
+        return;
+    }
     try {
         // serialize message
         std::string msg;
@@ -661,9 +658,17 @@ void MosaikScheduler::sendMsgGroupToMosaik() {
         // initialize new message group
         pmsg_group.Clear();
 
-        if (not untilReached) {
+        if (not untilReached and (until-simTime().dbl() > 0.001)) {
             log("MosaikScheduler: receive new messages from mosaik." + simTime().str() );
-            receiveUntil(INT64_MAX);
+            if (receiveUntilLock) {
+                receiveUntil(1000);
+            }
+            else {
+                receiveUntilLock = true;
+                receiveUntil(INT64_MAX);
+                receiveUntilLock = false;
+            }
+
         }
     } catch(...) {
         log("exception");
@@ -709,6 +714,9 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
     if (scheduleMessage) {
         if(pmsg_group.current_mosaik_step() == currentStep) {
             log("MosaikScheduler: request to send message for the same step " + std::to_string(currentStep) + " back to mosaik." );
+        } else if (getNumberOfMessagesInPMSGGroup() != 0) {
+            currentStep = pmsg_group.current_mosaik_step();
+            log("MosaikScheduler: send message back for step " + std::to_string(currentStep));
         } else {
             pmsg_group.set_current_mosaik_step(currentStep);
 
@@ -716,9 +724,9 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             MosaikSchedulerModule *schedulerModuleObject = dynamic_cast<MosaikSchedulerModule *>(schedulerModule);
             MosaikCtrlEvent* endOfStepEvent = new MosaikCtrlEvent("send message to mosaik");
             endOfStepEvent->setCtrlType(ControlType::EndOfStep);
-            endOfStepEvent->setArrival(schedulerModule->getId(), -1, currentStep_d);
+            endOfStepEvent->setArrival(schedulerModule->getId(), -1, currentStep_d+0.0000001);
             getSimulation()->getFES()->insert(endOfStepEvent);
-            log("MosaikScheduler: insert event 'send message to mosaik' for time " + std::to_string(currentStep_d) );
+            log("MosaikScheduler: insert event 'send message to mosaik' for time " + std::to_string(currentStep_d+0.0000001) );
 
         }
     }
@@ -736,15 +744,18 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
 
         std::stringstream logContent;
 
-        if (not containsOnlyValidFields(content)) {
-            content = "Message not valid";
-            messageValid = false;
-        }
+        //if (not containsOnlyValidFields(content)) {
+          //  content = "Message not valid";
+          //  messageValid = false;
+       // }
 
         if(replyMsg->getTransmission_error()) {
             SynchronisationMessage* syncMessage = pmsg_group.add_synchronisation_messages();
 
             syncMessage->set_msg_type(SynchronisationMessage_MsgType_TRANSMISSION_ERROR);
+            syncMessage->set_timeout(replyMsg->getTimeout());
+            syncMessage->set_timeout_msg_id(replyMsg->getMsgId());
+
             std::stringstream errorCounterStr;
             errorCounterStr << errorCounter;
             auto mId = "ErrorMessage_" + errorCounterStr.str();
@@ -752,7 +763,8 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             errorCounter += 1;
 
             logContent << "MosaikScheduler: send notification for transmission error for message with sender " << sender <<
-                    " and receiver " << receiver << " and id " << mId << " back to mosaik. ";
+                    " and receiver " << receiver << " and messageId " << replyMsg->getMsgId() << " as message " <<  mId <<
+                    " back to mosaik. ";
             log(logContent.str());
             logContent.str("");
         } else if (replyMsg->getDisconnected_event()) {
@@ -799,7 +811,7 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             infoMessage->set_msg_id(msgId);
             infoMessage->set_creation_time(creationTime);
             infoMessage->set_is_valid(messageValid);
-            logContent << "MosaikScheduler: send message with content '" << content << "' and sender " << sender << " back to mosaik.";
+            logContent << "MosaikScheduler: send message with content '" << content << "' and sender " << sender << " and current step " << currentStep << " back to mosaik.";
             log(logContent.str());
         }
 
@@ -825,17 +837,6 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             syncMessage->set_msg_id(mId);
             syncMessage->set_sim_time(currentStep);
             maxAdvanceCounter += 1;
-            if (isTimeBased) {
-                // schedule new max advance event for new step
-                MosaikSchedulerModule *schedulerModuleObject = dynamic_cast<MosaikSchedulerModule *>(schedulerModule);
-                if (!schedulerModuleObject->maxAdvEvent->isScheduled()) {
-                    schedulerModuleObject->maxAdvEvent->setArrival(schedulerModule->getId(), -1, currentStep_d+0.001);
-                    getSimulation()->getFES()->insert(schedulerModuleObject->maxAdvEvent);
-                    log("insert max advance event for " + std::to_string(currentStep_d+0.001));
-                } else {
-                    log("max advance event already scheduled");
-                }
-            }
             log("MosaikScheduler: send message with max advance info back to mosaik with Message id " + mId );
 
         }

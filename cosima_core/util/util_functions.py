@@ -12,10 +12,11 @@ from cosima_core.messages.message_pb2 import CosimaMsgGroup, InitialMessage, Inf
 import cosima_core.config as cfg
 
 
-def start_omnet(start_mode, network):
+def start_omnet(start_mode, network, cwd=None):
     command = f"./cosima_omnetpp_project -n ../inet/src/inet -f " \
               f"mosaik.ini -c {network}"
-    cwd = '../cosima_omnetpp_project/'
+    if cwd is None:
+        cwd = '../../cosima_omnetpp_project/'
     omnet_process = None
     if start_mode == 'cmd':
         command = command + " -u Cmdenv"

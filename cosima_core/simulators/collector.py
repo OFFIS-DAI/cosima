@@ -30,7 +30,7 @@ class Collector(mosaik_api.Simulator):
         self.data = collections.defaultdict(lambda:
                                             collections.defaultdict(dict))
         self.start_time = time.time()
-        self.comm_sim_steps = 0
+        self.communication_sim_steps = 0
 
     def init(self, sid):
         return self.meta
@@ -75,21 +75,19 @@ class Collector(mosaik_api.Simulator):
                     for value in values.values():
                         if 'ICTController' in sim and len(value[0]) > 0:
                             value = value[0][0]
-                            if value['steps'] > self.comm_sim_steps:
-                                self.comm_sim_steps = value['steps']
                             change_type = ""
-                            if value['type'] == 5:
+                            if value['msg_type'] == 0:
                                 change_type = "DISCONNECT"
-                            elif value['type'] == 6:
+                            elif value['msg_type'] == 1:
                                 change_type = "RECONNECT"
                             new_row = {"Simulator": sim, "message id": value['msg_id'], "creation time": value['sim_time'],
-                                       "infrastructure change": change_type, "changed module": value['module_name']}
+                                       "infrastructure change": change_type, "changed module": value['change_module']}
                             final_data = final_data.append(new_row, ignore_index=True)
-                        elif 'CommSim' in sim:
+                        elif 'CommunicationSimulator' in sim:
                             if value is not None and type(value) is list and type(value[0]) is list:
                                 value = value[0][0]
-                                if value['steps'] > self.comm_sim_steps:
-                                    self.comm_sim_steps = value['steps']
+                                if value['steps'] > self.communication_sim_steps:
+                                    self.communication_sim_steps = value['steps']
                                 new_row = {"Simulator": sim, "message id": value['msg_id'],
                                            "creation time": value['creation_time'], "output time": value['sim_time'],
                                            "sender": value['sender'], "receiver": value['receiver'],
@@ -98,8 +96,8 @@ class Collector(mosaik_api.Simulator):
                                 final_data = final_data.append(new_row, ignore_index=True)
             # set simulation duration
             final_data.iloc[0, 3] = round(time.time() - self.start_time, 2)
-            # set number of steps of commsim
-            final_data.iloc[0, 4] = self.comm_sim_steps
+            # set number of steps of communication simulator
+            final_data.iloc[0, 4] = self.communication_sim_steps
             final_data.to_csv(cfg.RESULTS_FILENAME + str(time.time()) + ".csv", index=False)
 
 

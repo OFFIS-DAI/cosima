@@ -49,7 +49,7 @@ protected:
     int64_t baseTime; // in microseconds, as returned by opp_get_monotonic_clock_usecs()
     SOCKET listenerSocket;
     SOCKET connSocket;
-    char recvBuffer[10000];
+    char recvBuffer[1000000];
     int recvBufferSize;
     int *numBytesPtr;
     size_t numOfBytes;

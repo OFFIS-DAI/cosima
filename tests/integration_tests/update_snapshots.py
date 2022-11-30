@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 import re
-import cosima_core.comm_scenario as comm_scenario
+import cosima_core.scenarios.communication_scenario as communication_scenario
 from cosima_core.util.util_functions import log
 import time
 
@@ -76,15 +76,35 @@ if __name__ == "__main__":
         n_agents = row["number of agents"]
         network = row["network"]
         parallel = row["parallel"]
+        agents_with_pv = row["agentsWithPV"]
+        agents_with_household = row["agentsWithHousehold"]
         offset = row["offset"]
+        if isinstance(agents_with_pv, str):
+            agents_with_pv = agents_with_pv.split(";")
+        else:
+            # agents_with_pv is nan, therefore no agents with pv plants are given
+            agents_with_pv = []
+
+        if isinstance(agents_with_household, str):
+            agents_with_household = agents_with_household.split(";")
+        else:
+            # agents_with_household is nan, therefore no agents with households are given
+            agents_with_household = []
+
         infrastructure_changes = get_infrastructure_changes(row)
         log(f'Simulate scenario {id} with {n_agents} agents, omnet network {network}, parallel= {parallel}, offset= '
             f'{offset} and infrastructure changes {infrastructure_changes}')
-
+        # other path necessary than the default one for the scenarios
+        cwd = '../cosima_omnetpp_project/'
         if len(infrastructure_changes) > 0:
-            comm_scenario.main(n_agents, network, parallel, offset, row["until"], infrastructure_changes)
+            communication_scenario.main(num_agents=n_agents, omnet_network=network, parallel=parallel,
+                                        agents_with_pv=agents_with_pv, agents_with_household=agents_with_household,
+                                        offset=offset, sim_end=row["until"],
+                                        infrastructure_changes=infrastructure_changes, cwd=cwd)
         else:
-            comm_scenario.main(n_agents, network, parallel, offset, row["until"])
+            communication_scenario.main(num_agents=n_agents, omnet_network=network, parallel=parallel,
+                                        agents_with_pv=agents_with_pv, agents_with_household=agents_with_household,
+                                        offset=offset, sim_end=row["until"], cwd=cwd)
         time.sleep(5)
         update_snapshot(df, id)
         print("\n \n")

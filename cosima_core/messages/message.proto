@@ -4,8 +4,7 @@ message InitialMessage {
     string msg_id = 1;
     int32 max_advance = 2;
     int32 until = 3;
-    bool is_time_based = 4;
-    int32 step_size = 5;
+    int32 step_size = 4;
   }
 
   message InfoMessage {
@@ -29,6 +28,9 @@ message InitialMessage {
     MsgType msg_type = 1;
     string msg_id = 2;
     int32 sim_time = 3;
+    int32 max_advance = 4;
+    bool timeout = 5;
+    string timeout_msg_id = 6;
   }
 
   message InfrastructureMessage {

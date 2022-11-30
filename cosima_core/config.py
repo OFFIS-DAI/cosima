@@ -6,7 +6,7 @@ STEP_SIZE_1_MS = 1
 STEP_SIZE_10_MS = 10
 STEP_SIZE_100_MS = 100
 
-USED_STEP_SIZE = STEP_SIZE_1_MS
+USED_STEP_SIZE = 1000
 
 # end of simulation
 SIMULATION_END = 100000
@@ -19,8 +19,12 @@ ROOT_PATH = Path(abspath(__file__)).parent
 CONTENT_PATH = ROOT_PATH / 'simulators' / 'tic_toc_example' / 'content.csv'
 
 # path to data for pv plant
-PV_DATA = '../data/pv_10kw.csv'
-START = '2014-01-01 00:00:00'
+PV_DATA = '../../data/pv_paper.csv'
+START = '2014-01-01 10:00:00'
+
+HOUSEHOLD_DATA = str(ROOT_PATH.parent / 'data' / 'household.data')
+# choose between "small grid" or "medium grid"
+GRID_NAME = "medium grid"
 
 # path to store results to
 RESULTS_FILENAME = 'results/result_'
@@ -39,7 +43,7 @@ VERBOSE = True
 # Track CPU and RAM during simulation run
 TRACK_PERFORMANCE = False
 
-# name for mosaik attribute which is exchanged between CommSim and Agents,
+# name for mosaik attribute which is exchanged between CommunicationSim and Agents,
 # containing the message from OMNeT++
 CONNECT_ATTR = 'message_with_delay_for_'
 
@@ -57,7 +61,10 @@ START_MODE = 'cmd'
 NETWORK = 'EventBasedUDP_SimulaneousMessageReceiving'
 
 # connect pv plant to agent?
-AGENTS_WITH_PV_PLANT = ['client0']
+AGENTS_WITH_PV_PLANT = ['client0', 'client1']
+
+# connect household to agent
+AGENTS_WITH_HOUSEHOLDS = ['client1']
 
 # each entry must contain values for type of infrastructure change
 # (Disconnect, Connect), time in ms and module. Module can be switch, client
@@ -75,6 +82,3 @@ CALCULATING_TIMES = {
     'client1': 0,
     'client2': 0
 }
-
-# configure simulators as time-based
-TIME_BASED = False

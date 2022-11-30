@@ -20,4 +20,5 @@ enum TimerType
     Send = 1;
     Close = 2;
     Renew = 3;
+    ConnectTimeout = 4;
 }

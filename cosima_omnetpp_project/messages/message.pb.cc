@@ -145,7 +145,6 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, msg_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, max_advance_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, until_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, is_time_based_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, step_size_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InfoMessage, _internal_metadata_),
@@ -169,6 +168,9 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::SynchronisationMessage, msg_type_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::SynchronisationMessage, msg_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::SynchronisationMessage, sim_time_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::SynchronisationMessage, max_advance_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::SynchronisationMessage, timeout_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::SynchronisationMessage, timeout_msg_id_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InfrastructureMessage, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -192,10 +194,10 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::InitialMessage)},
-  { 10, -1, sizeof(::InfoMessage)},
-  { 24, -1, sizeof(::SynchronisationMessage)},
-  { 32, -1, sizeof(::InfrastructureMessage)},
-  { 42, -1, sizeof(::CosimaMsgGroup)},
+  { 9, -1, sizeof(::InfoMessage)},
+  { 23, -1, sizeof(::SynchronisationMessage)},
+  { 34, -1, sizeof(::InfrastructureMessage)},
+  { 44, -1, sizeof(::CosimaMsgGroup)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -227,33 +229,34 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\026messages/message.proto\"n\n\016InitialMessa"
+      "\n\026messages/message.proto\"W\n\016InitialMessa"
       "ge\022\016\n\006msg_id\030\001 \001(\t\022\023\n\013max_advance\030\002 \001(\005\022"
-      "\r\n\005until\030\003 \001(\005\022\025\n\ris_time_based\030\004 \001(\010\022\021\n"
-      "\tstep_size\030\005 \001(\005\"\256\001\n\013InfoMessage\022\016\n\006msg_"
-      "id\030\001 \001(\t\022\023\n\013max_advance\030\002 \001(\005\022\020\n\010sim_tim"
-      "e\030\003 \001(\005\022\016\n\006sender\030\004 \001(\t\022\020\n\010receiver\030\005 \001("
-      "\t\022\014\n\004size\030\006 \001(\005\022\017\n\007content\030\007 \001(\t\022\025\n\rcrea"
-      "tion_time\030\010 \001(\005\022\020\n\010is_valid\030\t \001(\010\"\256\001\n\026Sy"
-      "nchronisationMessage\0221\n\010msg_type\030\001 \001(\0162\037"
-      ".SynchronisationMessage.MsgType\022\016\n\006msg_i"
-      "d\030\002 \001(\t\022\020\n\010sim_time\030\003 \001(\005\"\?\n\007MsgType\022\017\n\013"
-      "MAX_ADVANCE\020\000\022\013\n\007WAITING\020\001\022\026\n\022TRANSMISSI"
-      "ON_ERROR\020\002\"\322\001\n\025InfrastructureMessage\0220\n\010"
-      "msg_type\030\001 \001(\0162\036.InfrastructureMessage.M"
-      "sgType\022\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030\003 \001(\005"
-      "\022\025\n\rchange_module\030\004 \001(\t\022$\n\034connection_ch"
-      "ange_successful\030\005 \001(\010\"(\n\007MsgType\022\016\n\nDISC"
-      "ONNECT\020\000\022\r\n\tRECONNECT\020\001\"\361\001\n\016CosimaMsgGro"
-      "up\022)\n\020initial_messages\030\001 \003(\0132\017.InitialMe"
-      "ssage\022#\n\rinfo_messages\030\002 \003(\0132\014.InfoMessa"
-      "ge\0229\n\030synchronisation_messages\030\003 \003(\0132\027.S"
-      "ynchronisationMessage\0227\n\027infrastructure_"
-      "messages\030\004 \003(\0132\026.InfrastructureMessage\022\033"
-      "\n\023current_mosaik_step\030\005 \001(\005b\006proto3"
+      "\r\n\005until\030\003 \001(\005\022\021\n\tstep_size\030\004 \001(\005\"\256\001\n\013In"
+      "foMessage\022\016\n\006msg_id\030\001 \001(\t\022\023\n\013max_advance"
+      "\030\002 \001(\005\022\020\n\010sim_time\030\003 \001(\005\022\016\n\006sender\030\004 \001(\t"
+      "\022\020\n\010receiver\030\005 \001(\t\022\014\n\004size\030\006 \001(\005\022\017\n\007cont"
+      "ent\030\007 \001(\t\022\025\n\rcreation_time\030\010 \001(\005\022\020\n\010is_v"
+      "alid\030\t \001(\010\"\354\001\n\026SynchronisationMessage\0221\n"
+      "\010msg_type\030\001 \001(\0162\037.SynchronisationMessage"
+      ".MsgType\022\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030\003 \001"
+      "(\005\022\023\n\013max_advance\030\004 \001(\005\022\017\n\007timeout\030\005 \001(\010"
+      "\022\026\n\016timeout_msg_id\030\006 \001(\t\"\?\n\007MsgType\022\017\n\013M"
+      "AX_ADVANCE\020\000\022\013\n\007WAITING\020\001\022\026\n\022TRANSMISSIO"
+      "N_ERROR\020\002\"\322\001\n\025InfrastructureMessage\0220\n\010m"
+      "sg_type\030\001 \001(\0162\036.InfrastructureMessage.Ms"
+      "gType\022\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030\003 \001(\005\022"
+      "\025\n\rchange_module\030\004 \001(\t\022$\n\034connection_cha"
+      "nge_successful\030\005 \001(\010\"(\n\007MsgType\022\016\n\nDISCO"
+      "NNECT\020\000\022\r\n\tRECONNECT\020\001\"\361\001\n\016CosimaMsgGrou"
+      "p\022)\n\020initial_messages\030\001 \003(\0132\017.InitialMes"
+      "sage\022#\n\rinfo_messages\030\002 \003(\0132\014.InfoMessag"
+      "e\0229\n\030synchronisation_messages\030\003 \003(\0132\027.Sy"
+      "nchronisationMessage\0227\n\027infrastructure_m"
+      "essages\030\004 \003(\0132\026.InfrastructureMessage\022\033\n"
+      "\023current_mosaik_step\030\005 \001(\005b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 955);
+      descriptor, 994);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "messages/message.proto", &protobuf_RegisterTypes);
 }
@@ -322,7 +325,6 @@ void InitialMessage::InitAsDefaultInstance() {
 const int InitialMessage::kMsgIdFieldNumber;
 const int InitialMessage::kMaxAdvanceFieldNumber;
 const int InitialMessage::kUntilFieldNumber;
-const int InitialMessage::kIsTimeBasedFieldNumber;
 const int InitialMessage::kStepSizeFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -444,24 +446,10 @@ bool InitialMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // bool is_time_based = 4;
+      // int32 step_size = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, &is_time_based_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // int32 step_size = 5;
-      case 5: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
@@ -518,14 +506,9 @@ void InitialMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->until(), output);
   }
 
-  // bool is_time_based = 4;
-  if (this->is_time_based() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->is_time_based(), output);
-  }
-
-  // int32 step_size = 5;
+  // int32 step_size = 4;
   if (this->step_size() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->step_size(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->step_size(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -563,14 +546,9 @@ void InitialMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->until(), target);
   }
 
-  // bool is_time_based = 4;
-  if (this->is_time_based() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->is_time_based(), target);
-  }
-
-  // int32 step_size = 5;
+  // int32 step_size = 4;
   if (this->step_size() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->step_size(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->step_size(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -611,12 +589,7 @@ size_t InitialMessage::ByteSizeLong() const {
         this->until());
   }
 
-  // bool is_time_based = 4;
-  if (this->is_time_based() != 0) {
-    total_size += 1 + 1;
-  }
-
-  // int32 step_size = 5;
+  // int32 step_size = 4;
   if (this->step_size() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -660,9 +633,6 @@ void InitialMessage::MergeFrom(const InitialMessage& from) {
   if (from.until() != 0) {
     set_until(from.until());
   }
-  if (from.is_time_based() != 0) {
-    set_is_time_based(from.is_time_based());
-  }
   if (from.step_size() != 0) {
     set_step_size(from.step_size());
   }
@@ -696,7 +666,6 @@ void InitialMessage::InternalSwap(InitialMessage* other) {
     GetArenaNoVirtual());
   swap(max_advance_, other->max_advance_);
   swap(until_, other->until_);
-  swap(is_time_based_, other->is_time_based_);
   swap(step_size_, other->step_size_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
@@ -1318,6 +1287,9 @@ void SynchronisationMessage::InitAsDefaultInstance() {
 const int SynchronisationMessage::kMsgTypeFieldNumber;
 const int SynchronisationMessage::kMsgIdFieldNumber;
 const int SynchronisationMessage::kSimTimeFieldNumber;
+const int SynchronisationMessage::kMaxAdvanceFieldNumber;
+const int SynchronisationMessage::kTimeoutFieldNumber;
+const int SynchronisationMessage::kTimeoutMsgIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 SynchronisationMessage::SynchronisationMessage()
@@ -1335,17 +1307,22 @@ SynchronisationMessage::SynchronisationMessage(const SynchronisationMessage& fro
   if (from.msg_id().size() > 0) {
     msg_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.msg_id_);
   }
+  timeout_msg_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.timeout_msg_id().size() > 0) {
+    timeout_msg_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.timeout_msg_id_);
+  }
   ::memcpy(&msg_type_, &from.msg_type_,
-    static_cast<size_t>(reinterpret_cast<char*>(&sim_time_) -
-    reinterpret_cast<char*>(&msg_type_)) + sizeof(sim_time_));
+    static_cast<size_t>(reinterpret_cast<char*>(&timeout_) -
+    reinterpret_cast<char*>(&msg_type_)) + sizeof(timeout_));
   // @@protoc_insertion_point(copy_constructor:SynchronisationMessage)
 }
 
 void SynchronisationMessage::SharedCtor() {
   msg_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timeout_msg_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&msg_type_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&sim_time_) -
-      reinterpret_cast<char*>(&msg_type_)) + sizeof(sim_time_));
+      reinterpret_cast<char*>(&timeout_) -
+      reinterpret_cast<char*>(&msg_type_)) + sizeof(timeout_));
 }
 
 SynchronisationMessage::~SynchronisationMessage() {
@@ -1355,6 +1332,7 @@ SynchronisationMessage::~SynchronisationMessage() {
 
 void SynchronisationMessage::SharedDtor() {
   msg_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timeout_msg_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void SynchronisationMessage::SetCachedSize(int size) const {
@@ -1378,9 +1356,10 @@ void SynchronisationMessage::Clear() {
   (void) cached_has_bits;
 
   msg_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timeout_msg_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&msg_type_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&sim_time_) -
-      reinterpret_cast<char*>(&msg_type_)) + sizeof(sim_time_));
+      reinterpret_cast<char*>(&timeout_) -
+      reinterpret_cast<char*>(&msg_type_)) + sizeof(timeout_));
   _internal_metadata_.Clear();
 }
 
@@ -1439,6 +1418,50 @@ bool SynchronisationMessage::MergePartialFromCodedStream(
         break;
       }
 
+      // int32 max_advance = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &max_advance_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bool timeout = 5;
+      case 5: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &timeout_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // string timeout_msg_id = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_timeout_msg_id()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->timeout_msg_id().data(), static_cast<int>(this->timeout_msg_id().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "SynchronisationMessage.timeout_msg_id"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -1486,6 +1509,26 @@ void SynchronisationMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->sim_time(), output);
   }
 
+  // int32 max_advance = 4;
+  if (this->max_advance() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->max_advance(), output);
+  }
+
+  // bool timeout = 5;
+  if (this->timeout() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->timeout(), output);
+  }
+
+  // string timeout_msg_id = 6;
+  if (this->timeout_msg_id().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->timeout_msg_id().data(), static_cast<int>(this->timeout_msg_id().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "SynchronisationMessage.timeout_msg_id");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      6, this->timeout_msg_id(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -1522,6 +1565,27 @@ void SynchronisationMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->sim_time(), target);
   }
 
+  // int32 max_advance = 4;
+  if (this->max_advance() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->max_advance(), target);
+  }
+
+  // bool timeout = 5;
+  if (this->timeout() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->timeout(), target);
+  }
+
+  // string timeout_msg_id = 6;
+  if (this->timeout_msg_id().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->timeout_msg_id().data(), static_cast<int>(this->timeout_msg_id().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "SynchronisationMessage.timeout_msg_id");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        6, this->timeout_msg_id(), target);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
@@ -1546,6 +1610,13 @@ size_t SynchronisationMessage::ByteSizeLong() const {
         this->msg_id());
   }
 
+  // string timeout_msg_id = 6;
+  if (this->timeout_msg_id().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->timeout_msg_id());
+  }
+
   // .SynchronisationMessage.MsgType msg_type = 1;
   if (this->msg_type() != 0) {
     total_size += 1 +
@@ -1557,6 +1628,18 @@ size_t SynchronisationMessage::ByteSizeLong() const {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->sim_time());
+  }
+
+  // int32 max_advance = 4;
+  if (this->max_advance() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->max_advance());
+  }
+
+  // bool timeout = 5;
+  if (this->timeout() != 0) {
+    total_size += 1 + 1;
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -1590,11 +1673,21 @@ void SynchronisationMessage::MergeFrom(const SynchronisationMessage& from) {
 
     msg_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.msg_id_);
   }
+  if (from.timeout_msg_id().size() > 0) {
+
+    timeout_msg_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.timeout_msg_id_);
+  }
   if (from.msg_type() != 0) {
     set_msg_type(from.msg_type());
   }
   if (from.sim_time() != 0) {
     set_sim_time(from.sim_time());
+  }
+  if (from.max_advance() != 0) {
+    set_max_advance(from.max_advance());
+  }
+  if (from.timeout() != 0) {
+    set_timeout(from.timeout());
   }
 }
 
@@ -1624,8 +1717,12 @@ void SynchronisationMessage::InternalSwap(SynchronisationMessage* other) {
   using std::swap;
   msg_id_.Swap(&other->msg_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
+  timeout_msg_id_.Swap(&other->timeout_msg_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
   swap(msg_type_, other->msg_type_);
   swap(sim_time_, other->sim_time_);
+  swap(max_advance_, other->max_advance_);
+  swap(timeout_, other->timeout_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
