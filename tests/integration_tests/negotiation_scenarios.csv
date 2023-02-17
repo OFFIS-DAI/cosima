@@ -1,0 +1,6 @@
+scenarioID,network,until,number of agents,threshold,checkInboxInterval,disconnects,reconnects,events,messages,errors,maxAdvance,disconnect,reconnect,lastEvent
+1,LargeLTENetwork,10000,49,700,50,,,17659.0,192.0,6.0,12.0,0.0,0.0,3.0050001
+2,LargeLTENetwork,10000,25,350,50,,,17659.0,192.0,6.0,12.0,0.0,0.0,3.0050001
+3,LargeLTENetwork,10000,50,700,100,,,17659.0,192.0,6.0,12.0,0.0,0.0,3.0050001
+4,LargeLTENetwork,10000,25,350,100,,,17659.0,192.0,6.0,12.0,0.0,0.0,3.0050001
+

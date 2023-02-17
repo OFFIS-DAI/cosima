@@ -22,7 +22,7 @@ import modules.MosaikSchedulerModule;
 import modules.MosaikScenarioManager;
 
 
-network MosaikNetwork
+network CloudNetwork
 {
     @display("bgb=998.7494,586.0717;bgg=1;bgi=background/streetmap");
 

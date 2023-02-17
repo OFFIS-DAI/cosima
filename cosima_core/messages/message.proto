@@ -4,8 +4,9 @@ message InitialMessage {
     string msg_id = 1;
     int32 max_advance = 2;
     int32 until = 3;
-    bool is_time_based = 4;
-    int32 step_size = 5;
+    int32 step_size = 4;
+    string logging_level = 5;
+    int32 max_byte_size_per_msg_group = 6;
   }
 
   message InfoMessage {
@@ -17,7 +18,6 @@ message InitialMessage {
     int32 size = 6;
     string content = 7;
     int32 creation_time = 8;
-    bool is_valid = 9;
   }
 
   message SynchronisationMessage {
@@ -29,6 +29,9 @@ message InitialMessage {
     MsgType msg_type = 1;
     string msg_id = 2;
     int32 sim_time = 3;
+    int32 max_advance = 4;
+    bool timeout = 5;
+    string timeout_msg_id = 6;
   }
 
   message InfrastructureMessage {
@@ -49,6 +52,8 @@ message CosimaMsgGroup {
   repeated SynchronisationMessage synchronisation_messages = 3;
   repeated InfrastructureMessage infrastructure_messages = 4;
   int32 current_mosaik_step = 5;
+  int32 number_of_message_groups = 6;
+  int32 number_of_messages = 7;
 }
 
 

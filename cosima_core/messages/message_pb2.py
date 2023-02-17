@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x16messages/message.proto\"n\n\x0eInitialMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\r\n\x05until\x18\x03 \x01(\x05\x12\x15\n\ris_time_based\x18\x04 \x01(\x08\x12\x11\n\tstep_size\x18\x05 \x01(\x05\"\xae\x01\n\x0bInfoMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x0e\n\x06sender\x18\x04 \x01(\t\x12\x10\n\x08receiver\x18\x05 \x01(\t\x12\x0c\n\x04size\x18\x06 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x07 \x01(\t\x12\x15\n\rcreation_time\x18\x08 \x01(\x05\x12\x10\n\x08is_valid\x18\t \x01(\x08\"\xae\x01\n\x16SynchronisationMessage\x12\x31\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1f.SynchronisationMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\"?\n\x07MsgType\x12\x0f\n\x0bMAX_ADVANCE\x10\x00\x12\x0b\n\x07WAITING\x10\x01\x12\x16\n\x12TRANSMISSION_ERROR\x10\x02\"\xd2\x01\n\x15InfrastructureMessage\x12\x30\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1e.InfrastructureMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x15\n\rchange_module\x18\x04 \x01(\t\x12$\n\x1c\x63onnection_change_successful\x18\x05 \x01(\x08\"(\n\x07MsgType\x12\x0e\n\nDISCONNECT\x10\x00\x12\r\n\tRECONNECT\x10\x01\"\xf1\x01\n\x0e\x43osimaMsgGroup\x12)\n\x10initial_messages\x18\x01 \x03(\x0b\x32\x0f.InitialMessage\x12#\n\rinfo_messages\x18\x02 \x03(\x0b\x32\x0c.InfoMessage\x12\x39\n\x18synchronisation_messages\x18\x03 \x03(\x0b\x32\x17.SynchronisationMessage\x12\x37\n\x17infrastructure_messages\x18\x04 \x03(\x0b\x32\x16.InfrastructureMessage\x12\x1b\n\x13\x63urrent_mosaik_step\x18\x05 \x01(\x05\x62\x06proto3')
+  serialized_pb=_b('\n\x16messages/message.proto\"\x93\x01\n\x0eInitialMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\r\n\x05until\x18\x03 \x01(\x05\x12\x11\n\tstep_size\x18\x04 \x01(\x05\x12\x15\n\rlogging_level\x18\x05 \x01(\t\x12#\n\x1bmax_byte_size_per_msg_group\x18\x06 \x01(\x05\"\x9c\x01\n\x0bInfoMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x0e\n\x06sender\x18\x04 \x01(\t\x12\x10\n\x08receiver\x18\x05 \x01(\t\x12\x0c\n\x04size\x18\x06 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x07 \x01(\t\x12\x15\n\rcreation_time\x18\x08 \x01(\x05\"\xec\x01\n\x16SynchronisationMessage\x12\x31\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1f.SynchronisationMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x13\n\x0bmax_advance\x18\x04 \x01(\x05\x12\x0f\n\x07timeout\x18\x05 \x01(\x08\x12\x16\n\x0etimeout_msg_id\x18\x06 \x01(\t\"?\n\x07MsgType\x12\x0f\n\x0bMAX_ADVANCE\x10\x00\x12\x0b\n\x07WAITING\x10\x01\x12\x16\n\x12TRANSMISSION_ERROR\x10\x02\"\xd2\x01\n\x15InfrastructureMessage\x12\x30\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1e.InfrastructureMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x15\n\rchange_module\x18\x04 \x01(\t\x12$\n\x1c\x63onnection_change_successful\x18\x05 \x01(\x08\"(\n\x07MsgType\x12\x0e\n\nDISCONNECT\x10\x00\x12\r\n\tRECONNECT\x10\x01\"\xaf\x02\n\x0e\x43osimaMsgGroup\x12)\n\x10initial_messages\x18\x01 \x03(\x0b\x32\x0f.InitialMessage\x12#\n\rinfo_messages\x18\x02 \x03(\x0b\x32\x0c.InfoMessage\x12\x39\n\x18synchronisation_messages\x18\x03 \x03(\x0b\x32\x17.SynchronisationMessage\x12\x37\n\x17infrastructure_messages\x18\x04 \x03(\x0b\x32\x16.InfrastructureMessage\x12\x1b\n\x13\x63urrent_mosaik_step\x18\x05 \x01(\x05\x12 \n\x18number_of_message_groups\x18\x06 \x01(\x05\x12\x1a\n\x12number_of_messages\x18\x07 \x01(\x05\x62\x06proto3')
 )
 
 
@@ -45,8 +45,8 @@ _SYNCHRONISATIONMESSAGE_MSGTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=427,
-  serialized_end=490,
+  serialized_start=509,
+  serialized_end=572,
 )
 _sym_db.RegisterEnumDescriptor(_SYNCHRONISATIONMESSAGE_MSGTYPE)
 
@@ -67,8 +67,8 @@ _INFRASTRUCTUREMESSAGE_MSGTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=663,
-  serialized_end=703,
+  serialized_start=745,
+  serialized_end=785,
 )
 _sym_db.RegisterEnumDescriptor(_INFRASTRUCTUREMESSAGE_MSGTYPE)
 
@@ -102,15 +102,22 @@ _INITIALMESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='is_time_based', full_name='InitialMessage.is_time_based', index=3,
-      number=4, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='step_size', full_name='InitialMessage.step_size', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='step_size', full_name='InitialMessage.step_size', index=4,
-      number=5, type=5, cpp_type=1, label=1,
+      name='logging_level', full_name='InitialMessage.logging_level', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_byte_size_per_msg_group', full_name='InitialMessage.max_byte_size_per_msg_group', index=5,
+      number=6, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -127,8 +134,8 @@ _INITIALMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=26,
-  serialized_end=136,
+  serialized_start=27,
+  serialized_end=174,
 )
 
 
@@ -195,13 +202,6 @@ _INFOMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='is_valid', full_name='InfoMessage.is_valid', index=8,
-      number=9, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -214,8 +214,8 @@ _INFOMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=139,
-  serialized_end=313,
+  serialized_start=177,
+  serialized_end=333,
 )
 
 
@@ -247,6 +247,27 @@ _SYNCHRONISATIONMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_advance', full_name='SynchronisationMessage.max_advance', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='timeout', full_name='SynchronisationMessage.timeout', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='timeout_msg_id', full_name='SynchronisationMessage.timeout_msg_id', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -260,8 +281,8 @@ _SYNCHRONISATIONMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=316,
-  serialized_end=490,
+  serialized_start=336,
+  serialized_end=572,
 )
 
 
@@ -320,8 +341,8 @@ _INFRASTRUCTUREMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=493,
-  serialized_end=703,
+  serialized_start=575,
+  serialized_end=785,
 )
 
 
@@ -367,6 +388,20 @@ _COSIMAMSGGROUP = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='number_of_message_groups', full_name='CosimaMsgGroup.number_of_message_groups', index=5,
+      number=6, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='number_of_messages', full_name='CosimaMsgGroup.number_of_messages', index=6,
+      number=7, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -379,8 +414,8 @@ _COSIMAMSGGROUP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=706,
-  serialized_end=947,
+  serialized_start=788,
+  serialized_end=1091,
 )
 
 _SYNCHRONISATIONMESSAGE.fields_by_name['msg_type'].enum_type = _SYNCHRONISATIONMESSAGE_MSGTYPE

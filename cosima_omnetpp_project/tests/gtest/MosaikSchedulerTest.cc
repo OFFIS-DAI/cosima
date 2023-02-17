@@ -167,17 +167,6 @@ TEST_F(MosaikSchedulerTest, TestSendToMosaikWithDelayMsg) {
     delete delayMsg;
 }
 
-/**
- * Test method sendToMosaik().
- * Method is called with control message.
- * asserted result: current pmsg group for mosaik contains two elements (one of the test before and one from this).
- */
-TEST_F(MosaikSchedulerTest, TestSendToMosaikWithCtrlEvent) {
-    MosaikCtrlEvent *event = createValidMosaikCtrlEvent();
-    scheduler->sendToMosaik(event);
-    ASSERT_EQ(scheduler->getNumberOfMessagesInPMSGGroup(), 2);
-    delete event;
-}
 
 /**
  * Test method getPortForModule().

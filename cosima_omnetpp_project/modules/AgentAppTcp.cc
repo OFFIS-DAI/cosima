@@ -44,7 +44,7 @@ AgentAppTcp::~AgentAppTcp() {
         std::list<Timer * > timerForModule = iter->second;
         std::list<Timer *>::iterator it;
         for (it = timerForModule.begin(); it != timerForModule.end(); ++it) {
-            scheduler->log(nameStr + ": cancel timer for client with ID " + std::to_string(iter->first));
+            scheduler->log(nameStr + ": cancel timer for client with ID " + std::to_string(iter->first), "debug");
             cancelAndDelete(*it);
         }
         ++iter;
@@ -104,12 +104,14 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
         auto receiverPort = scheduler->getPortForModule(receiverName);
 
         if (receiverPort == -1) {
+            sendTransmissionErrorNotification(receiverName, msgId, false);
             delete msg;
             return false;
         }
-        scheduler->log(nameStr + ": send message with content '" +
-                content + "' and msgId " + msgId + " to " + receiverName + " with port " + std::to_string(receiverPort) + " at time "
+        scheduler->log(nameStr + ": send message " + msgId + " to " + receiverName + " with port " + std::to_string(receiverPort) + " at time "
                 + std::to_string(mosaikSimTime));
+        std::string contentStr = content;
+        scheduler->log("content is: " + contentStr);
 
         // make packet
         auto packet = new inet::Packet();
@@ -133,6 +135,7 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
         timerMsg->setTimerType(0);
         timerMsg->setReceiverName(receiverName);
         timerMsg->setReceiverPort(receiverPort);
+        timerMsg->setMessageId(msgId);
 
         // schedule timer as self message
         scheduleAt(simTime(), timerMsg);
@@ -177,19 +180,16 @@ Timer *AgentAppTcp::getTimerForModuleId(int clientId) {
 }
 
 void AgentAppTcp::setPacketForModuleId(int clientId, inet::Packet *packet) {
-    packetToClient[clientId] = packet;
+    packetToClient[clientId].push_back(packet);
 }
 
 inet::Packet *AgentAppTcp::getPacketForModuleId(int clientId) {
     auto iter = packetToClient.begin();
 
-    // if timer is already created for client id, return it
-    while (iter != packetToClient.end()) {
-        if (iter->first == clientId) {
-            auto packet = packetToClient[clientId];
-            return packet;
-        }
-        ++iter;
+    if (packetToClient.count(clientId) and packetToClient[clientId].size() > 0) {
+        auto packet = packetToClient[clientId].front();
+        packetToClient[clientId].pop_front();
+        return packet;
     }
     return nullptr;
 }
@@ -215,11 +215,12 @@ void AgentAppTcp::handleTimer(cMessage *msg) {
             break;
 
         case 0:
-            connect(recvtimer->getReceiverName(), recvtimer->getReceiverPort());
+            connect(recvtimer->getReceiverName(), recvtimer->getReceiverPort(), recvtimer->getMessageId());
             break;
 
         case 1:
-            sendData(recvtimer->getReceiverName());
+            waitingForPortsToConnectTo.erase(recvtimer->getReceiverPort());
+            sendData(recvtimer->getReceiverName(), recvtimer->getMessageId());
             break;
 
         case 2:
@@ -229,15 +230,44 @@ void AgentAppTcp::handleTimer(cMessage *msg) {
         case 3:
             renew(recvtimer->getReceiverName());
             break;
+
+        case 4:
+            connectTimeout(recvtimer->getReceiverName(), recvtimer->getMessageId(), recvtimer->getReceiverPort());
+            break;
+
         }
     } else {
         throw cRuntimeError("AgentAppTcp: called handleTimer with non-Timer object.");
     }
 }
 
+void AgentAppTcp::sendTransmissionErrorNotification(const char *receiverName, const char *msgId, bool timeout=false) {
+    MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+    notification_message->setTransmission_error(true);
+    notification_message->setSender(this->getParentModule()->getName());
+    notification_message->setReceiver(receiverName);
+    notification_message->setTimeout(timeout);
+    notification_message->setMsgId(msgId);
+    scheduler->sendToMosaik(notification_message);
+}
 
-void AgentAppTcp::connect(const char *receiverName, int receiverPort)
+void AgentAppTcp::connectTimeout(const char *receiverName, const char *msgId, int receiverPort) {
+    if (std::find(waitingForPortsToConnectTo.begin(), waitingForPortsToConnectTo.end(), receiverPort) != waitingForPortsToConnectTo.end()) {
+        scheduler->log(nameStr + " received connect timeout for " + receiverName + " with message ID " + msgId, "debug");
+
+        // case 1: called connect because received connect timeout and AgentApp is still waiting for connect
+        // -> send transmission error to mosaik and don't wait any longer
+        scheduler->log(nameStr + ": received connect timeout information for " + receiverName + " at time " + simTime().str(), "debug");
+        sendTransmissionErrorNotification(receiverName, msgId, true);
+        waitingForPortsToConnectTo.erase(receiverPort);
+    }
+}
+
+
+void AgentAppTcp::connect(const char *receiverName, int receiverPort, const char *messageId)
 {
+    // case: received "normal" connect timer
+    // -> connect to given receiver
     inet::TcpSocket clientSocket;
     int clientId = getModuleIdByName(receiverName);
     if(clientSockets.find(clientId) != clientSockets.end()) {
@@ -275,25 +305,36 @@ void AgentAppTcp::connect(const char *receiverName, int receiverPort)
         inet::L3AddressResolver().tryResolve(receiverName, destination);
         if (destination.isUnspecified()) {
             scheduler->log(nameStr + ": connecting to " + receiverName + " and port " + std::to_string(receiverPort) +
-                    ": cannot resolve destination address");
+                    ": cannot resolve destination address", "warning");
         }
         else {
             std::string receiverNameStr = receiverName;
-            scheduler->log(nameStr + ": connecting to " + receiverNameStr + "(" + destination.str() + ") and port " + std::to_string(receiverPort));
+            std::string messageIdStr = messageId;
+            scheduler->log(nameStr + ": connecting to " + receiverNameStr + "(" + destination.str() + ") and port " + std::to_string(receiverPort), "debug");
 
             clientSocket.connect(destination, receiverPort);
+            waitingForPortsToConnectTo.insert(receiverPort);
 
             numSessions++;
             emit(connectSignal, 1L);
+
+
+            auto timerMsg = getTimerForModuleId(clientId);
+            // type 4 means connectTimeout
+            timerMsg->setTimerType(4);
+            timerMsg->setReceiverName(receiverNameStr.c_str());
+            timerMsg->setReceiverPort(receiverPort);
+            timerMsg->setMessageId(messageIdStr.c_str());
+
+            // schedule timer as self message
+            scheduleAt(simTime() + 3.1, timerMsg);
+
         }
         clientSockets[clientId] = clientSocket;
     } catch(...) {
-        scheduler->log(nameStr + ": Error when trying to resolve L3 address");
-        MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
-        notification_message->setTransmission_error(true);
-        notification_message->setSender(this->getParentModule()->getName());
-        notification_message->setReceiver(receiverName);
-        scheduler->sendToMosaik(notification_message);
+        scheduler->log(nameStr + ": Error when trying to resolve L3 address", "warning");
+        sendTransmissionErrorNotification(receiverName, messageId);
+        waitingForPortsToConnectTo.erase(receiverPort);
     }
 }
 
@@ -319,13 +360,14 @@ void AgentAppTcp::socketEstablished(inet::TcpSocket *socket) {
         // type 1 means send
         timerMsg->setTimerType(1);
         timerMsg->setReceiverName(moduleName.c_str());
+        timerMsg->setReceiverPort(socket->getRemotePort());
         scheduleAt(simTime(), timerMsg);
     }
 }
 
 void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
         inet::Packet *msg, bool urgent) {
-    scheduler->log(nameStr + ": socket data arrived.");
+    scheduler->log(nameStr + ": socket data arrived.", "debug");
     auto copy = msg->dup();
     simtime_t delay;
     auto delay_d = 0.0;
@@ -353,21 +395,75 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                 }
                 auto length = chunk->getChunkLength();
 
-                if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
-                    replyContent =
-                            recvPacket->peekAt<MosaikApplicationChunk>(offset, length)->getContent();
-                    simtime_t delay =
-                            simTime() - recvPacket->peekAt<MosaikApplicationChunk>(offset, length)->getCreationTime();
+                if (chunk->getClassName() == std::string("inet::SliceChunk")) {
+                    auto newPacket = recvPacket->peekData<inet::SliceChunk>(inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                    auto encapsulatedChunk = newPacket->getChunk();
+                    if (encapsulatedChunk->getClassName() != std::string("MosaikApplicationChunk")) {
+                        if (encapsulatedChunk->getClassName() == std::string("inet::SequenceChunk")) {
+                            inet::SequenceChunk *encapsulatedSequenceChunk = dynamic_cast<inet::SequenceChunk *>(encapsulatedChunk.get());
+                            auto queue = encapsulatedSequenceChunk->getChunks();
+                            for (int i=0; i < queue.size(); i++) {
+                                auto item = queue[i];
+                                auto itemget = item.get();
+                                if (itemget->getClassName() == std::string("inet::SliceChunk")) {
+                                    const inet::SliceChunk *encapsulatedSliceChunk = dynamic_cast<const inet::SliceChunk *>(itemget);
+                                    auto appChunkInSliceChunk = encapsulatedSliceChunk->getChunk();
+                                    auto appChunk = appChunkInSliceChunk->peek<MosaikApplicationChunk>(inet::b(0), appChunkInSliceChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                                    bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
+                                    if (alreadyReceived) {
+                                        std::cout << "already received msg " << appChunk->getMsgId() << endl;
+                                        return;
+                                    }
+                                    answer->setContent(appChunk->getContent());
+                                    answer->setReceiver(appChunk->getReceiver());
+                                    simtime_t delay =
+                                            simTime() - appChunk->getCreationTime();
+                                    auto delay_i = 0U;
+                                    delay_i = ceil(delay.dbl()*1000);
+                                    answer->setDelay(delay_i);
+                                    answer->setSender(appChunk->getSender());
+                                    answer->setMsgId(appChunk->getMsgId());
+                                    answer->setCreationTime(appChunk->getCreationTimeMosaik());
+                                    foundApplicationChunk = true;
+                                    receivedMsgIds.push_back(appChunk->getMsgId());
+                                    sendReply(answer);
+                                }
+
+                            }
+                        }
+                    } else {
+                        auto appChunk = encapsulatedChunk->peek<MosaikApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                        bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
+                        if (alreadyReceived) {
+                            std::cout << "already received msg " << appChunk->getMsgId() << endl;
+                            return;
+                        }
+                        answer->setContent(appChunk->getContent());
+                        answer->setReceiver(appChunk->getReceiver());
+                        simtime_t delay =
+                                simTime() - appChunk->getCreationTime();
+                        auto delay_i = 0U;
+                        delay_i = ceil(delay.dbl()*1000);
+                        answer->setDelay(delay_i);
+                        answer->setSender(appChunk->getSender());
+                        answer->setMsgId(appChunk->getMsgId());
+                        answer->setCreationTime(appChunk->getCreationTimeMosaik());
+                        foundApplicationChunk = true;
+                        receivedMsgIds.push_back(appChunk->getMsgId());
+                        sendReply(answer);
+                    }
+
+
+                } else if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
+                    auto mosaikApplicationChunk = recvPacket->peekAt<MosaikApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                    replyContent = mosaikApplicationChunk->getContent();
+                    simtime_t delay = simTime() - mosaikApplicationChunk->getCreationTime();
                     auto delay_i = 0U;
                     delay_i = ceil(delay.dbl()*1000);
-                    replyReceiver =
-                            recvPacket->peekAt<MosaikApplicationChunk>(offset, length)->getReceiver();
-                    auto replySender =
-                            recvPacket->peekAt<MosaikApplicationChunk>(offset, length)->getSender();
-                    auto msgId =
-                            recvPacket->peekAt<MosaikApplicationChunk>(offset, length)->getMsgId();
-                    auto creationTime =
-                            recvPacket->peekAt<MosaikApplicationChunk>(offset, length)->getCreationTimeMosaik();
+                    replyReceiver = mosaikApplicationChunk->getReceiver();
+                    auto replySender = mosaikApplicationChunk->getSender();
+                    auto msgId = mosaikApplicationChunk->getMsgId();
+                    auto creationTime = mosaikApplicationChunk->getCreationTimeMosaik();
                     answer->setContent(replyContent);
                     answer->setReceiver(replyReceiver);
                     answer->setDelay(delay_i);
@@ -375,10 +471,15 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                     answer->setMsgId(msgId);
                     answer->setCreationTime(creationTime);
                     foundApplicationChunk = true;
+                    receivedMsgIds.push_back(msgId);
                     sendReply(answer);
 
                 } else {
                     offset += chunk->getChunkLength();
+                    if (offset >= recvPacket->getTotalLength()) {
+                        scheduler->log("Couldn't find MosaikApplicationChunk in packet: " + recvPacket->str(), "warning");
+                        break;
+                    }
                     answer->setDelay(delay_d);
                 }
             }
@@ -388,29 +489,34 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
     }
 }
 
-void AgentAppTcp::sendData(const char *receiverName) {
+void AgentAppTcp::sendData(const char *receiverName, const char *messageId) {
     int clientId = getModuleIdByName(receiverName);
     if(clientSockets.find(clientId) != clientSockets.end()) {
         inet::TcpSocket clientSocket;
         clientSocket = clientSockets[clientId];
 
-        inet::Packet *packet;
-        packet = getPacketForModuleId(clientId);
+        auto packet = getPacketForModuleId(clientId);
+
+        if (packet == nullptr) {
+            scheduler->log(nameStr + " has not saved packet for clientId " + std::to_string(clientId), "warning");
+        }
 
         if (packet) {
-            inet::Packet *sending = packet->dup();
+            inet::Packet *sending;
+            sending = packet->dup();
             sending->setTimestamp(packet->getTimestamp());
             int numBytes = sending->getByteLength();
             emit(inet::packetSentSignal, sending);
-
             clientSocket.send(sending);
             packetsSent++;
             bytesSent += numBytes;
-            delete packet;
+            if (packet->getOwner() == this) {
+                delete packet;
+            }
         }
     } else {
-        scheduler->log(nameStr + ": socket not connected to " + receiverName);
-        connect(receiverName, scheduler->getPortForModule(receiverName));
+        scheduler->log(nameStr + ": socket not connected to " + receiverName, "warning");
+        connect(receiverName, scheduler->getPortForModule(receiverName), messageId);
     }
 
 }
@@ -421,7 +527,7 @@ void AgentAppTcp::sendReply(MosaikSchedulerMessage *reply) {
 }
 
 void AgentAppTcp::socketClosed(inet::TcpSocket *socket) {
-    scheduler->log(nameStr + ": socket closed.");
+    scheduler->log(nameStr + ": socket closed.", "debug");
 
     TcpAppBase::socketClosed(socket);
     if (operationalState == State::STOPPING_OPERATION && !this->socket.isOpen())
@@ -429,13 +535,8 @@ void AgentAppTcp::socketClosed(inet::TcpSocket *socket) {
 }
 
 void AgentAppTcp::socketFailure(inet::TcpSocket *socket, int code) {
-    scheduler->log(nameStr + ": socket failure with code:" + std::to_string(code));
+    scheduler->log(nameStr + ": socket failure with code:" + std::to_string(code), "debug");
     TcpAppBase::socketFailure(socket, code);
-    auto notificationMessage = new MosaikSchedulerMessage();
-    notificationMessage->setTransmission_error(true);
-    notificationMessage->setSender(this->getParentModule()->getName());
-    scheduler->sendToMosaik(notificationMessage);
-
 }
 
 void AgentAppTcp::handleStartOperation(inet::LifecycleOperation *operation) {

@@ -22,7 +22,7 @@
 class MosaikScheduler : public omnetpp::cScheduler
 {
 public:
-     /**
+    /**
      * Method can be called from modules in order to get matching port for module name.
      */
     int getPortForModule(std::string module_name);
@@ -33,7 +33,6 @@ public:
     std::list<omnetpp::cModule*> getModuleList();
     omnetpp::cModule *getSchedulerModule() { return schedulerModule; }
     bool socketToMosaikInitialized() { return listenerSocket != -1; }
-    int getNumberOfMessagesInPMSGGroup();
 
 protected:
     omnetpp::cModule *schedulerModule;
@@ -45,14 +44,7 @@ protected:
     // TCP port to mosaik
     auto static const PORT = 4242;
 
-    // socket parameter
-    int64_t baseTime; // in microseconds, as returned by opp_get_monotonic_clock_usecs()
     SOCKET listenerSocket;
-    SOCKET connSocket;
-    char recvBuffer[10000];
-    int recvBufferSize;
-    int *numBytesPtr;
-    size_t numOfBytes;
 
     // registered modules that represent agents in mosaik
     int numModules;
@@ -67,13 +59,10 @@ protected:
      */
     virtual void setupListener();
     /**
-     * Receive data from socket.
-     */
-    virtual bool receiveWithTimeout(long usec);
-    /**
      * Receive data from socket until a given time.
      */
-    virtual int receiveUntil(int64_t targetTime);
+    virtual void receive();
+
 
 public:
     /**
@@ -109,6 +98,8 @@ public:
     void printCurrentTime();
 
     void log(std::string info);
+
+    void log(std::string info, std::string logLevel);
 
     /**
      * To be called from the module which wishes to receive data from the
@@ -174,12 +165,12 @@ public:
     /**
      * Send message group back to mosaik.
      */
-    virtual void sendMsgGroupToMosaik();
+    virtual void sendMsgGroupToMosaik(int currentMosaikStep, bool isWaitingMsg);
 
     /**
      * Handle message from mosaik
      */
-    bool handleMsgFromMosaik();
+    int handleMsgFromMosaik(std::vector<char> data);
     /**
      * Setter methods.
      */

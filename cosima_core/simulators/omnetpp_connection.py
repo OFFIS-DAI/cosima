@@ -1,69 +1,137 @@
-import sys
+import socket
 import time
+import threading
+import socketserver
+import os
 
 from cosima_core.messages.message_pb2 import CosimaMsgGroup
-import threading
-
 from cosima_core.util.util_functions import log
+import cosima_core.util.general_config as cfg
 
 
 class OmnetppConnection:
 
-    def __init__(self, observer_port, client_socket):
+    def __init__(self, observer_port):
         self.observer_port = observer_port
-        self.client_socket = client_socket
         self._servername = "127.0.0.1"
+        self._listener_port = 4243
         self.stored_messages = []
+        self.expected_messages = 0
         self._wait_for_messages = True
-        self._closed_due_to_timeout = False
-        self.omnet_thread = None
+        self.server_thread = None
+        self._done_receiving = True
+        self.current_received_msgs_groups = 0
+        self.server = socketserver.TCPServer((self._servername, self._listener_port), self.handle_server_connection())
 
     def start_connection(self):
-        self.client_socket.connect((self._servername, self.observer_port))
-        self.omnet_thread = threading.Thread(target=self.wait_for_msgs)
-        self.omnet_thread.daemon = False
-        self.omnet_thread.start()
+        # Create a new thread to run the server
+        self.server_thread = threading.Thread(target=self.server.serve_forever)
+        self.server_thread.daemon = True
 
-    @property
-    def is_still_connected(self):
-        return self._wait_for_messages and not self._closed_due_to_timeout
+        # Start the server thread
+        self.server_thread.start()
 
     def close_connection(self):
         log('close connection called')
         self._wait_for_messages = False
         try:
-            self.omnet_thread.join()
-        except RuntimeError:
+            self.server.server_close()
+            self.server.shutdown()
+        except Exception as e:
+            print(f'Exception: {e}')
             pass
-
-    def wait_for_msgs(self):
-        while self._wait_for_messages:
-            time.sleep(1)
-            try:
-                data = self.client_socket.recv(4096)
-                msg_group = CosimaMsgGroup()
-                msg_group.ParseFromString(data)
-                for msg in msg_group.info_messages:
-                    self.stored_messages.append(msg)
-                for msg in msg_group.infrastructure_messages:
-                    self.stored_messages.append(msg)
-                for msg in msg_group.synchronisation_messages:
-                    self.stored_messages.append(msg)
-            except Exception as current_exception:
-                log(current_exception)
-                self._closed_due_to_timeout = False
-                log("Connection to OMNeT++ closed.")
-                self.close_connection()
-
-    def send_message(self, msg):
         try:
-            self.client_socket.connect((self._servername, self.observer_port))
-        except Exception:
+            self.server_thread.join()
+        except Exception as e:
+            print(f'Exception: {e}')
             pass
+        os.system('killall -9 cosima_omnetpp_project')
 
-        self.client_socket.send(msg)
+    def send_messages(self, messages):
+        sender_threads = list()
+        for message in messages:
+            sender_thread = threading.Thread(target=self.sender, args=(message,), daemon=True)
+            sender_threads.append(sender_thread)
+            sender_thread.start()
+
+        for index, thread in enumerate(sender_threads):
+            thread.join()
+
+    def sender(self, message):
+        sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        time.sleep(1)
+        sender_socket.connect((self._servername, self.observer_port))
+        sender_socket.send(message)
+        sender_socket.close()
 
     def return_messages(self):
+        time.sleep(0.1)
+        if not self._done_receiving:
+            return []
+        if not self.expected_messages == len(self.stored_messages):
+            return []
         msgs = self.stored_messages
         self.stored_messages = []
         return msgs
+
+    def process_data(self, data):
+        """
+        Process received bytes from OMNeT++. Create msgs groups and store data.
+        """
+        self._done_receiving = False
+        if data.count(b'END') == 0:
+            raise ValueError('No separation tag in message!')
+        data_split = data.split(b'END')
+        data = data_split[0]
+        try:
+            msg_group = CosimaMsgGroup()
+            msg_group.ParseFromString(data)
+            number_of_msg_groups = msg_group.number_of_message_groups
+            self.expected_messages = msg_group.number_of_messages
+
+            self.stored_messages.extend(msg_group.info_messages)
+            self.stored_messages.extend(msg_group.infrastructure_messages)
+            self.stored_messages.extend(msg_group.synchronisation_messages)
+
+            self.current_received_msgs_groups += 1
+            if self.current_received_msgs_groups == number_of_msg_groups \
+                    and self.expected_messages == len(self.stored_messages):
+                self._done_receiving = True
+                self.current_received_msgs_groups = 0
+            elif self.current_received_msgs_groups == number_of_msg_groups:
+                print(f'Expected {self.expected_messages}, but received {len(self.stored_messages)}.')
+
+        except Exception as other_exception:
+            log(other_exception)
+            print('data: ', data)
+            self.close_connection()
+            log("Connection to OMNeT++ closed.")
+
+    def handle_server_connection(self):
+        outer_class_self = self
+
+        class CosimaTCPHandler(socketserver.BaseRequestHandler):
+            """
+            The request handler class for our server.
+            It is instantiated once per connection to the server, and must
+            override the handle() method to implement communication to the
+            client.
+            """
+
+            def handle(self):
+                outer_class_self._done_receiving = False
+                outer_class_self.current_received_msgs_groups = 0
+
+                while not outer_class_self._done_receiving:
+                    # self.request is the TCP socket connected to the client
+                    data = self.request.recv(cfg.MAX_BYTE_SIZE_PER_MSG_GROUP)
+                    if len(data) == 0:
+                        continue
+                    else:
+                        # received data, therefore process it
+                        thread = threading.Thread(target=outer_class_self.process_data(data),
+                                                  args=(), daemon=True)
+                        thread.start()
+                        thread.join()
+
+        return CosimaTCPHandler

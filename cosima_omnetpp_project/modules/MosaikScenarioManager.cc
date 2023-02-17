@@ -90,6 +90,9 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
         disconnectedModule.moduleObject = module;
         for (auto i = 0; i < module->gateCount() / 2; i++) {
             // get gates of module
+            if (not module->hasGate("ethg$i", i) or not module->hasGate("ethg$o", i)) {
+                continue;
+            }
             if(not module->gate("ethg$i", i)->isConnectedOutside() or not module->gate("ethg$o", i)->isConnectedOutside()) {
                 continue;
             }
@@ -138,7 +141,7 @@ MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName
         changedNetworkModules.push_back(disconnectedModule);
 
     } catch (...) {
-        scheduler->log("MosaikScenarioManager: ERROR when trying to disconnect " + nameStr + ".");
+        scheduler->log("MosaikScenarioManager: ERROR when trying to disconnect " + nameStr + ".", "warning");
     }
     notificationMessage->setConnection_change_successful(disconnectedGate);
 
@@ -174,7 +177,7 @@ MosaikSchedulerMessage *MosaikScenarioManager::connect(const char *moduleName) {
 
                 notificationMessage->setConnection_change_successful(true);
             } catch(...) {
-                scheduler->log("MosaikScenarioManager: ERROR when trying to reconnect " + nameStr + ".");
+                scheduler->log("MosaikScenarioManager: ERROR when trying to reconnect " + nameStr + ".", "warning");
             }
 
         }

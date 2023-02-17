@@ -28,7 +28,10 @@ private:
     inet::TcpSocket serverSocket;
     std::map<int, inet::TcpSocket> clientSockets;
     std::map<int,std::list<Timer *>> timer;
+    std::set<int> waitingForPortsToConnectTo;
     cGate *connectGate;
+
+    std::list<const char *> receivedMsgIds;
 
     std::string nameStr = "";
 
@@ -40,7 +43,7 @@ protected:
 
     MosaikScheduler *scheduler;
 
-    std::map<int, inet::Packet *> packetToClient;
+    std::map<int, std::list<inet::Packet *>> packetToClient;
 
     /**
      * Initialize module and register at Scheduler.
@@ -118,16 +121,27 @@ protected:
     /**
      * Send data over inet network.
      */
-    virtual void sendData(const char *receiver_name);
+    virtual void sendData(const char *receiver_name, const char *messageId);
     /**
      * Renew server socket for new incoming connections.
      */
     void renew(const char *receiver_name);
 
     /**
+     * Is called when AgentApp received timeout timer.
+     */
+
+    void connectTimeout(const char *receiver_name, const char *messageId, int receiver_port);
+
+    /**
      * Is called to connect to another client.
      */
-    void connect(const char *receiver_name, int receiver_port);
+    void connect(const char *receiver_name, int receiver_port, const char *messageId);
+
+    /**
+     * Send a notification to mosaik because a transmission error was detected.
+     */
+    void sendTransmissionErrorNotification(const char *receiverName, const char *msgId, bool timeout);
 
     /**
      * Is to be called at the end of the simulation.

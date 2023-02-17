@@ -82,7 +82,23 @@ void AgentAppUdp::handleMessage(cMessage *msg) {
                 }
                 auto length = chunk->getChunkLength();
 
-                if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
+                if (chunk->getClassName() == std::string("inet::SliceChunk")) {
+                    auto newPacket = packet->peekData<inet::SliceChunk>(0);
+                    auto encapsulatedChunk = newPacket->getChunk();
+                    auto appChunk = encapsulatedChunk->peek<MosaikApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength());
+                    answer->setContent(appChunk->getContent());
+                    answer->setReceiver(appChunk->getReceiver());
+                    simtime_t delay =
+                            simTime() - appChunk->getCreationTime();
+                    auto delay_i = 0U;
+                    delay_i = ceil(delay.dbl()*1000);
+                    answer->setDelay(delay_i);
+                    answer->setSender(appChunk->getSender());
+                    answer->setMsgId(appChunk->getMsgId());
+                    answer->setCreationTime(appChunk->getCreationTimeMosaik());
+                    foundApplicationChunk = true;
+
+                } else if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
                     replyContent =
                             packet->peekAt<MosaikApplicationChunk>(offset, length)->getContent();
                     auto replyReceiver =
@@ -102,6 +118,10 @@ void AgentAppUdp::handleMessage(cMessage *msg) {
                     foundApplicationChunk = true;
                 } else {
                     offset += chunk->getChunkLength();
+                    if (offset >= packet->getTotalLength()) {
+                        scheduler->log("Couldn't find MosaikApplicationChunk in packet: " + packet->str(), "warning");
+                        break;
+                    }
                     answer->setDelay(delay_i);
                 }
             }
@@ -130,9 +150,11 @@ void AgentAppUdp::handleSocketEvent(cMessage *msg) {
 
         // get corresponding port for receiver name
         int receiverPort = scheduler->getPortForModule(receiverName);
+        std::string contentStr = content;
 
-        scheduler->log(nameStr + ": send message with content '" +
-                content + "' to " + receiverName + " with port " + std::to_string(receiverPort) + " at time " + simTime().str() + " with id " + msgId);
+        scheduler->log(nameStr + ": send message " + msgId + + " to " + receiverName + " with port " + std::to_string(receiverPort) + " at time "
+                        + std::to_string(creationTime), "info");
+        scheduler->log("content is: " + contentStr);
 
         // make packet
         auto packet = new inet::Packet();
@@ -153,7 +175,7 @@ void AgentAppUdp::handleSocketEvent(cMessage *msg) {
             // send packet
             socketudp.sendTo(packet, destAddress, receiverPort);
         } catch(...) {
-            scheduler->log(nameStr + ": Error when trying to resolve L3 address");
+            scheduler->log(nameStr + ": Error when trying to resolve L3 address", "warning");
             MosaikSchedulerMessage *notificationMessage = new MosaikSchedulerMessage();
             notificationMessage->setTransmission_error(true);
             notificationMessage->setSender(nameStr.c_str());

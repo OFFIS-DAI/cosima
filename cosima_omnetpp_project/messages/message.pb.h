@@ -217,6 +217,20 @@ class InitialMessage : public ::google::protobuf::Message /* @@protoc_insertion_
   ::std::string* release_msg_id();
   void set_allocated_msg_id(::std::string* msg_id);
 
+  // string logging_level = 5;
+  void clear_logging_level();
+  static const int kLoggingLevelFieldNumber = 5;
+  const ::std::string& logging_level() const;
+  void set_logging_level(const ::std::string& value);
+  #if LANG_CXX11
+  void set_logging_level(::std::string&& value);
+  #endif
+  void set_logging_level(const char* value);
+  void set_logging_level(const char* value, size_t size);
+  ::std::string* mutable_logging_level();
+  ::std::string* release_logging_level();
+  void set_allocated_logging_level(::std::string* logging_level);
+
   // int32 max_advance = 2;
   void clear_max_advance();
   static const int kMaxAdvanceFieldNumber = 2;
@@ -229,27 +243,28 @@ class InitialMessage : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::int32 until() const;
   void set_until(::google::protobuf::int32 value);
 
-  // bool is_time_based = 4;
-  void clear_is_time_based();
-  static const int kIsTimeBasedFieldNumber = 4;
-  bool is_time_based() const;
-  void set_is_time_based(bool value);
-
-  // int32 step_size = 5;
+  // int32 step_size = 4;
   void clear_step_size();
-  static const int kStepSizeFieldNumber = 5;
+  static const int kStepSizeFieldNumber = 4;
   ::google::protobuf::int32 step_size() const;
   void set_step_size(::google::protobuf::int32 value);
+
+  // int32 max_byte_size_per_msg_group = 6;
+  void clear_max_byte_size_per_msg_group();
+  static const int kMaxByteSizePerMsgGroupFieldNumber = 6;
+  ::google::protobuf::int32 max_byte_size_per_msg_group() const;
+  void set_max_byte_size_per_msg_group(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:InitialMessage)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr msg_id_;
+  ::google::protobuf::internal::ArenaStringPtr logging_level_;
   ::google::protobuf::int32 max_advance_;
   ::google::protobuf::int32 until_;
-  bool is_time_based_;
   ::google::protobuf::int32 step_size_;
+  ::google::protobuf::int32 max_byte_size_per_msg_group_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2fmessage_2eproto::TableStruct;
 };
@@ -422,12 +437,6 @@ class InfoMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::google::protobuf::int32 creation_time() const;
   void set_creation_time(::google::protobuf::int32 value);
 
-  // bool is_valid = 9;
-  void clear_is_valid();
-  static const int kIsValidFieldNumber = 9;
-  bool is_valid() const;
-  void set_is_valid(bool value);
-
   // @@protoc_insertion_point(class_scope:InfoMessage)
  private:
 
@@ -440,7 +449,6 @@ class InfoMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::google::protobuf::int32 sim_time_;
   ::google::protobuf::int32 size_;
   ::google::protobuf::int32 creation_time_;
-  bool is_valid_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2fmessage_2eproto::TableStruct;
 };
@@ -575,6 +583,20 @@ class SynchronisationMessage : public ::google::protobuf::Message /* @@protoc_in
   ::std::string* release_msg_id();
   void set_allocated_msg_id(::std::string* msg_id);
 
+  // string timeout_msg_id = 6;
+  void clear_timeout_msg_id();
+  static const int kTimeoutMsgIdFieldNumber = 6;
+  const ::std::string& timeout_msg_id() const;
+  void set_timeout_msg_id(const ::std::string& value);
+  #if LANG_CXX11
+  void set_timeout_msg_id(::std::string&& value);
+  #endif
+  void set_timeout_msg_id(const char* value);
+  void set_timeout_msg_id(const char* value, size_t size);
+  ::std::string* mutable_timeout_msg_id();
+  ::std::string* release_timeout_msg_id();
+  void set_allocated_timeout_msg_id(::std::string* timeout_msg_id);
+
   // .SynchronisationMessage.MsgType msg_type = 1;
   void clear_msg_type();
   static const int kMsgTypeFieldNumber = 1;
@@ -587,13 +609,28 @@ class SynchronisationMessage : public ::google::protobuf::Message /* @@protoc_in
   ::google::protobuf::int32 sim_time() const;
   void set_sim_time(::google::protobuf::int32 value);
 
+  // int32 max_advance = 4;
+  void clear_max_advance();
+  static const int kMaxAdvanceFieldNumber = 4;
+  ::google::protobuf::int32 max_advance() const;
+  void set_max_advance(::google::protobuf::int32 value);
+
+  // bool timeout = 5;
+  void clear_timeout();
+  static const int kTimeoutFieldNumber = 5;
+  bool timeout() const;
+  void set_timeout(bool value);
+
   // @@protoc_insertion_point(class_scope:SynchronisationMessage)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr msg_id_;
+  ::google::protobuf::internal::ArenaStringPtr timeout_msg_id_;
   int msg_type_;
   ::google::protobuf::int32 sim_time_;
+  ::google::protobuf::int32 max_advance_;
+  bool timeout_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2fmessage_2eproto::TableStruct;
 };
@@ -913,6 +950,18 @@ class CosimaMsgGroup : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::int32 current_mosaik_step() const;
   void set_current_mosaik_step(::google::protobuf::int32 value);
 
+  // int32 number_of_message_groups = 6;
+  void clear_number_of_message_groups();
+  static const int kNumberOfMessageGroupsFieldNumber = 6;
+  ::google::protobuf::int32 number_of_message_groups() const;
+  void set_number_of_message_groups(::google::protobuf::int32 value);
+
+  // int32 number_of_messages = 7;
+  void clear_number_of_messages();
+  static const int kNumberOfMessagesFieldNumber = 7;
+  ::google::protobuf::int32 number_of_messages() const;
+  void set_number_of_messages(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:CosimaMsgGroup)
  private:
 
@@ -922,6 +971,8 @@ class CosimaMsgGroup : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::RepeatedPtrField< ::SynchronisationMessage > synchronisation_messages_;
   ::google::protobuf::RepeatedPtrField< ::InfrastructureMessage > infrastructure_messages_;
   ::google::protobuf::int32 current_mosaik_step_;
+  ::google::protobuf::int32 number_of_message_groups_;
+  ::google::protobuf::int32 number_of_messages_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2fmessage_2eproto::TableStruct;
 };
@@ -1017,21 +1068,7 @@ inline void InitialMessage::set_until(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:InitialMessage.until)
 }
 
-// bool is_time_based = 4;
-inline void InitialMessage::clear_is_time_based() {
-  is_time_based_ = false;
-}
-inline bool InitialMessage::is_time_based() const {
-  // @@protoc_insertion_point(field_get:InitialMessage.is_time_based)
-  return is_time_based_;
-}
-inline void InitialMessage::set_is_time_based(bool value) {
-  
-  is_time_based_ = value;
-  // @@protoc_insertion_point(field_set:InitialMessage.is_time_based)
-}
-
-// int32 step_size = 5;
+// int32 step_size = 4;
 inline void InitialMessage::clear_step_size() {
   step_size_ = 0;
 }
@@ -1043,6 +1080,73 @@ inline void InitialMessage::set_step_size(::google::protobuf::int32 value) {
   
   step_size_ = value;
   // @@protoc_insertion_point(field_set:InitialMessage.step_size)
+}
+
+// string logging_level = 5;
+inline void InitialMessage::clear_logging_level() {
+  logging_level_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& InitialMessage::logging_level() const {
+  // @@protoc_insertion_point(field_get:InitialMessage.logging_level)
+  return logging_level_.GetNoArena();
+}
+inline void InitialMessage::set_logging_level(const ::std::string& value) {
+  
+  logging_level_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:InitialMessage.logging_level)
+}
+#if LANG_CXX11
+inline void InitialMessage::set_logging_level(::std::string&& value) {
+  
+  logging_level_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:InitialMessage.logging_level)
+}
+#endif
+inline void InitialMessage::set_logging_level(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  logging_level_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:InitialMessage.logging_level)
+}
+inline void InitialMessage::set_logging_level(const char* value, size_t size) {
+  
+  logging_level_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:InitialMessage.logging_level)
+}
+inline ::std::string* InitialMessage::mutable_logging_level() {
+  
+  // @@protoc_insertion_point(field_mutable:InitialMessage.logging_level)
+  return logging_level_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* InitialMessage::release_logging_level() {
+  // @@protoc_insertion_point(field_release:InitialMessage.logging_level)
+  
+  return logging_level_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void InitialMessage::set_allocated_logging_level(::std::string* logging_level) {
+  if (logging_level != NULL) {
+    
+  } else {
+    
+  }
+  logging_level_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), logging_level);
+  // @@protoc_insertion_point(field_set_allocated:InitialMessage.logging_level)
+}
+
+// int32 max_byte_size_per_msg_group = 6;
+inline void InitialMessage::clear_max_byte_size_per_msg_group() {
+  max_byte_size_per_msg_group_ = 0;
+}
+inline ::google::protobuf::int32 InitialMessage::max_byte_size_per_msg_group() const {
+  // @@protoc_insertion_point(field_get:InitialMessage.max_byte_size_per_msg_group)
+  return max_byte_size_per_msg_group_;
+}
+inline void InitialMessage::set_max_byte_size_per_msg_group(::google::protobuf::int32 value) {
+  
+  max_byte_size_per_msg_group_ = value;
+  // @@protoc_insertion_point(field_set:InitialMessage.max_byte_size_per_msg_group)
 }
 
 // -------------------------------------------------------------------
@@ -1317,20 +1421,6 @@ inline void InfoMessage::set_creation_time(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:InfoMessage.creation_time)
 }
 
-// bool is_valid = 9;
-inline void InfoMessage::clear_is_valid() {
-  is_valid_ = false;
-}
-inline bool InfoMessage::is_valid() const {
-  // @@protoc_insertion_point(field_get:InfoMessage.is_valid)
-  return is_valid_;
-}
-inline void InfoMessage::set_is_valid(bool value) {
-  
-  is_valid_ = value;
-  // @@protoc_insertion_point(field_set:InfoMessage.is_valid)
-}
-
 // -------------------------------------------------------------------
 
 // SynchronisationMessage
@@ -1414,6 +1504,87 @@ inline void SynchronisationMessage::set_sim_time(::google::protobuf::int32 value
   
   sim_time_ = value;
   // @@protoc_insertion_point(field_set:SynchronisationMessage.sim_time)
+}
+
+// int32 max_advance = 4;
+inline void SynchronisationMessage::clear_max_advance() {
+  max_advance_ = 0;
+}
+inline ::google::protobuf::int32 SynchronisationMessage::max_advance() const {
+  // @@protoc_insertion_point(field_get:SynchronisationMessage.max_advance)
+  return max_advance_;
+}
+inline void SynchronisationMessage::set_max_advance(::google::protobuf::int32 value) {
+  
+  max_advance_ = value;
+  // @@protoc_insertion_point(field_set:SynchronisationMessage.max_advance)
+}
+
+// bool timeout = 5;
+inline void SynchronisationMessage::clear_timeout() {
+  timeout_ = false;
+}
+inline bool SynchronisationMessage::timeout() const {
+  // @@protoc_insertion_point(field_get:SynchronisationMessage.timeout)
+  return timeout_;
+}
+inline void SynchronisationMessage::set_timeout(bool value) {
+  
+  timeout_ = value;
+  // @@protoc_insertion_point(field_set:SynchronisationMessage.timeout)
+}
+
+// string timeout_msg_id = 6;
+inline void SynchronisationMessage::clear_timeout_msg_id() {
+  timeout_msg_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& SynchronisationMessage::timeout_msg_id() const {
+  // @@protoc_insertion_point(field_get:SynchronisationMessage.timeout_msg_id)
+  return timeout_msg_id_.GetNoArena();
+}
+inline void SynchronisationMessage::set_timeout_msg_id(const ::std::string& value) {
+  
+  timeout_msg_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:SynchronisationMessage.timeout_msg_id)
+}
+#if LANG_CXX11
+inline void SynchronisationMessage::set_timeout_msg_id(::std::string&& value) {
+  
+  timeout_msg_id_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:SynchronisationMessage.timeout_msg_id)
+}
+#endif
+inline void SynchronisationMessage::set_timeout_msg_id(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  timeout_msg_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:SynchronisationMessage.timeout_msg_id)
+}
+inline void SynchronisationMessage::set_timeout_msg_id(const char* value, size_t size) {
+  
+  timeout_msg_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:SynchronisationMessage.timeout_msg_id)
+}
+inline ::std::string* SynchronisationMessage::mutable_timeout_msg_id() {
+  
+  // @@protoc_insertion_point(field_mutable:SynchronisationMessage.timeout_msg_id)
+  return timeout_msg_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* SynchronisationMessage::release_timeout_msg_id() {
+  // @@protoc_insertion_point(field_release:SynchronisationMessage.timeout_msg_id)
+  
+  return timeout_msg_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void SynchronisationMessage::set_allocated_timeout_msg_id(::std::string* timeout_msg_id) {
+  if (timeout_msg_id != NULL) {
+    
+  } else {
+    
+  }
+  timeout_msg_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), timeout_msg_id);
+  // @@protoc_insertion_point(field_set_allocated:SynchronisationMessage.timeout_msg_id)
 }
 
 // -------------------------------------------------------------------
@@ -1704,6 +1875,34 @@ inline void CosimaMsgGroup::set_current_mosaik_step(::google::protobuf::int32 va
   
   current_mosaik_step_ = value;
   // @@protoc_insertion_point(field_set:CosimaMsgGroup.current_mosaik_step)
+}
+
+// int32 number_of_message_groups = 6;
+inline void CosimaMsgGroup::clear_number_of_message_groups() {
+  number_of_message_groups_ = 0;
+}
+inline ::google::protobuf::int32 CosimaMsgGroup::number_of_message_groups() const {
+  // @@protoc_insertion_point(field_get:CosimaMsgGroup.number_of_message_groups)
+  return number_of_message_groups_;
+}
+inline void CosimaMsgGroup::set_number_of_message_groups(::google::protobuf::int32 value) {
+  
+  number_of_message_groups_ = value;
+  // @@protoc_insertion_point(field_set:CosimaMsgGroup.number_of_message_groups)
+}
+
+// int32 number_of_messages = 7;
+inline void CosimaMsgGroup::clear_number_of_messages() {
+  number_of_messages_ = 0;
+}
+inline ::google::protobuf::int32 CosimaMsgGroup::number_of_messages() const {
+  // @@protoc_insertion_point(field_get:CosimaMsgGroup.number_of_messages)
+  return number_of_messages_;
+}
+inline void CosimaMsgGroup::set_number_of_messages(::google::protobuf::int32 value) {
+  
+  number_of_messages_ = value;
+  // @@protoc_insertion_point(field_set:CosimaMsgGroup.number_of_messages)
 }
 
 #ifdef __GNUC__

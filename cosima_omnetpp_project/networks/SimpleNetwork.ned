@@ -31,7 +31,7 @@ channel MyEth10M extends EtherLink
     datarate = 10Mbps;
 }
 
-network WinzentNetwork
+network SimpleNetwork
 {
     @display("bgb=1332.5,1063.4");
     submodules:
@@ -111,7 +111,7 @@ network WinzentNetwork
         router0.ethg++ <--> Eth10M {  length = 50km; }  <--> switch3.ethg++;
 }
 
-network DisconnectedClient2_WinzentNetwork
+network DisconnectedClient2_SimpleNetwork
 {
     submodules:
 
@@ -179,7 +179,7 @@ network DisconnectedClient2_WinzentNetwork
         switch2.ethg++ <--> Eth10M {  length = 50km; } <--> router3.ethg++;
 }
 
-network DisconnectedClient1_WinzentNetwork
+network DisconnectedClient1_SimpleNetwork
 {
     submodules:
 		scenarioManager: MosaikScenarioManager {
@@ -247,7 +247,7 @@ network DisconnectedClient1_WinzentNetwork
         switch2.ethg++ <--> Eth10M {  length = 50km; } <--> router3.ethg++;
 }
 
-network SimpleWinzentNetwork
+network SmallNetwork
 {
     submodules:
         scenarioManager: MosaikScenarioManager {
@@ -301,32 +301,3 @@ network SimpleWinzentNetwork
 
 }
 
-
-
-network MinimalNetwork
-{
-    submodules:
-        scenarioManager: MosaikScenarioManager {
-            @display("p=216.6825,136.52249");
-        }
-        
-        schedulerModule: MosaikSchedulerModule {
-            @display("p=200,100");
-        }
-        
-        configurator: Ipv4NetworkConfigurator {
-            @display("p=100,100");
-        }
-
-        host0: StandardHost {
-            @display("p=580,233");
-
-        }
-        host1: StandardHost {
-            @display("p=98,384");
-        }
-
-    connections:
-        host0.ethg++ <--> Eth10M <--> host1.ethg++;
-
-}

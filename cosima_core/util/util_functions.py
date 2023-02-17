@@ -6,16 +6,18 @@ import time
 from datetime import datetime
 import google.protobuf.json_format
 from simpy.io.codec import JSON
+from termcolor import colored
 
 from cosima_core.messages.message_pb2 import CosimaMsgGroup, InitialMessage, InfoMessage, SynchronisationMessage, \
     InfrastructureMessage
-import cosima_core.config as cfg
+import cosima_core.util.general_config as cfg
+import scenario_config
 
 
 def start_omnet(start_mode, network):
     command = f"./cosima_omnetpp_project -n ../inet/src/inet -f " \
               f"mosaik.ini -c {network}"
-    cwd = '../cosima_omnetpp_project/'
+    cwd = '../../cosima_omnetpp_project/'
     omnet_process = None
     if start_mode == 'cmd':
         command = command + " -u Cmdenv"
@@ -60,7 +62,7 @@ def check_omnet_connection(port):
             continue
 
 
-def get_host_names(first_index=0, num_hosts=cfg.NUMBER_OF_AGENTS):
+def get_host_names(first_index=0, num_hosts=scenario_config.NUMBER_OF_AGENTS):
     host_names = []
     for index in range(first_index, num_hosts):
         host_names.append(f'client{index}')
@@ -77,27 +79,69 @@ def get_dict_from_protobuf_message(protobuf_message):
     return google.protobuf.json_format.MessageToDict(protobuf_message, preserving_proto_field_name=True)
 
 
-def create_protobuf_msg(messages, current_step):
-    """creates protobuf message from given dictionary"""
-    msg_group = CosimaMsgGroup()
-    msg_group.current_mosaik_step = current_step
-    message_count = 0
-    for message_dict, message_type in messages:
-        if message_type == InitialMessage:
-            protobuf_msg = msg_group.initial_messages.add()
-        elif message_type == InfoMessage:
-            protobuf_msg = msg_group.info_messages.add()
-            message_dict['size'] = len(JSON().encode(message_dict))
-            message_count += 1
-        elif message_type == InfrastructureMessage:
-            protobuf_msg = msg_group.infrastructure_messages.add()
-        elif message_type == SynchronisationMessage:
-            protobuf_msg = msg_group.synchronisation_messages.add()
+def make_protobuf_message_for_type(msg_group, message_type, message_dict, message_count):
+    if message_type == InitialMessage:
+        protobuf_msg = msg_group.initial_messages.add()
+    elif message_type == InfoMessage:
+        protobuf_msg = msg_group.info_messages.add()
+        if 'content' in message_dict.keys():
+            message_dict['size'] = len(JSON().encode(message_dict['content']))
+        elif 'content_bytes' in message_dict.keys():
+            message_dict['size'] = len(message_dict['content_bytes'])
         else:
-            raise RuntimeError("unknown message type")
-        get_protobuf_message_from_dict(message_dict, protobuf_msg)
+            raise ValueError("Message has no content!")
+        message_count += 1
+    elif message_type == InfrastructureMessage:
+        protobuf_msg = msg_group.infrastructure_messages.add()
+    elif message_type == SynchronisationMessage:
+        protobuf_msg = msg_group.synchronisation_messages.add()
+    else:
+        raise RuntimeError("unknown message type")
+    get_protobuf_message_from_dict(message_dict, protobuf_msg)
     return msg_group, message_count
 
 
-def log(info):
-    print(f'mosaik:  {datetime.now().strftime("%H:%M:%S:%f")} {info}')
+def create_protobuf_messages(messages, current_step):
+    """creates protobuf message from given dictionary"""
+    msg_groups = list()
+    msg_ids = list()
+    msg_group = CosimaMsgGroup()
+    message_count = 0
+    for index, (message_dict, message_type) in enumerate(messages):
+        msg_ids.append(message_dict['msg_id'])
+        # fill protobuf message group msg_group
+        msg_group, message_count = make_protobuf_message_for_type(msg_group, message_type, message_dict, message_count)
+        byte_size = msg_group.ByteSize()
+        # if size of msg_group exceeds max -> make new msg group, add protobuf message to new message group
+        # if size of msg_group is within boundaries -> keep msg_group, add current to list
+        if byte_size <= cfg.MAX_BYTE_SIZE_PER_MSG_GROUP - 100:
+            if msg_groups:
+                msg_groups.pop()
+        else:
+            msg_group.Clear()
+            msg_group, message_count = make_protobuf_message_for_type(msg_group, message_type, message_dict,
+                                                                      message_count)
+        msg_group_copy = CosimaMsgGroup()
+        msg_group.current_mosaik_step = int(current_step)
+        msg_group_copy.CopyFrom(msg_group)
+        msg_groups.append(msg_group_copy)
+
+    for msg_group in msg_groups:
+        msg_group.number_of_message_groups = len(msg_groups)
+        if msg_group.ByteSize() > cfg.MAX_BYTE_SIZE_PER_MSG_GROUP:
+            raise ValueError(f'Max byte size exceeded. Consider increasing the MAX_BYTE_SIZE_PER_MSG_GROUP.')
+
+    return msg_groups, message_count, msg_ids
+
+
+def log(text, log_type='debug'):
+    if log_type == 'warning':
+        print(datetime.now(), end='')
+        print(colored('  | WARNING | mosaik: ', 'red'), end='')
+        print(text)
+    elif log_type == 'info' and scenario_config.LOGGING_LEVEL == ('info' or 'warnings'):
+        print(datetime.now(), end='')
+        print(colored('  | INFO    | mosaik: ', 'blue'), end='')
+        print(text)
+    elif scenario_config.LOGGING_LEVEL == 'debug':
+        print(f'{datetime.now()} | DEBUG   | mosaik: {text}')

@@ -25,7 +25,9 @@ using namespace omnetpp;
 
 class MosaikSchedulerMock : public MosaikScheduler {
 public:
-    MosaikSchedulerMock() {
+
+    MosaikSchedulerMock():
+        MosaikScheduler() {
         numModules = 0;
         sim = new cSimulation("simulation", new cNullEnvir(0, nullptr, nullptr));
     }

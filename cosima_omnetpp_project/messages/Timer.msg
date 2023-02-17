@@ -26,5 +26,6 @@ enum TimerType;
 packet Timer {
     int timerType @enum(TimerType);
     int receiverPort;
-    string receiverName; 
+    string receiverName;
+    string messageId;
 }

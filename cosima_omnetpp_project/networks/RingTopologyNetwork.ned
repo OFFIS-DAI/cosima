@@ -27,7 +27,7 @@ import modules.MosaikScenarioManager;
 package networks;
 
 
-network ManyAgentNetwork
+network RingTopologyNetwork
 {
     @display("bgb=3833.667,1842.9011");
     submodules:

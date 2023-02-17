@@ -29,9 +29,9 @@ MosaikSchedulerModule::~MosaikSchedulerModule() {
 
 
 void MosaikSchedulerModule::initialize(int stage){
-      scheduler = check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
-      // register module at scheduler
-      scheduler->setInterfaceModule(this, true);
+    scheduler = check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
+    // register module at scheduler
+    scheduler->setInterfaceModule(this, true);
 }
 
 void MosaikSchedulerModule::handleMessage(cMessage *msg){
@@ -44,15 +44,18 @@ void MosaikSchedulerModule::handleMessage(cMessage *msg){
         } else if (event->getCtrlType() == 2) {
             // is until event
             scheduler->log("MosaikSchedulerModule: received until event.");
+            scheduler->endRun();
             scheduler->setUntilReached(true);
         } else {
             // is message group event
             scheduler->log("MosaikSchedulerModule: received event in order to send info back to mosaik at time " + simTime().str());
-            scheduler->sendMsgGroupToMosaik();
+            auto currentStep = 0U;
+            currentStep = ceil(simTime().dbl()*1000);
+            scheduler->sendMsgGroupToMosaik(currentStep, false); //TODO: check!
             delete msg;
         }
     } else {
-        scheduler->log("MosaikSchedulerModule: received unknown message.");
+        scheduler->log("MosaikSchedulerModule: received unknown message.", "warning");
         delete msg;
     }
 

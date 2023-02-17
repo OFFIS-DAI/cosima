@@ -28,7 +28,7 @@ import modules.MosaikSchedulerModule;
 import modules.MosaikScenarioManager;
 
 
-network LargeCosimaNetwork
+network DERNetwork
 {
     @display("bgb=6962.763,4474.325");
     submodules:
