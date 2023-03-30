@@ -182,10 +182,12 @@ class CommunicationSimulator(mosaik_api.Simulator):
                             and msg.msg_type == SynchronisationMessage.MsgType.MAX_ADVANCE:
                         log(f'case received max advance message with simtime {msg.sim_time} '
                             f'and max advance {max_advance}')
-                        max_advance_for_waiting_message = max_advance + 1
-                        if msg.sim_time > time:
-                            next_step = self.get_next_step(next_step, msg.sim_time)
-                        elif msg.sim_time == time:
+                        max_advance_for_waiting_message = max_advance
+                        is_only_max_adv_msg, latest_sim_time = \
+                            self.check_if_is_only_one_max_advance_message_and_get_latest_simtime(msgs)
+                        if latest_sim_time > time:
+                            next_step = self.get_next_step(next_step, latest_sim_time)
+                        elif latest_sim_time == time:
                             next_step = self.get_next_step(next_step, time + 1)
                         else:
                             raise ValueError(f'mosaik time: {time}, max advance'
@@ -206,6 +208,17 @@ class CommunicationSimulator(mosaik_api.Simulator):
                         else:
                             self.send_waiting_msg(sim_time=next_step + 1, max_advance=max_advance_for_waiting_message)
                 return answers, next_step
+
+    def check_if_is_only_one_max_advance_message_and_get_latest_simtime(self, messages):
+        counter = 0
+        latest_sim_time = 0
+        for message in messages:
+            if type(message) == SynchronisationMessage \
+                    and message.msg_type == SynchronisationMessage.MsgType.MAX_ADVANCE:
+                counter += 1
+                if message.sim_time > latest_sim_time:
+                    latest_sim_time = message.sim_time
+        return counter == 1, latest_sim_time
 
     def send_message_to_omnetpp(self, messages):
         """

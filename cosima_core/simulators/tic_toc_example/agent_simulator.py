@@ -8,26 +8,22 @@ from time import sleep
 import mosaik_api
 import pandas as pd
 
-from cosima_core.config import CONNECT_ATTR, PARALLEL, OFFSET, TIME_BASED
+from cosima_core.util.general_config import CONNECT_ATTR
 from cosima_core.util.util_functions import log
 
-sim_meta = {
-    'models': {
-        'A': {
-            'public': True,
-            'params': [],
-            'attrs': [
-                'message_with_delay',  # input
-                'next_step',  # output
-                'ACK',  # output
-            ],
-        },
+sim_meta = {'models': {
+    'A': {
+        'public': True,
+        'params': [],
+        'attrs': [
+            'message_with_delay',  # input
+            'P',  # input
+            'ACK',  # output
+            'LOAD_ACK',  # output
+            'message',  # output
+        ],
     },
-}
-if TIME_BASED:
-    sim_meta['type'] = 'time-based'
-else:
-    sim_meta['type'] = 'event-based'
+}, 'type': 'event-based'}
 
 
 class Agent(mosaik_api.Simulator):
@@ -35,11 +31,7 @@ class Agent(mosaik_api.Simulator):
 
     def __init__(self):
         super().__init__(sim_meta)
-        self.sid = None
         self.eid = None
-        self.step_size = None
-        self.value = None
-        self.event_setter_wait = None
         self._max_advance = None
         self._agent_name = None
         self._neighbors = []
@@ -48,24 +40,22 @@ class Agent(mosaik_api.Simulator):
         self._send_msg = True
         self._msgs = []
         self._content_to_send = None
-        self._saved_inputs = dict()
-        self._output_step = None
         self._msg_counter = 0
         self._calculating_time = 0
-        self.event_queue = None
         self.parallel = False
+        self.offset = 0
         self._pv_output = None
+        self._household_output = None
+        self._message_content = None
 
-    def init(self, sid, step_size=1,
-             agent_name=None, content_path=None, calculating_time=0, agent_names=None):
-        self.sid = sid
+    def init(self, sid, time_resolution=1.0,
+             agent_name=None, content_path=None, calculating_time=0, agent_names=None, parallel=False, offset=0,
+             message_content=None):
         if agent_names is None:
             agent_names = []
-        self.step_size = step_size
         self._calculating_time = calculating_time
 
         self._agent_name = agent_name
-        model_name = ''
         for model_name, information in self.meta["models"].items():
             for idx, attr in enumerate(
                     self.meta["models"][model_name]['attrs']):
@@ -73,20 +63,18 @@ class Agent(mosaik_api.Simulator):
                     self.meta["models"][model_name]['attrs'][
                         idx] = f'{CONNECT_ATTR}{self._agent_name}'
 
-        self.meta["models"][model_name]['attrs'].append(
-            f'message')
-        self.meta["models"][model_name]['attrs'].append('P')
-
         for agent_name in agent_names:
             if not agent_name == self._agent_name:
                 self._neighbors.append(agent_name)
-
-        self.parallel = PARALLEL
 
         if content_path is not None:
             self._content_to_send = pd.read_csv(content_path, delimiter=';',
                                                 encoding="utf-8-sig")[
                 "content"].to_list()
+
+        self.parallel = parallel
+        self.offset = offset
+        self._message_content = message_content
 
         return self.meta
 
@@ -98,45 +86,36 @@ class Agent(mosaik_api.Simulator):
 
     def step(self, time, inputs, max_advance=None):
         self._pv_output = None
-        log(f'{self._agent_name} steps in {time} with input {inputs}')
-        if TIME_BASED:
-            self._output_time = time
-        else:
-            # Output time needs to be time + 1 to make sure that mosaik considers
-            # all outputs from all agents to prevent errors in stepping order.
-            self._output_time = time + 1
+        self._household_output = None
+        log(f'{self._agent_name} steps in {time}')
+        # Output time needs to be time + 1 to make sure that mosaik considers
+        # all outputs from all agents to prevent errors in stepping order.
+        self._output_time = time + 1
         self._max_advance = max_advance
-        if not inputs:
-            inputs = self._saved_inputs
-            self._saved_inputs = dict()
 
         for eid, attr_names_to_source_values in inputs.items():
             for attribute_name, sources_to_values in \
                     attr_names_to_source_values.items():
-                for source, messages in sources_to_values.items():
-                    if type(messages) is list:
-                        for msg in messages:
+                for source, values in sources_to_values.items():
+                    if type(values) is list:
+                        for msg in values:
                             if msg['receiver'] == self.eid:
-                                if msg['sim_time'] > time:
-                                    self._saved_inputs = inputs
-                                    log(
-                                        f'Agent {self.agent_name}'
-                                        f' performs new step at time'
-                                        f' {msg["sim_time"]}')
-                                elif msg['sim_time'] < time:
+                                if msg['sim_time'] < time:
                                     raise RuntimeError(
                                         f'Agent {self.agent_name} received message'
                                         f' at time {time}, expected time is '
                                         f'{msg["sim_time"]}.')
                                 elif msg['sim_time'] == time and \
                                         msg is not None:
-                                    log(
-                                        f'{self.agent_name} received {msg}')
+                                    if self._message_content and self._message_content != msg['content']:
+                                        raise ValueError(f'Wrong message content! '
+                                                         f'size of message sent: {len(self._message_content)} '
+                                                         f'size of message received: {len(msg["content"])}')
                                     # send reply
-                                    message_text = self.get_next_content(
-                                        msg['content'])
+                                    message_text = self._message_content if self._message_content else \
+                                        self.get_next_content(msg['content'])
                                     self._msgs.append({'msg_id': f'AgentMessage_{self._agent_name}_'
-                                                                f'{self._msg_counter}',
+                                                                 f'{self._msg_counter}',
                                                        'max_advance': self._max_advance,
                                                        'sim_time': self._output_time,
                                                        'sender': self._agent_name,
@@ -145,10 +124,13 @@ class Agent(mosaik_api.Simulator):
                                                        'creation_time': self._output_time,
                                                        })
                                     self._msg_counter += 1
-                    elif messages:
-                        log(f'{self._agent_name} has new input from PV plant.'
-                            f' Input is {messages}.')
-                        self._pv_output = 1
+                    elif values is not None:
+                        log(f'{self._agent_name} has new input from {source}.'
+                            f' Input is {values}.')
+                        if source.startswith('CSV'):
+                            self._pv_output = 1
+                        else:
+                            self._household_output = 1
 
     def get_next_content(self, message):
         """
@@ -173,39 +155,40 @@ class Agent(mosaik_api.Simulator):
         return self._agent_name
 
     def get_data(self, outputs):
-        if self._output_time >= self.mosaik.world.until:
-            self._output_time = self.mosaik.world.until - 1
+        if not self._output_time or self._output_time >= self.mosaik.world.until:
+            return {}
         outputs = []
         if self._calculating_time != 0:
             log(f'{self._agent_name} starts calculating at {self._output_time} for {self._calculating_time} seconds')
             sleep(self._calculating_time)
             log(f'{self._agent_name} stops calculating')
-        if self._agent_name == 'client0' and self._send_msg and (
-                (TIME_BASED and self._output_time == 0) or (not TIME_BASED and self._output_time == 1)):
+        if self._agent_name == 'client0' and self._send_msg and self._output_time == 1:
             self._send_msg = False
+            message_text = self._message_content if self._message_content else 'Lets go through the alphabet!'
             for neighbor in self._neighbors:
                 outputs.append({'msg_id': f'AgentMessage_{self._agent_name}_'
-                                         f'{self._msg_counter}',
+                                          f'{self._msg_counter}',
                                 'max_advance': self._max_advance,
                                 'sim_time': self._output_time,
                                 'sender': self._agent_name,
                                 'receiver': neighbor,
-                                'content': 'Lets go through the alphabet!',
+                                'content': message_text,
                                 'creation_time': self._output_time,
                                 })
                 self._msg_counter += 1
             data = {self.eid: {f'message': outputs}}
-        elif self._agent_name == 'client1' and self._output_time == OFFSET + 1 and \
-                self._send_msg:
+        elif self._agent_name == 'client1' and self._output_time == self.offset + 1 and \
+                self._send_msg and self.parallel:
             self._send_msg = False
+            message_text = self._message_content if self._message_content else 'Sending parallel message.'
             for neighbor in self._neighbors:
                 outputs.append({'msg_id': f'AgentMessage_{self._agent_name}_'
-                                         f'{self._msg_counter}',
+                                          f'{self._msg_counter}',
                                 'max_advance': self._max_advance,
                                 'sim_time': self._output_time,
                                 'sender': self._agent_name,
                                 'receiver': neighbor,
-                                'content': 'Sending parallel message.',
+                                'content': message_text,
                                 'creation_time': self._output_time,
                                 })
                 self._msg_counter += 1
@@ -221,6 +204,8 @@ class Agent(mosaik_api.Simulator):
             data['time'] = self._output_time
             if self._pv_output is not None:
                 data['ACK'] = self._pv_output
+            if self._household_output is not None:
+                data['LOAD_ACK'] = self._household_output
         return data
 
     def finalize(self):

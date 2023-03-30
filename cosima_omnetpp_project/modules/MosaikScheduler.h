@@ -95,7 +95,11 @@ public:
      */
     virtual void executionResumed() override;
 
+    int getNumberOfSavedMessages();
+
     void printCurrentTime();
+
+    std::string getCurrentTime();
 
     void log(std::string info);
 
@@ -165,7 +169,7 @@ public:
     /**
      * Send message group back to mosaik.
      */
-    virtual void sendMsgGroupToMosaik(int currentMosaikStep, bool isWaitingMsg);
+    virtual void sendMsgGroupToMosaik(bool isWaitingMsg);
 
     /**
      * Handle message from mosaik

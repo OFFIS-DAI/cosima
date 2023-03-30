@@ -1,7 +1,7 @@
 from typing import Dict, Any
 import pandas as pd
 
-from mango.core.agent import Agent
+from mango import Agent
 
 from cosima_core.util.util_functions import log
 from cosima_core.util.general_config import ROOT_PATH
@@ -25,7 +25,7 @@ class ActiveAgent(Agent):
         log('Greet all neighbors. ')
         for neighbor in self._neighbors:
             log(f'ActiveAgent sends message to {neighbor}')
-            await self._container.send_message(receiver_addr=neighbor[0], receiver_id=neighbor[1],
+            await self.context.send_message(receiver_addr=neighbor[0], receiver_id=neighbor[1],
                                                acl_metadata={'sender_id': self.aid},
                                                create_acl=True, content='Lets go through the alphabet!',
                                                )
@@ -37,7 +37,7 @@ class ActiveAgent(Agent):
 
     async def reply_to_msg(self, receiver_id, receiver_addr, last_content):
         log(f'ActiveAgent {self.aid} replies to message. ')
-        await self._container.send_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
+        await self.context.send_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
                                            acl_metadata={'sender_id': self.aid},
                                            create_acl=True, content=self.get_next_content(last_content))
 

@@ -154,7 +154,7 @@ void AgentAppUdp::handleSocketEvent(cMessage *msg) {
 
         scheduler->log(nameStr + ": send message " + msgId + + " to " + receiverName + " with port " + std::to_string(receiverPort) + " at time "
                         + std::to_string(creationTime), "info");
-        scheduler->log("content is: " + contentStr);
+        // scheduler->log("content is: " + contentStr);
 
         // make packet
         auto packet = new inet::Packet();

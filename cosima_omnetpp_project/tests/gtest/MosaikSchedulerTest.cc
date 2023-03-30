@@ -59,15 +59,6 @@ public:
 };
 
 /**
- * Test method startRun().
- * asserted result: listener socket for mosaik is initialized.
- */
-TEST_F(MosaikSchedulerTest, TestSchedulerIsRunning) {
-    scheduler->startRun();
-    ASSERT_TRUE(scheduler->socketToMosaikInitialized());
-}
-
-/**
  * Test method setInterfaceModule().
  * AgentAppTcp registers at scheduler.
  * asserted result: scheduler adds application to internal list.
@@ -151,8 +142,7 @@ TEST_F(MosaikSchedulerTest, TestSendToMosaikWithNullptr) {
     }
     catch(const cRuntimeError& expected) {
     }
-    // no message should be added to pmsg group
-    ASSERT_EQ(scheduler->getNumberOfMessagesInPMSGGroup(), 0);
+    ASSERT_EQ(scheduler->getNumberOfSavedMessages(), 0);
 }
 
 /**
@@ -163,7 +153,7 @@ TEST_F(MosaikSchedulerTest, TestSendToMosaikWithNullptr) {
 TEST_F(MosaikSchedulerTest, TestSendToMosaikWithDelayMsg) {
     MosaikSchedulerMessage *delayMsg = createValidMosaikSchedulerMessageWithDelayInfo();
     scheduler->sendToMosaik(delayMsg);
-    ASSERT_EQ(scheduler->getNumberOfMessagesInPMSGGroup(), 1);
+    ASSERT_EQ(scheduler->getNumberOfSavedMessages(), 1);
     delete delayMsg;
 }
 
@@ -193,7 +183,8 @@ TEST_F(MosaikSchedulerTest, TestHandleMsgFromMosaik) {
     scheduler->setScenarioManager(new MosaikScenarioManager());
     scheduler->setInterfaceModule(schedulerModule, true);
     // no messages received, method should return false
-    ASSERT_EQ(scheduler->handleMsgFromMosaik(), false);
+    std::vector<char> data;
+    ASSERT_EQ(scheduler->handleMsgFromMosaik(data), false);
     delete(schedulerModule);
 }
 

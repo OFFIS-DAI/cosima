@@ -13,11 +13,15 @@ from cosima_core.messages.message_pb2 import CosimaMsgGroup, InitialMessage, Inf
 import cosima_core.util.general_config as cfg
 import scenario_config
 
+cwd = os.path.abspath(os.path.dirname(__file__))
+new_wd = os.path.abspath(cwd + "/../")
+os.chdir(new_wd)
+
 
 def start_omnet(start_mode, network):
-    command = f"./cosima_omnetpp_project -n ../inet/src/inet -f " \
+    command = f"./cosima_omnetpp_project -n ../inet4/src/inet -f " \
               f"mosaik.ini -c {network}"
-    cwd = '../../cosima_omnetpp_project/'
+    cwd = '../cosima_omnetpp_project/'
     omnet_process = None
     if start_mode == 'cmd':
         command = command + " -u Cmdenv"
@@ -114,7 +118,7 @@ def create_protobuf_messages(messages, current_step):
         byte_size = msg_group.ByteSize()
         # if size of msg_group exceeds max -> make new msg group, add protobuf message to new message group
         # if size of msg_group is within boundaries -> keep msg_group, add current to list
-        if byte_size <= cfg.MAX_BYTE_SIZE_PER_MSG_GROUP - 100:
+        if byte_size <= cfg.MAX_BYTE_SIZE_PER_MSG_GROUP - 500:
             if msg_groups:
                 msg_groups.pop()
         else:
@@ -134,14 +138,31 @@ def create_protobuf_messages(messages, current_step):
     return msg_groups, message_count, msg_ids
 
 
+def set_up_file_logging():
+    f = open(f'{cfg.ROOT_PATH.parent}/log.txt', 'w')
+    f.close()
+
+
 def log(text, log_type='debug'):
     if log_type == 'warning':
         print(datetime.now(), end='')
         print(colored('  | WARNING | mosaik: ', 'red'), end='')
         print(text)
-    elif log_type == 'info' and scenario_config.LOGGING_LEVEL == ('info' or 'warnings'):
+    elif log_type == 'info' and scenario_config.LOGGING_LEVEL == 'info':
         print(datetime.now(), end='')
         print(colored('  | INFO    | mosaik: ', 'blue'), end='')
         print(text)
     elif scenario_config.LOGGING_LEVEL == 'debug':
         print(f'{datetime.now()} | DEBUG   | mosaik: {text}')
+    if log_type == 'debug':
+        return
+    written = False
+    while not written:
+        try:
+            f = open(f'{cfg.ROOT_PATH.parent}/log.txt', 'a')
+            f.write(f'{datetime.now()} mosaik: ' + text + '\n')
+            written = True
+            f.close()
+        except:
+            pass
+

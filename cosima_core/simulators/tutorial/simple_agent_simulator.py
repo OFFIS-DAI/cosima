@@ -47,7 +47,7 @@ class SimpleAgent(mosaik_api.Simulator):
     def step(self, time, inputs, max_advance):
         log(f'{self._client_name} received input {inputs}')
         content = 'Hi neighbor!'
-        self._outbox.append({'msg_id': f'GridAgentMessage_{self._msg_counter}',
+        self._outbox.append({'msg_id': f'{self._client_name}_{self._msg_counter}',
                              'max_advance': max_advance,
                              'sim_time': time + 1,
                              'sender': self._client_name,
