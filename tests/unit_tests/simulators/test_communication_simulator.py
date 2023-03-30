@@ -135,7 +135,7 @@ def mock_disconnect_msg():
     return [msg]
 
 
-def mock_max_advance_msg():
+def mock_max_advance_and_info_msg():
     """
     This methods mocks method "return_messages" in OmnetppConnection.
 
@@ -145,7 +145,10 @@ def mock_max_advance_msg():
     msg = msg_group.synchronisation_messages.add()
     msg.msg_type = SynchronisationMessage.MsgType.MAX_ADVANCE
 
-    return [msg]
+    second_msg = msg_group.info_messages.add()
+    second_msg.sim_time = 10
+
+    return [msg, second_msg]
 
 
 def mock_max_advance_and_info_msg():
@@ -164,7 +167,7 @@ def mock_max_advance_and_info_msg():
 
     msg_group = CosimaMsgGroup()
     msg = msg_group.info_messages.add()
-    msg.sim_time = 10
+    msg.sim_time = 0
     msg_list.append(msg)
 
     return msg_list
@@ -341,7 +344,7 @@ def test_receive_messages_from_omnetpp_info_msg(monkeypatch):
     test several situations when an info message was received.
     """
     communication_simulator = set_up_communication_simulator()
-    communication_simulator._omnetpp_connection = OmnetppConnection(None, None)
+    communication_simulator._omnetpp_connection = OmnetppConnection(None)
 
     monkeypatch.setattr(communication_simulator._omnetpp_connection, 'return_messages',
                         mock_info_msg)
@@ -371,7 +374,7 @@ def test_receive_messages_from_omnetpp_transmission_error(monkeypatch):
     test several situations when a transmission error was received.
     """
     communication_simulator = set_up_communication_simulator()
-    communication_simulator._omnetpp_connection = OmnetppConnection(None, None)
+    communication_simulator._omnetpp_connection = OmnetppConnection(None)
 
     monkeypatch.setattr(communication_simulator._omnetpp_connection, 'return_messages',
                         mock_transmission_error)
@@ -391,7 +394,7 @@ def test_receive_messages_from_omnetpp_disconnect(monkeypatch):
     test several situations when a disconnect message was received.
     """
     communication_simulator = set_up_communication_simulator()
-    communication_simulator._omnetpp_connection = OmnetppConnection(None, None)
+    communication_simulator._omnetpp_connection = OmnetppConnection(None)
 
     monkeypatch.setattr(communication_simulator._omnetpp_connection, 'return_messages',
                         mock_disconnect_msg)
@@ -412,18 +415,19 @@ def test_receive_messages_from_omnetpp_max_advance(monkeypatch):
     test several situations when a max advance message was received.
     """
     communication_simulator = set_up_communication_simulator()
-    communication_simulator._omnetpp_connection = OmnetppConnection(None, None)
+    communication_simulator._omnetpp_connection = OmnetppConnection(None)
 
     monkeypatch.setattr(communication_simulator._omnetpp_connection, 'return_messages',
-                        mock_max_advance_msg)
+                        mock_max_advance_and_info_msg)
     monkeypatch.setattr(communication_simulator, 'send_waiting_msg',
                         mock_send_waiting_msg)
 
     answers, next_step = communication_simulator.receive_messages_from_omnetpp(time=0, max_advance=5,
                                                                                messages_sent=False)
-    # the sim time is smaller than the messages sim time, therefore, the
-    # communication simulator directly returns. Next step will be the time in the message
-    assert len(answers) == 0
+    # the communication simulator received a max_advanced and an info_msg. Since only the infomessage will be returned,
+    # one answer is returned.
+    assert len(answers) == 1
+    # Next step will be the time in the message
     assert next_step is not None
 
     # set the sim time to a very large number, way further then message time,
@@ -439,7 +443,7 @@ def test_receive_messages_from_omnetpp_max_advance_and_info(monkeypatch):
     received.
     """
     communication_simulator = set_up_communication_simulator()
-    communication_simulator._omnetpp_connection = OmnetppConnection(None, None)
+    communication_simulator._omnetpp_connection = OmnetppConnection(None)
 
     monkeypatch.setattr(communication_simulator._omnetpp_connection, 'return_messages',
                         mock_max_advance_and_info_msg)

@@ -1,0 +1,4 @@
+scenarioID,network,until,number of agents,events,messages,errors,maxAdvance,disconnect,reconnect,lastEvent
+1,Test,1000,10,0,0,0,0,0,0,0
+1,Test,10000,50,0,0,0,0,0,0,0
+1,Test,100000,100,0,0,0,0,0,0,0

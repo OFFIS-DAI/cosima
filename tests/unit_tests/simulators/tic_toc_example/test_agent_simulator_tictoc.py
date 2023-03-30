@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 import mosaik
 
-from cosima_core.config import CONTENT_PATH
+from cosima_core.scenarios.communication_scenario import CONTENT_PATH
 from cosima_core.simulators.tic_toc_example.agent_simulator import Agent
 
 
