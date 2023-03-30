@@ -2,14 +2,15 @@ from time import sleep
 import mosaik.util
 from cosima_core.util.util_functions import start_omnet, \
     check_omnet_connection, stop_omnet, \
-    get_host_names, log
+    get_host_names, log, set_up_file_logging
 from cosima_core.simulators.mango_example.active_agent import ActiveAgent
 from cosima_core.simulators.mango_example.reply_agent import ReplyAgent
 from mango.messages.codecs import JSON
-from mango_library.negotiation.util import extra_serializers
+from mango_library.negotiation.util import cohda_serializers
 
 # Sim config. and other parameters
-from scenario_config import USE_COMMUNICATION_SIMULATION
+from scenario_config import USE_COMMUNICATION_SIMULATION, START_MODE, NETWORK, SIMULATION_END
+import cosima_core.util.general_config as cfg
 
 SIM_CONFIG = {
     'ContainerSim': {
@@ -23,7 +24,7 @@ SIM_CONFIG = {
 NUMBER_OF_MANGO_AGENTS = 2
 
 codec = JSON()
-for serializer in extra_serializers:
+for serializer in cohda_serializers:
     codec.add_serializer(*serializer())
 
 # conversion factor to convert mango time in mosaik time and vice versa. For example, mango uses seconds and mosaik
@@ -32,11 +33,13 @@ conversion_factor = 1000
 
 if USE_COMMUNICATION_SIMULATION:
     # start connection to OMNeT++
-    omnet_process = start_omnet(cfg.START_MODE, cfg.NETWORK)
+    omnet_process = start_omnet(START_MODE, NETWORK)
     check_omnet_connection(cfg.PORT)
 
 # Create World
 world = mosaik.World(SIM_CONFIG, time_resolution=0.001, cache=False)
+
+set_up_file_logging()
 
 # generate container simulators
 agent_models = {}
@@ -69,7 +72,6 @@ for idx in range(NUMBER_OF_MANGO_AGENTS):
 if USE_COMMUNICATION_SIMULATION:
     # start communication simulator
     comm_sim = world.start('CommunicationSimulator',
-                           step_size=cfg.USED_STEP_SIZE,
                            port=cfg.PORT,
                            client_attribute_mapping=client_attribute_mapping).CommunicationModel()
     # Connect entities
@@ -84,8 +86,8 @@ else:
 world.set_initial_event(agent_models['client0'].sid, time=0)
 
 # Run simulation
-log(f'run until {cfg.SIMULATION_END}')
-world.run(until=cfg.SIMULATION_END)
+log(f'run until {SIMULATION_END}')
+world.run(until=SIMULATION_END)
 log("end of process")
 sleep(5)
 if USE_COMMUNICATION_SIMULATION:

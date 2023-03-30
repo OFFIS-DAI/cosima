@@ -111,7 +111,7 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
         scheduler->log(nameStr + ": send message " + msgId + " to " + receiverName + " with port " + std::to_string(receiverPort) + " at time "
                 + std::to_string(mosaikSimTime));
         std::string contentStr = content;
-        scheduler->log("content is: " + contentStr);
+        // scheduler->log("content is: " + contentStr);
 
         // make packet
         auto packet = new inet::Packet();
@@ -327,7 +327,7 @@ void AgentAppTcp::connect(const char *receiverName, int receiverPort, const char
             timerMsg->setMessageId(messageIdStr.c_str());
 
             // schedule timer as self message
-            scheduleAt(simTime() + 3.1, timerMsg);
+            // scheduleAt(simTime() + 10, timerMsg);
 
         }
         clientSockets[clientId] = clientSocket;
@@ -411,7 +411,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                                     auto appChunk = appChunkInSliceChunk->peek<MosaikApplicationChunk>(inet::b(0), appChunkInSliceChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
                                     bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
                                     if (alreadyReceived) {
-                                        std::cout << "already received msg " << appChunk->getMsgId() << endl;
+                                        // std::cout << "already received msg " << appChunk->getMsgId() << endl;
                                         return;
                                     }
                                     answer->setContent(appChunk->getContent());
@@ -435,7 +435,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                         auto appChunk = encapsulatedChunk->peek<MosaikApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
                         bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
                         if (alreadyReceived) {
-                            std::cout << "already received msg " << appChunk->getMsgId() << endl;
+                            // std::cout << "already received msg " << appChunk->getMsgId() << endl;
                             return;
                         }
                         answer->setContent(appChunk->getContent());

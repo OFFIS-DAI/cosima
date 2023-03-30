@@ -107,18 +107,28 @@ RUN mkdir -p /root/models
 WORKDIR /root/models
 RUN wget https://github.com/inet-framework/inet/releases/download/v4.2.2/inet-4.2.2-src.tgz \
     && tar -xzf inet-4.2.2-src.tgz \
-    && rm inet-4.2.2-src.tgz \
-    && mv inet4 inet
-WORKDIR /root/models/inet
+    && rm inet-4.2.2-src.tgz 
+#    && mv inet4 inet
+WORKDIR /root/models/inet4
 RUN make makefiles \
     && make -j$(grep -c proc /proc/cpuinfo) \
-    && make MODE=debug -j$(grep -c proc /proc/cpuinfo)
+    && make MODE=release -j$(grep -c proc /proc/cpuinfo)
 # Import inet into eclipse workspace
     # && /usr/omnetpp/omnetpp-5.6.2 -nosplash -data /root/models -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import /root/models/inet
 ARG VERSION=4.2.2
 ENV INET_VER=$VERSION
 RUN echo 'PS1="inet-$INET_VER:\w\$ "' >> /root/.bashrc && chmod +x /root/.bashrc && \
     touch /root/.hushlogin
+
+# SimuLTE
+WORKDIR /root/models
+RUN wget https://github.com/inet-framework/simulte/releases/download/v1.2.0/simulte-1.2.0-src.tgz
+RUN tar -xzf simulte-1.2.0-src.tgz && \
+    rm simulte-1.2.0-src.tgz
+WORKDIR /root/models/simulte
+RUN make makefiles \
+    && make -j$(grep -c proc /proc/cpuinfo) \
+    && make MODE=release -j$(grep -c proc /proc/cpuinfo)
 
 # install protobuf
 RUN apt-get update -y && apt-get install -y libprotobuf-dev protobuf-compiler

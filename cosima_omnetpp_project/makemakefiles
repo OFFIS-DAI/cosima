@@ -7,7 +7,8 @@
 
 MAKEMAKE=opp_makemake $(MMOPT)
 
-INET_PROJ=../inet
+INET_PROJ=../inet4
+LTE_PROJ=../simulte
 
 all:
-	$(MAKEMAKE) -f --deep -O out -KINET_PROJ=../inet -DINET_IMPORT -I. -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/src -lINET$$\(D\) -- -lprotobuf
+	$(MAKEMAKE) -f --deep -O out -KINET_PROJ=../inet4 -KLTE_PROJ=../simulte -DINET_IMPORT -I$(INET_PROJ)/src -I$(LTE_PROJ)/src -L$(INET_PROJ)/src -L$(LTE_PROJ)/src -lINET$(D) -llte$(D) -Xtests -- -lpthread -lprotobuf

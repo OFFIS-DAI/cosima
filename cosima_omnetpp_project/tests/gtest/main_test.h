@@ -34,7 +34,7 @@ public:
 
     MOCK_METHOD(cModule *, getReceiverModule, (std::string module_name));
     MOCK_METHOD(void, sendToMosaik, (cMessage*));
-    MOCK_METHOD(void, sendMsgGroupToMosaik, ());
+    MOCK_METHOD(void, sendMsgGroupToMosaik, (bool isWaitingMsg));
     MOCK_METHOD(int, receiveUntil, (int64_t targetTime));
     MOCK_METHOD(void, endSimulation, ());
 

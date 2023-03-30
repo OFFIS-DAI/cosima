@@ -2,7 +2,6 @@ import arrow
 
 import mosaik_api
 
-
 __version__ = '1.2.0'
 
 from cosima_core.util.util_functions import log
@@ -24,7 +23,7 @@ class CSV(mosaik_api.Simulator):
         self.current_time = 0
 
     def init(self, sid, time_resolution, sim_start, datafile, date_format='YYYY-MM-DD HH:mm:ss',
-             delimiter=','):
+             delimiter=',', mosaik_attrs=[]):
         self.time_resolution = float(time_resolution)
         self.delimiter = delimiter
         self.date_format = date_format
@@ -43,10 +42,10 @@ class CSV(mosaik_api.Simulator):
             except ValueError:
                 pass
             attrs[i] = attr.strip()
-        attrs.append('ACK')
         self.attrs = attrs
+        self.attrs.extend(mosaik_attrs)
 
-        self.meta['type'] = 'event-based'
+        self.meta['type'] = 'time-based'
 
         self.meta['models'][self.modelname] = {
             'public': True,
@@ -92,7 +91,7 @@ class CSV(mosaik_api.Simulator):
 
         # Check date
         date = data[0]
-        expected_date = self.start_date.shift(seconds=time*self.time_resolution)
+        expected_date = self.start_date.shift(seconds=time * self.time_resolution)
         if date != expected_date:
             raise IndexError('Wrong date "%s", expected "%s"' % (
                 date.format(self.date_format),
@@ -102,10 +101,9 @@ class CSV(mosaik_api.Simulator):
         self.cache = {}
         for attr, val in zip(self.attrs, data[1:]):
             self.cache[attr] = float(val)
-
         self._read_next_row()
         if self.next_row is not None:
-            return time + int((self.next_row[0].int_timestamp - date.int_timestamp)/self.time_resolution)
+            return time + int((self.next_row[0].int_timestamp - date.int_timestamp) / self.time_resolution)
         else:
             print('now return max advance in csv')
             return max_advance

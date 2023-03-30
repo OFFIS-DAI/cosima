@@ -1,12 +1,12 @@
-import socket
-import time
-import threading
-import socketserver
 import os
+import socket
+import socketserver
+import threading
+import time
 
+import cosima_core.util.general_config as cfg
 from cosima_core.messages.message_pb2 import CosimaMsgGroup
 from cosima_core.util.util_functions import log
-import cosima_core.util.general_config as cfg
 
 
 class OmnetppConnection:
@@ -21,15 +21,23 @@ class OmnetppConnection:
         self.server_thread = None
         self._done_receiving = True
         self.current_received_msgs_groups = 0
-        self.server = socketserver.TCPServer((self._servername, self._listener_port), self.handle_server_connection())
+        self.server = None
 
     def start_connection(self):
         # Create a new thread to run the server
-        self.server_thread = threading.Thread(target=self.server.serve_forever)
-        self.server_thread.daemon = True
-
-        # Start the server thread
-        self.server_thread.start()
+        while True:
+            try:
+                self.server = socketserver.TCPServer((self._servername, self._listener_port),
+                                                     self.handle_server_connection())
+                self.server_thread = threading.Thread(target=self.server.serve_forever)
+                self.server_thread.daemon = True
+                # Start the server thread
+                self.server_thread.start()
+                return
+            except OSError as e:
+                log(f'Retry connecting because of error{e}')
+                os.system('fuser -k 4243/tcp')
+                time.sleep(5)
 
     def close_connection(self):
         log('close connection called')
@@ -46,6 +54,7 @@ class OmnetppConnection:
             print(f'Exception: {e}')
             pass
         os.system('killall -9 cosima_omnetpp_project')
+        os.system('fuser -k 4243/tcp')
 
     def send_messages(self, messages):
         sender_threads = list()
@@ -68,7 +77,7 @@ class OmnetppConnection:
         time.sleep(0.1)
         if not self._done_receiving:
             return []
-        if not self.expected_messages == len(self.stored_messages):
+        if self.expected_messages > len(self.stored_messages):
             return []
         msgs = self.stored_messages
         self.stored_messages = []
@@ -98,12 +107,15 @@ class OmnetppConnection:
                     and self.expected_messages == len(self.stored_messages):
                 self._done_receiving = True
                 self.current_received_msgs_groups = 0
-            elif self.current_received_msgs_groups == number_of_msg_groups:
+            elif self.current_received_msgs_groups == number_of_msg_groups\
+                    and self.expected_messages < len(self.stored_messages):
                 print(f'Expected {self.expected_messages}, but received {len(self.stored_messages)}.')
+                print('step: ', msg_group.current_mosaik_step)
+                self._done_receiving = True
+                self.current_received_msgs_groups = 0
 
         except Exception as other_exception:
             log(other_exception)
-            print('data: ', data)
             self.close_connection()
             log("Connection to OMNeT++ closed.")
 
@@ -120,6 +132,7 @@ class OmnetppConnection:
 
             def handle(self):
                 outer_class_self._done_receiving = False
+                prev_data = None
                 outer_class_self.current_received_msgs_groups = 0
 
                 while not outer_class_self._done_receiving:
@@ -128,7 +141,6 @@ class OmnetppConnection:
                     if len(data) == 0:
                         continue
                     else:
-                        # received data, therefore process it
                         thread = threading.Thread(target=outer_class_self.process_data(data),
                                                   args=(), daemon=True)
                         thread.start()

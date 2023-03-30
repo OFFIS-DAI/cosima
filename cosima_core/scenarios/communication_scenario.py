@@ -1,6 +1,7 @@
 import random
 from time import sleep
 import string
+import os
 
 from mosaik import scenario
 
@@ -8,8 +9,14 @@ import cosima_core.util.general_config as cfg
 import scenario_config
 from cosima_core.util.util_functions import start_omnet, \
     check_omnet_connection, stop_omnet, \
-    get_host_names, log
+    get_host_names, log, set_up_file_logging
 from householdsim.mosaik import meta as household_meta
+
+# change working directory because the main is called from the
+# test folder now
+cwd = os.path.abspath(os.path.dirname(__file__))
+new_wd = os.path.abspath(cwd + "/../")
+os.chdir(new_wd)
 
 # agents send messages parallel with given offset
 PARALLEL = True
@@ -29,8 +36,6 @@ CALCULATING_TIMES = {
     'client2': 0
 }
 
-# length of the content string sent by the agents
-CONTENT_LENGTH = None
 CONTENT_PATH = cfg.ROOT_PATH / 'simulators' / 'tic_toc_example' / 'content.csv'
 
 
@@ -53,6 +58,10 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
         scenario_config.AGENTS_WITH_PV_PLANT = agents_with_pv
     if agents_with_household is not None:
         scenario_config.AGENTS_WITH_HOUSEHOLDS = agents_with_household
+    # length of the content string sent by the agents
+    CONTENT_LENGTH = None
+    if content_length:
+        CONTENT_LENGTH = content_length
 
     sim_config = {
         'Collector': {
@@ -77,6 +86,8 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
     else:
         message_content = None
 
+    set_up_file_logging()
+
     world = scenario.World(sim_config, time_resolution=0.001,
                            cache=False)
 
@@ -92,7 +103,7 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
     communication_simulator = world.start('CommunicationSimulator',
                                           port=cfg.PORT,
                                           client_attribute_mapping=client_attribute_mapping,
-                                          use_communication_simulation=scenario_config.USE_COMMUNICATION_SIMULATION)\
+                                          use_communication_simulation=scenario_config.USE_COMMUNICATION_SIMULATION) \
         .CommunicationModel()
 
     if len(scenario_config.INFRASTRUCTURE_CHANGES) > 0 and scenario_config.USE_COMMUNICATION_SIMULATION:
@@ -113,9 +124,7 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
 
     if len(AGENTS_WITH_PV_PLANT) > 0:
         pv_sim = world.start('CSV', sim_start=cfg.START, datafile=cfg.PV_DATA,
-                             delimiter=',')
-        pv_sim.meta['models']['PV']['attrs'].append('ACK')
-        pv_sim.meta['models']['PV']['attrs'].append('P')
+                             delimiter=',', mosaik_attrs=['ACK', 'P'])
         pv_models = pv_sim.PV.create(len(AGENTS_WITH_PV_PLANT))
 
     if len(AGENTS_WITH_HOUSEHOLDS) > 0:

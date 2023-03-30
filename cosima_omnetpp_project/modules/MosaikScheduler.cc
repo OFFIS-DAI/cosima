@@ -47,7 +47,7 @@ Register_Class(MosaikScheduler);
 
 using namespace omnetpp;
 
-auto MAX_BYTE_SIZE_PER_MSG = 10000;
+auto MAX_BYTE_SIZE_PER_MSG = 100000;
 
 // counter for messages
 auto maxAdvanceCounter = 0U;
@@ -138,6 +138,11 @@ public:
 
 std::list<Message> messages;
 
+int MosaikScheduler::getNumberOfSavedMessages() {
+    int size = messages.size();
+    return size;
+}
+
 struct Receiver {
     std::vector<char> operator()(SOCKET listenerSocket) {
         std::vector<char> buf(MAX_BYTE_SIZE_PER_MSG);
@@ -214,6 +219,10 @@ void MosaikScheduler::executionResumed() {
 }
 
 void MosaikScheduler::printCurrentTime() {
+    std::cout << getCurrentTime() << " ";
+}
+
+std::string MosaikScheduler::getCurrentTime() {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     int usec = curTime.tv_usec;
@@ -229,7 +238,7 @@ void MosaikScheduler::printCurrentTime() {
 
     char currentTime[84] = "";
     sprintf(currentTime, "%s:%d", buffer, usec);
-    std::cout << currentTime << " ";
+    return currentTime;
 }
 
 void MosaikScheduler::log(std::string info, std::string logLevel) {
@@ -247,6 +256,22 @@ void MosaikScheduler::log(std::string info, std::string logLevel) {
         printCurrentTime();
         std::cout << " | DEBUG   | OMNeT++: ";
         std::cout << info << endl;
+    }
+
+    auto written = false;
+    while (not written) {
+        try {
+            std::fstream f;
+
+            // opening file using ofstream
+            f.open("../log.txt", std::ios::app);
+            if (!f)
+                std::cout << "No such file found";
+            f << getCurrentTime() << " OMNeT++: " << info << "\n";
+            f.close();
+            written = true;
+        } catch(...) {
+        }
     }
 
 }
@@ -319,6 +344,9 @@ cModule *MosaikScheduler::getReceiverModule(std::string module_name) {
 }
 
 int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
+    if (data.size() == 0) {
+        return 0;
+    }
     GOOGLE_PROTOBUF_VERIFY_VERSION;
     CosimaMsgGroup pmsg_group;
     auto success = pmsg_group.ParseFromString(data.data());
@@ -651,11 +679,11 @@ void MosaikScheduler::endSimulation() {
 
 }
 
-void MosaikScheduler::sendMsgGroupToMosaik(int currentMosaikStep, bool isWaitingMsg) {
+void MosaikScheduler::sendMsgGroupToMosaik(bool isWaitingMsg) {
     std::list<CosimaMsgGroup> msgGroups;
     CosimaMsgGroup msgGroup;
 
-    msgGroup.set_current_mosaik_step(currentMosaikStep);
+    msgGroup.set_current_mosaik_step(currentMosaikStepInMessage);
 
     std::list<Message> newMessagesList;
     if(isWaitingMsg) {
@@ -663,10 +691,14 @@ void MosaikScheduler::sendMsgGroupToMosaik(int currentMosaikStep, bool isWaiting
     } else {
         std::copy(messages.begin(), messages.end(), std::back_inserter(newMessagesList));
         messages.clear();
-        lastMosaikStepInMessage = currentMosaikStep;
+        lastMosaikStepInMessage = currentMosaikStepInMessage;
     }
 
     auto length = newMessagesList.size();
+    if (length == 0) {
+        return;
+    }
+
     int index = 0;
 
     int sock = 0, valread, client_fd;
@@ -700,7 +732,7 @@ void MosaikScheduler::sendMsgGroupToMosaik(int currentMosaikStep, bool isWaiting
             msgGroupCopy.CopyFrom(msgGroup);
             msgGroups.push_back(msgGroupCopy);
             msgGroup.Clear();
-            msgGroup.set_current_mosaik_step(currentMosaikStep);
+            msgGroup.set_current_mosaik_step(currentMosaikStepInMessage);
         }
         msgGroup = message.addMessageToMsgGroup(msgGroup);
         msgGroup.set_number_of_messages(length);
@@ -718,13 +750,20 @@ void MosaikScheduler::sendMsgGroupToMosaik(int currentMosaikStep, bool isWaiting
         std::string msg;
         msgGroup.SerializeToString(&msg);
         msg += "END";
+        int numOfBytesbefore = strlen(msg.c_str());
+
         msg.insert(msg.end(), MAX_BYTE_SIZE_PER_MSG - msg.size(), ' ');
         int numOfBytes = strlen(msg.c_str());
 
+        if ((numOfBytes) != MAX_BYTE_SIZE_PER_MSG) {
+            throw cRuntimeError("MosaikScheduler: number of bytes is not max byte size per msg");
+        }
+
         // send message over TCP socket
         std::future<ssize_t> asyncSend = std::async(send, sock, msg.c_str(), numOfBytes, 0);
-        ssize_t size = asyncSend.get();
+        size_t size = asyncSend.get();
         msg.clear();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     close(sock);
     receive();
@@ -886,7 +925,7 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             messages.push_back(message);
 
             log("MosaikScheduler: send message with waiting info back to mosaik");
-            sendMsgGroupToMosaik(currentStep, false);
+            sendMsgGroupToMosaik(false);
 
         } else if (replyEvent->getCtrlType() == MaxAdvance) {
             SynchronisationMessage syncMessage;

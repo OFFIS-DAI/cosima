@@ -1,6 +1,6 @@
 from typing import Dict, Any
 import pandas as pd
-from mango.core.agent import Agent
+from mango import Agent
 
 from cosima_core.util.util_functions import log
 from cosima_core.util.general_config import ROOT_PATH
@@ -26,7 +26,7 @@ class ReplyAgent(Agent):
 
     async def reply_to_msg(self, receiver_id, receiver_addr, last_content):
         log(f'ReplyAgent {self.aid} replies to message. ')
-        await self._container.send_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
+        await self.context.send_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
                                            acl_metadata={'sender_id': self.aid},
                                            create_acl=True, content=self.get_next_content(last_content))
 

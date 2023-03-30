@@ -19,6 +19,7 @@ To get the idea of cosima, we recommend reading :doc:`Overview`.
 
    Overview
    Installation
+   Tutorial
    Scenarios
    Synchronization
    MessageTypes

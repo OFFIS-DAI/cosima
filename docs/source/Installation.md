@@ -86,10 +86,14 @@ To set up testing in python follow these steps:
 For further information see [info](https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest).
 
 ## Optional: Google-Test and Google-Mock
-In the [test folder in OMNeT++](../../cosima_omnetpp_project/tests) the unit tests for OMNeT++ can be found. 
-The framework Google Test with Google Mock is used for implementation 
-(see [googletest](https://github.com/google/googletest/blob/main/googletest/README.md)).
-For installing Google Test:
+The process of testing is performed with the unit-testing Framework [Google Test](https://github.com/google/googletest/blob/main/googletest/README.md) with Google Mock. 
+It is generally used to test different functionalities of the cosima project like the AgentApps, the MosaikScenarioManager or the Scheduler Module. 
+Because the tests do not include the functionalities of the Networks itself, there is no need to execute them, when implementing a new Network. 
+For this reason, the tests are excluded from being executed in OMNeT++ by default.
+
+### Installing Google Test
+The following commands can be used to install the Google Test framework under a Linux distribution.
+Google Test must be installed, to run any of the tests but is not necessary to execute the project itself.
 ```bash
 git clone https://github.com/google/googletest.git -b release-1.11.0
 cd googletest
@@ -107,10 +111,22 @@ sudo cmake CMakeLists.tx
 sudo make
 sudo make install
 ```
-For executing the tests the following steps must be executed:
-* include  [test folder in OMNeT++](../../cosima_omnetpp_project/tests) in build
-* under "Project Properties -> OMNeT++ -> Makemake -> Options -> Link -> Additional objects to link with" add the 
-  following dependencies: 
-  * -lgmock -lgtest -lpthread
-* rebuild project 
-* when executing, now the test files will be executed 
+
+### Include the Tests and execute them
+Executing the tests is possible by doing the following steps...
+
+1. Including the tests folder
+To perform Tests for the cosima project first you have to include them in the OMNeT++ Framework. 
+To do so, right-click on the folder [tests](../../cosima_omnetpp_project/tests) and then go to Resource Configuration -> Exclude from Build. 
+In the newly opened window you now can uncheck the boxes for the configuration, that you want to perform the tests on. 
+By default, both the configuration for the debug and release mode should be checked.
+
+![excluding of folders](../../docs/source/images/exclude.PNG)
+
+2. Update dependencies
+Next up we have to make sure, that the compiler uses the Google Test libraries, when executinmg the project. 
+Under the Project Properties of our cosima_omnetpp_project, we have to click on OMNeT++ -> Makemake -> Options -> Link -> Additional objects to link with. 
+Here you have to add the following dependencies (-lgmock -lgtest -lpthread). 
+Now all that is left, is to rebuild the project and then executing it. The Tests should now be performed with the rest of the project.
+
+![updating dependencies](../../docs/source/images/makemake.PNG)

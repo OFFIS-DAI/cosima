@@ -51,7 +51,7 @@ void MosaikSchedulerModule::handleMessage(cMessage *msg){
             scheduler->log("MosaikSchedulerModule: received event in order to send info back to mosaik at time " + simTime().str());
             auto currentStep = 0U;
             currentStep = ceil(simTime().dbl()*1000);
-            scheduler->sendMsgGroupToMosaik(currentStep, false); //TODO: check!
+            scheduler->sendMsgGroupToMosaik(false);
             delete msg;
         }
     } else {

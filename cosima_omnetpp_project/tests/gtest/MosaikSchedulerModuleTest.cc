@@ -57,7 +57,7 @@ TEST_F(MosaikSchedulerModuleTest, TestHandleMessage) {
     schedulerModuleMock.handleMessage(new cMessage());
 
     // calling method with MosaikCtrlEvent (type 0: max advance event)
-    // -> sendToMosaik() should be called in scheduler
+    // -> sendToMosaik() should not be called in scheduler
     EXPECT_CALL(schedulerModuleMock.schedulerMock, sendToMosaik).WillOnce(testing::Return());
     MosaikCtrlEvent *maxAdvEvent = new MosaikCtrlEvent();
     maxAdvEvent->setCtrlType(0);
