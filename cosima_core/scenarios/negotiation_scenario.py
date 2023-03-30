@@ -1,6 +1,8 @@
 """
     Scenario file for tutorial of cosima.
 """
+from os.path import abspath
+from pathlib import Path
 from time import sleep
 
 import matplotlib.pyplot as plt
@@ -17,7 +19,7 @@ from scenario_config import NUMBER_OF_AGENTS, USE_COMMUNICATION_SIMULATION
 PORT = 4242
 SIMULATION_END = 10000
 START_MODE = 'cmd'
-NETWORK = 'LargeLTENetwork'
+NETWORK = 'StarTopologyNetwork'
 
 # Simulation configuration -> tells mosaik where to find the simulators
 SIM_CONFIG = {
@@ -37,7 +39,9 @@ SIM_CONFIG = {
 }
 THRESHOLD = 700
 CHECK_INBOX_INTERVAL = 50
-PV_DATA = '../../data/pv_paper.csv'
+# path to load content for agent messages from
+ROOT_PATH = Path(abspath(__file__)).parent.parent
+PV_DATA = str(ROOT_PATH.parent / 'data' / 'pv_paper.csv')
 
 INFRASTRUCTURE_CHANGES = [
     # {'type': 'Disconnect',

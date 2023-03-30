@@ -25,12 +25,19 @@ class OmnetppConnection:
 
     def start_connection(self):
         # Create a new thread to run the server
-        self.server = socketserver.TCPServer((self._servername, self._listener_port), self.handle_server_connection())
-        self.server_thread = threading.Thread(target=self.server.serve_forever)
-        self.server_thread.daemon = True
-
-        # Start the server thread
-        self.server_thread.start()
+        while True:
+            try:
+                self.server = socketserver.TCPServer((self._servername, self._listener_port),
+                                                     self.handle_server_connection())
+                self.server_thread = threading.Thread(target=self.server.serve_forever)
+                self.server_thread.daemon = True
+                # Start the server thread
+                self.server_thread.start()
+                return
+            except OSError as e:
+                log(f'Retry connecting because of error{e}')
+                os.system('fuser -k 4243/tcp')
+                time.sleep(5)
 
     def close_connection(self):
         log('close connection called')
@@ -47,6 +54,7 @@ class OmnetppConnection:
             print(f'Exception: {e}')
             pass
         os.system('killall -9 cosima_omnetpp_project')
+        os.system('fuser -k 4243/tcp')
 
     def send_messages(self, messages):
         sender_threads = list()

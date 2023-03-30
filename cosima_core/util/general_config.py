@@ -9,7 +9,6 @@ ROOT_PATH = Path(abspath(__file__)).parent.parent
 
 # path to data for pv plant
 PV_DATA = str(ROOT_PATH.parent / 'data' / 'pv_10kw.csv')
-# PV_DATA = '../../data/pv_10kw.csv'
 START = '2014-01-01 10:00:00'
 
 HOUSEHOLD_DATA = str(ROOT_PATH.parent / 'data' / 'household.data')
@@ -19,7 +18,7 @@ GRID_NAME = "large grid"
 CHP_DATA = str(ROOT_PATH.parent / 'data')
 
 # path to store results to
-RESULTS_FILENAME = '../results/result_'
+RESULTS_FILENAME = str(ROOT_PATH.parent / 'results' / 'result')
 
 # port for OMNeT++ connection
 PORT = 4242
