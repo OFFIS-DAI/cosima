@@ -13,7 +13,6 @@ from mango_library.negotiation.cohda.cohda_starting import CohdaNegotiationDirec
 from mango_library.negotiation.termination import NegotiationTerminationDetectorRole, \
     NegotiationTerminationParticipantRole
 
-from cosima_core.simulators.mango_example.reply_agent import ReplyAgent
 from cosima_core.simulators.mango_example.unit_agent import UnitAgent
 from cosima_core.util.general_config import CONNECT_ATTR
 from cosima_core.util.util_functions import log

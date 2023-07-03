@@ -4,6 +4,7 @@ Tutorial
 
 .. _cosima gitlab repository: https://gitlab.com/mosaik/examples/cosima
 .. _OMNeT’s website: https://docs.omnetpp.org/tutorials/tictoc/
+.. _mango website: https://gitlab.com/mango-agents
 
 In this tutorial, you will be guided through multiple examples, on how cosima integrates the (communication) simulator
 OMNeT++ into the co-simulation framework mosaik and on how to set up your own scenarios and simulators.
@@ -13,7 +14,7 @@ as well as showing how agents are connected to mosaik through a simple scenario.
 The tutorial is based on scenarios, which you can find under ``cosima_core/scenarios/tutorial/`` in the official
 `cosima gitlab repository`_.
 To check if your installation (for details see ``README.md``) was successful,
-you can run ``cosima_core/scenarios/tutorial/simulators_and_connection_to_omnet.py``.
+you can run ``cosima_core/scenarios/tutorial/01_simulators_and_connection_to_omnet.py``.
 
 However, this requires a basic understanding of how ONNeT++ works.
 Therefore, it is recommended, that new users first try out the TicToc example from `OMNeT’s website`_.
@@ -38,43 +39,42 @@ That means, to send and receive messages, we first have to create an agent, that
 To do that, first create a python file under ``cosima_core/simulators`` named ``agent_simulator.py``.
 Next put the following lines into that file:
 
-.. code-block:: python
-    :linenos:
+    ::
 
-    import mosaik_api
+        import mosaik_api
 
-    META = {
-        'api_version': '3.0',
-        'type': 'event-based',
-        'models': {
-            'SimpleAgentModel': {
-                'public': True,
-                'params': [],
-                'attrs': ['message'],
+        META = {
+            'api_version': '3.0',
+            'type': 'event-based',
+            'models': {
+                'SimpleAgentModel': {
+                    'public': True,
+                    'params': [],
+                    'attrs': ['message'],
+                },
             },
-        },
-    }
+        }
 
-    class SimpleAgent(mosaik_api.Simulator):
-        def __init__(self):
-            super().__init__(META)
-            self._sid = None
-            self._client_name = None
-            self._msg_counter = 0
-            self._outbox = []
-            self._output_time = 0
-            self._neighbor = None
-            self._connection_attr = None
+        class SimpleAgent(mosaik_api.Simulator):
+            def __init__(self):
+                super().__init__(META)
+                self._sid = None
+                self._client_name = None
+                self._msg_counter = 0
+                self._outbox = []
+                self._output_time = 0
+                self._neighbor = None
+                self._connection_attr = None
 
-        def init(self, sid, **sim_params):
-            self._sid = sid
-            self._connection_attr = sim.params.get(“connect_attr”)
-            if 'client_name' in sim_params.keys():
-                self.meta['models']['SimpleAgentModel']['attrs'].append(f'{self.connect_attr}{sim_params["client_name"]}')
-                self._client_name = sim_params['client_name']
-            if 'neighbor' in sim_params.keys():
-                self._neighbor = sim_params['neighbor']
-            return META
+            def init(self, sid, **sim_params):
+                self._sid = sid
+                self._connection_attr = sim.params.get(“connect_attr”)
+                if 'client_name' in sim_params.keys():
+                    self.meta['models']['SimpleAgentModel']['attrs'].append(f'{self.connect_attr}{sim_params["client_name"]}')
+                    self._client_name = sim_params['client_name']
+                if 'neighbor' in sim_params.keys():
+                    self._neighbor = sim_params['neighbor']
+                return META
 
 .. _mosaik simulator: https://mosaik.offis.de/docs/
 
@@ -254,25 +254,24 @@ We start by creating the mosaic World as well as mapping the attributes of our t
 With this, now both simulations can be running simultaneously and in sync.
 Now we can add and start our clients by instantiate our agents:
 
-.. code-block:: python
-    :linenos:
+    ::
 
-    simple_agent_1 = world.start('SimpleAgent',
-                                 content_path=CONTENT_PATH,
-                                 client_name='client0',
-                                 neighbor='client1'
-                                 connection_attr=’message_with_delay_for_’).SimpleAgentModel()
+        simple_agent_1 = world.start('SimpleAgent',
+                                     content_path=CONTENT_PATH,
+                                     client_name='client0',
+                                     neighbor='client1'
+                                     connection_attr=’message_with_delay_for_’).SimpleAgentModel()
 
-    simple_agent_2 = world.start('SimpleAgent',
-                                 content_path=CONTENT_PATH,
-                                 client_name='client1',
-                                 neighbor='client0'
-                                 connection_attr=’message_with_delay_for_’).SimpleAgentModel()
+        simple_agent_2 = world.start('SimpleAgent',
+                                     content_path=CONTENT_PATH,
+                                     client_name='client1',
+                                     neighbor='client0'
+                                     connection_attr=’message_with_delay_for_’).SimpleAgentModel()
 
-    comm_sim = world.start('CommunicationSimulator',
-                           step_size=1,
-                           port=cfg.PORT,
-                           client_attribute_mapping=client_attribute_mapping).CommunicationModel()
+        comm_sim = world.start('CommunicationSimulator',
+                               step_size=1,
+                               port=cfg.PORT,
+                               client_attribute_mapping=client_attribute_mapping).CommunicationModel()
 
 This will call the ``create`` and ``init`` functions, we created in our agent implementation and thereby setting up the clients with our defined messages.
 Even though we just want to use our two clients in our scenario, we actually have to set up one more Simulator, the so called CommunicationSimulator.
@@ -805,3 +804,283 @@ At the end of the scenario file you can use the ``ScenarioHelper`` again to run 
 
 Also note, that we have now used the ``scenario_config.py`` for the configuration of the scenario.
 In that config file you can specify parameters such as the number of communicating agents and the start mode of OMNeT++.
+
+Part 3: Integrating the agent framework mango
+=============================================
+This tutorial explains how to integrate the agent framework mango into a co-simulation using cosima.
+mango is a framework for agent-based simulations. Detailed information can be found at the `mango website`_.
+
+Prerequisites
+-------------
+
+Before you begin this tutorial, make sure you have the following:
+
+1. mango-agents and mango-library libraries installed. You can install them using pip:
+
+   ::
+
+       pip install mango-agents mango-library
+
+2. make yourself comfortable with using mango. Try to execute their tutorials at `mango website`_.
+
+Scenario Setup
+--------------
+
+1. Create a new Python file and name it `mango_simulation_scenario.py`. The according file can be found at ``cosima_core/scenarios/tutorial/03_integrating_the_agent_framework_mango.py``
+
+2. Import the necessary modules:
+
+   ::
+
+       from copy import deepcopy
+       from cosima_core.messages.mango_messages import AlphabetMessage
+       from cosima_core.simulators.mango_example.simple_roles import ActiveRole, PassiveRole
+       from cosima_core.util.scenario_setup_util import ScenarioHelper
+       from cosima_core.util.util_functions import get_host_names
+       from mango.messages.codecs import JSON
+       from mango_library.negotiation.util import cohda_serializers
+       import scenario_config
+       import cosima_core.util.general_config as cfg
+
+3. Define the simulation configuration and other parameters as learned in Part 2:
+
+   ::
+
+       sim_config = {
+           'ContainerSim': {
+               'python': 'cosima_core.simulators.mango_example.container_sim:ContainerSimulator',
+           },
+       }
+
+4. Initialize the scenario helper as learned in Part 2:
+
+   ::
+
+       scenario_helper = ScenarioHelper()
+       world, communication_simulator, client_attribute_mapping, sim_config = \
+           scenario_helper.prepare_scenario(sim_config=sim_config)
+
+5. Initialize the JSON codec for mango and register the necessary serializers:
+
+   ::
+
+       codec = JSON()
+       for serializer in cohda_serializers:
+           codec.add_serializer(*serializer())
+       codec.add_serializer(*AlphabetMessage.__serializer__())
+
+6. Generate container simulators and their agents. Each ContainerSimulator needs to know its neighbors for message exchange in mango. In this example we are using two kinds of agents - an active agent that starts message exchange and a passive agent that responds to messages from the active agent. In mango you can use roles for the definition of the agent behaviour. Therefore, we define an ActiveRole and a PassiveRole:
+
+   ::
+
+       agent_models = {}
+       client_names = get_host_names(num_hosts=scenario_config.NUMBER_OF_AGENTS)
+       client_agent_mapping = {
+           'client0': 'activeAgent',
+           'client1': 'replyAgent'
+       }
+
+       port = 5876
+       # Instantiate container sim model
+       for idx in range(scenario_config.NUMBER_OF_AGENTS):
+           current_container_name = 'client' + str(idx)
+
+           agent_roles = list()
+           neighbors = deepcopy(client_agent_mapping)
+           del neighbors[current_container_name]
+           neighbors = [(key, value) for key, value in neighbors.items()]
+
+           # Start simulators
+           if idx == 0:
+               agent_roles.append(ActiveRole(neighbors))
+           else:
+               agent_roles.append(PassiveRole(neighbors))
+           agent_models[current_container_name] = \
+               world.start('ContainerSim', client_name=current_container_name, port=port, agent_roles=agent_roles,
+                           client_names=client_names, client_agent_mapping=client_agent_mapping,
+                           conversion_factor=cfg.MANGO_CONVERSION_FACTOR, codec=codec).ContainerModel()
+           port += 1
+
+7. Connect the entities:
+
+   If communication simulation is enabled:
+
+   ::
+
+       if scenario_config.USE_COMMUNICATION_SIMULATION:
+           # Connect entities
+           for name in agent_models:
+               world.connect(agent_models[name], communication_simulator, f'message', weak=True)
+               world.connect(communication_simulator, agent_models[name], client_attribute_mapping[name])
+
+   If communication simulation is not enabled:
+
+   ::
+
+       else:
+           world.connect(agent_models['client0'], agent_models['client1'], f'message', weak=True)
+           world.connect(agent_models['client1'], agent_models['client0'], f'message')
+
+8.
+
+ Set the initial event:
+
+   ::
+
+       world.set_initial_event(agent_models['client0'].sid, time=0)
+
+9. Run the simulation:
+
+   ::
+
+       scenario_helper.run_simulation()
+
+10. Shutdown the simulation:
+
+    ::
+
+        scenario_helper.shutdown_simulation()
+
+
+Implementation of mango roles
+-----------------------------
+In this section, we will explore the implementation of the `SimpleRoles` using the mango agent framework.
+The `SimpleRoles` implementation consists of three classes: `SimpleRole`, `ActiveRole`, and `PassiveRole`.
+These classes define the behavior and interaction of agents in the simulation.
+To organize the code and maintain modularity, we will implement the `SimpleRoles` in a separate file.
+The reference file might be found in the folder ``cosima_core/simulators/tutorial/`` called `simple_roles.py`.
+Let's create the `simple_roles.py` file.
+
+Let's delve into the code of the `SimpleRoles` implementation to understand its functionality and how the agents
+interact with each other.
+
+The `SimpleRoles` implementation consists of three classes: `SimpleRole`, `ActiveRole`, and `PassiveRole`.
+Each class inherits from the `Role` class provided by the mango agent framework.
+
+1. Implementing the SimpleRole
+
+The `SimpleRole` class is the base class for both the active and passive roles.
+
+    ::
+
+        class SimpleRole(Role):
+
+            def __init__(self, neighbors):
+                super().__init__()
+                self._neighbors = neighbors
+                self._content_to_send = None
+                self._content_to_send = pd.read_csv(CONTENT_PATH, delimiter=';', encoding="utf-8-sig")["content"].to_list()
+
+            def setup(self) -> None:
+                super().setup()
+                # subscribe messages
+                self.context.subscribe_message(
+                    self, self._handle_alphabet_message, lambda content, meta: isinstance(content, AlphabetMessage)
+                )
+
+            def _handle_alphabet_message(self, content, meta):
+                self.context.schedule_instant_task(
+                    self.reply_to_msg(receiver_id=meta['sender_id'], receiver_addr=meta['sender_addr'], last_content=content))
+
+            async def reply_to_msg(self, receiver_id, receiver_addr, last_content):
+                log(f'ActiveAgent {self.context.aid} replies to message. ')
+                await self.context.send_acl_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
+                                                    acl_metadata={'sender_id': self.context.aid},
+                                                    create_acl=True, content=self.get_next_content(last_content))
+
+            def get_next_content(self, message):
+                """
+                Select next message content for a given content (message) according
+                to content saved in content_to_send.
+                """
+                if message in self._content_to_send:
+                    index = self._content_to_send.index(message)
+                    if index + 1 >= len(self._content_to_send):
+                        content = self._content_to_send[0]
+                    else:
+                        content = self._content_to_send[index + 1]
+                else:
+                    # No matching entry found in content list,
+                    # therefore start with line 0.
+                    content = self._content_to_send[0]
+                return content
+
+It initializes the `neighbors` attribute, which represents the neighboring agents that the agent can interact with.
+It also reads the content from a CSV file and stores it in the `_content_to_send` attribute.
+
+The `setup()` method is called when the role is set up in the simulation.
+It subscribes to messages by using the `subscribe_message()` method provided by the mango agent framework.
+In this case, it subscribes to messages of type `AlphabetMessage`.
+
+The `_handle_alphabet_message()` method is the message handler for `AlphabetMessage`.
+It is called when an `AlphabetMessage` is received.
+It schedules an instant task to reply to the message by calling the `reply_to_msg()` method.
+
+The `reply_to_msg()` method is an asynchronous method that sends a reply to the sender of the message.
+It logs the reply and uses the `send_acl_message()` method to send an ACL message to the receiver.
+It includes the next content to send based on the received message by calling the `get_next_content()` method.
+
+The `get_next_content()` method selects the next message content based on the received message.
+It checks if the received message exists in the `_content_to_send` list and retrieves the next content accordingly.
+If the received message is not found in the list, it starts from the beginning.
+
+2. Implementing the ActiveRole
+
+The `ActiveRole` class is a subclass of `SimpleRole` and represents the active role in the simulation.
+In addition to the functionality inherited from `SimpleRole`, it overrides the `setup()` method.
+After setting up the base class, it further subscribes to messages of type `AlphabetMessage` and schedules an instant
+task to greet all neighbors.
+
+    ::
+
+        class ActiveRole(SimpleRole):
+
+            def __init__(self, neighbors):
+                super().__init__(neighbors)
+
+            def setup(self) -> None:
+                super().setup()
+                # subscribe messages
+                self.context.subscribe_message(
+                    self, self._handle_alphabet_message, lambda content, meta: isinstance(content, AlphabetMessage)
+                )
+                self.context.schedule_instant_task(self.greet_all_neighbors())
+
+            async def greet_all_neighbors(self):
+                log('Greet all neighbors. ')
+                for neighbor in self._neighbors:
+                    log(f'ActiveAgent sends message to {neighbor}')
+                    await self.context.send_acl_message(AlphabetMessage(content='Lets go through the alphabet!'),
+                                                        receiver_addr=neighbor[0], receiver_id=neighbor[1],
+                                                        acl_metadata={'sender_id': self.context.aid},
+                                                        create_acl=True)
+
+
+The `greet_all_neighbors()` method is an asynchronous method that sends an `AlphabetMessage`
+with the content "Let's go through the alphabet!" to all neighbors.
+It uses the `send_acl_message()` method to send the message to each neighbor.
+
+3. Implementing the PassiveRole
+
+The `PassiveRole` class is another subclass of `SimpleRole` and represents the passive role in the simulation.
+It inherits the `setup()` method from the base class.
+
+    ::
+
+        class PassiveRole(SimpleRole):
+
+            def __init__(self, neighbors):
+                super().__init__(neighbors)
+
+            def setup(self) -> None:
+                super().setup()
+
+
+These classes demonstrate how agents can interact with each other using the mango agent framework.
+The `SimpleRole` acts as the base for both active and passive roles,
+while the `ActiveRole` and `PassiveRole` define additional behavior specific to their respective roles.
+
+Feel free to modify and extend these classes according to your simulation requirements.
+The modular structure allows you to customize the behavior of agents and define their interactions within the simulation.
+
+

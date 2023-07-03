@@ -548,7 +548,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
         trafficEvent->setInterval(trafficMessage.interval());
         trafficEvent->setPacketLength(trafficMessage.packet_length());
         auto arrivalTime = (trafficMessage.start() * 1.0) / 1000;
-        trafficEvent->setArrival(scenarioManagerObject->getId(), -1, simTime());
+        trafficEvent->setArrival(scenarioManagerObject->getId(), -1, arrivalTime);
         log("MosaikScheduler: traffic event inserted for simtime " + std::to_string(arrivalTime) + " for " + trafficMessage.source() + " to " + trafficMessage.destination() + ".");
         getSimulation()->getFES()->insert(trafficEvent);
     }

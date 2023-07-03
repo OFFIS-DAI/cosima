@@ -28,6 +28,7 @@ To get the idea of cosima, we recommend reading :doc:`Overview`.
    Networks
    MosaikScheduler
    AgentApps
+   Coupling_with_mango
    Privacy
    Legals
    Datenschutz
