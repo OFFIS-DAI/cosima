@@ -35,7 +35,7 @@ NETWORK = 'SimpleNetworkTCP'
 # or router. Also add the number of the certain module, f.e. client1
 INFRASTRUCTURE_CHANGES = [
     #     {'type': 'Disconnect',
-    #      'time': 2,
+    #      'start': 2,
     #      'module': 'client1'}
 ]
 

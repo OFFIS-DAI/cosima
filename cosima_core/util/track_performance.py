@@ -4,7 +4,7 @@ import time
 import psutil
 import matplotlib.pyplot as plt
 
-from cosima_core.util.general_config import ROOT_PATH
+from cosima_core.config import ROOT_PATH
 
 
 class PerformanceTracker(object):

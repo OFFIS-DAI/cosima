@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from cosima_core.messages.mango_messages import AlphabetMessage
-from cosima_core.simulators.mango_example.simple_roles import ActiveRole, PassiveRole
+from cosima_core.simulators.tutorial.simple_roles import ActiveRole, PassiveRole
 from cosima_core.util.scenario_setup_util import ScenarioHelper
 from cosima_core.util.util_functions import get_host_names
 from mango.messages.codecs import JSON

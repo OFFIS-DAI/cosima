@@ -5,12 +5,12 @@ import random
 import pytest
 
 import scenario_config
-import cosima_core.scenarios.mango.mango_simple_scenario as mango_simple_scenario
 import cosima_core.scenarios.mango.mango_cohda_scenario as mango_cohda_scenario
 import cosima_core.scenarios.mango.mango_units_scenario as mango_units_scenario
 
 # change working directory because the main is called from the
 # test folder now
+from cosima_core.scenarios.mango import mango_simple_scenario
 from tests.integration_tests.util_functions_for_test import terminate_test_process
 
 cwd = os.path.abspath(os.path.dirname(__file__))

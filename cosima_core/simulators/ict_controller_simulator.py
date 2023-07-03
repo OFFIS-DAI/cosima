@@ -83,10 +83,9 @@ class ICTController(mosaik_api.Simulator):
                 log(f"ICTController: Send traffic information to OMNeT++ at time {next_event_time}.", "info")
                 outputs.append({
                     'msg_id': f'ICTController_Traffic_{self._traffic_counter}',
-                    'sim_time': event['start'] + 1,
+                    'sim_time': event['start'],
                     'source': event['source'],
                     'destination': event['destination'],
-                    'start': event['start'] + 1,
                     'stop': event['stop'],
                     'interval': event['interval'],
                     'packet_length': event['packet_length']
@@ -112,7 +111,7 @@ class ICTController(mosaik_api.Simulator):
                     'stop': event['stop'],
                 })
                 self._attack_counter += 1
-        data = {self.eid: {f'ict_message': outputs}, 'time': next_event_time + 1}
+        data = {self.eid: {f'ict_message': outputs}, 'time': self._current_time + 1}
         self._events = [event for event in self._events if event not in next_events]
 
         return data
