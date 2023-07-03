@@ -100,6 +100,8 @@ class Agent(mosaik_api.Simulator):
                     if type(values) is list:
                         for msg in values:
                             if msg['receiver'] == self.eid:
+                                if 'is_falsified' in msg.keys():
+                                    log(f'{self.eid} received falsified message.', 'info')
                                 if msg['sim_time'] < time:
                                     raise RuntimeError(
                                         f'Agent {self.agent_name} received message'

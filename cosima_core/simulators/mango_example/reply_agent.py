@@ -19,16 +19,16 @@ class ReplyAgent(Agent):
     def start(self):
         log('Starting ReplyAgent.')
 
-    def handle_msg(self, content, meta: Dict[str, Any]):
+    def handle_message(self, content, meta: Dict[str, Any]):
         log(f'ReplyAgent received message with content "{content}"')
         self.schedule_instant_task(
             self.reply_to_msg(receiver_id=meta['sender_id'], receiver_addr=meta['sender_addr'], last_content=content))
 
     async def reply_to_msg(self, receiver_id, receiver_addr, last_content):
         log(f'ReplyAgent {self.aid} replies to message. ')
-        await self.context.send_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
-                                           acl_metadata={'sender_id': self.aid},
-                                           create_acl=True, content=self.get_next_content(last_content))
+        await self.send_acl_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
+                                    acl_metadata={'sender_id': self.aid},
+                                    create_acl=True, content=self.get_next_content(last_content))
 
     def get_next_content(self, message):
         """

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scenarios &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Synchronization of OMNeT++ and mosaik" href="Synchronization.html" />
+    <link rel="prev" title="Tutorial" href="Tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scenarios</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general-conditions">General Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#networks">Networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-configurations">Dynamic configurations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-of-agents">Configuration of agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-own-scenarios">Create own scenarios</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Scenarios</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Scenarios.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scenarios">
+<h1>Scenarios<a class="headerlink" href="#scenarios" title="Permalink to this heading"></a></h1>
+<p>It is possible to simulate different scenarios. In the
+following, the parameters to configure these scenarios are
+described. The parameters are set in the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py">scenario configuration file</a>.</p>
+<section id="general-conditions">
+<h2>General Conditions<a class="headerlink" href="#general-conditions" title="Permalink to this heading"></a></h2>
+<p>For the general conditions of the scenarios, it is possible to adapt the
+<strong>step size</strong> of the simulation. This parameter is set in milliseconds and
+determines the size of one mosaik step. For example, a step size of 10 would
+mean that one mosaik step refers to 10 milliseconds. This also influences
+the time in OMNeT++, since the configuration of the step size will also be
+taken into acoount on this side.
+Furthermore, it is possible to set the duration of the simulation by setting
+the end of the simulation (<strong>until</strong> in mosaik, see: <a class="reference internal" href="Synchronization.html"><span class="std std-doc">Explanation of until</span></a>).</p>
+</section>
+<section id="networks">
+<h2>Networks<a class="headerlink" href="#networks" title="Permalink to this heading"></a></h2>
+<p>To create a scenario, a network to simulate needs to be chosen. See a detailed
+<a class="reference internal" href="Networks.html"><span class="std std-doc">description of the provided networks</span></a>. It is possible to
+simulate UDP and TCP networks.
+The network files can be found in the
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/tree/master/cosima_omnetpp_project/networks">networks folder</a>.</p>
+<section id="dynamic-configurations">
+<h3>Dynamic configurations<a class="headerlink" href="#dynamic-configurations" title="Permalink to this heading"></a></h3>
+<p>It is possible to do some infrastructure changes for the simulated network.
+In concrete terms that means that some elements (clients, routers and switches)
+can be disconnected and reconnected. For this, only the time and the selected element must be
+specified. It is possible to reconnect and connect the same element multiple times. The dynamic
+(re)configurations can be integrated by the <a class="reference internal" href="ICTController.html"><span class="std std-doc">ICT Controller</span></a>.</p>
+</section>
+</section>
+<section id="configuration-of-agents">
+<h2>Configuration of agents<a class="headerlink" href="#configuration-of-agents" title="Permalink to this heading"></a></h2>
+<p>To choose a configuration for the agents in the scenario, the <strong>number of agents</strong> to be simulated can be set.
+The number of agents depends on the used network. Currently, networks for 2-50 agents are stored. It is possible
+to extend these or use your own networks (see <a class="reference internal" href="Networks.html"><span class="std std-doc">Networks</span></a>).
+Thus, it is possible to have a <strong>parallel</strong> setting or not. If this is not the case, only one agent starts
+to interact with others by sending messages to which they then respond.
+With parallel setting, a second agent begins an interaction with other
+agents by sending them a message one step later than the first
+agent. Therefore, if parallel sending is simulated, two agents send messages
+simultaneously and time-shifted. The number of steps in time difference can be set via the offset parameter.</p>
+<p>Additionally, it is possible to consider <strong>PV plants</strong> in the scenario. A
+simulated PV plant is given a csv-file with power values for a given time.
+During the simulation, the PV plant always takes the current power value from this
+list according to the current simulation time and forwards it to the agent via
+mosaik. The associated agent responds with an acknowledgement that is sent
+back to the plant via mosaik. At this point, the agent could make adjustments
+or take control measures for the plant. Each simulated agent can be connected to
+a PV plant.</p>
+<p>Furthermore, some calculation times for the agents can be simulated. In that case,
+the agents would not send the answer directly to other agents, but first wait
+for the given calculation time and then send their answer. This affects subsequent
+responses from other agents, as they receive the message to respond at a later time.
+Thus, changes in the simulation due to higher
+calculation times can be investigated.</p>
+</section>
+<section id="create-own-scenarios">
+<h2>Create own scenarios<a class="headerlink" href="#create-own-scenarios" title="Permalink to this heading"></a></h2>
+<p>To create own scenarios, it is necessary to define the communication connections, which should be simulated in OMNeT++ and the hosts,
+which should be represented in OMNeT++.
+To define the connections which should be considered in the simulation in OMNeT++, the implemented models or
+simulators need to be connected to the <a class="reference internal" href="CommunicationSimulator.html"><span class="std std-doc">CommunicationSimulator</span></a>. The attribute for the connection via
+mosaik can be set in the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/util/general_config.py">general configuration file</a>: <em>CONNECT_ATTR</em>. To create the entities
+which should be represented as hosts, the method <em>‘get_host_names’</em> in <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/util/util_functions.py">util functions</a>
+can be used. This method creates the corresponding names in OMNeT++ for the given number of hosts.
+For each host in OMNeT++, one CommunicationModel is created, which represents this instance. It is necessary
+that these models know the name of the OMNeT++ host.
+When the CommunicationSimulator is created, a mapping between the hosts and the connect attributes from
+mosaik is necessary (a dictionary like: <em>[‘host0’: ‘connect_attr_for_host0’, ..]</em>) to create the CommunicationModels. An example
+to create this can be found in the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/scenarios/communication_scenario.py">communication_scenario</a>, where the <em>‘client_attribute_mapping’</em> is created.
+Depending on the scenario, it could be necessary to create a separate attribute for each host, since each model
+(or simulator) that is connected to the CommunicationSim via the attribute receives all messages sent via this attribute.
+In order to send messages only to one certain host, the name of the host could be included in the attribute
+(this has been implemented in the same way in the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/scenarios/communication_scenario.py">communication_scenario</a>).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Synchronization.html" class="btn btn-neutral float-right" title="Synchronization of OMNeT++ and mosaik" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

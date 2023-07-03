@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="Installation.html" />
+    <link rel="prev" title="Welcome to cosima’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general-simulation-architecture">General Simulation Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-a-scenario">Configure a Scenario</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-steps-and-parameters">Configuration Steps and Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#run-simulation">Run simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modelling-a-new-network-in-omnet">Modelling a new network in OMNeT++</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Overview.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h1>
+<p>To get started with cosima, we have included an examplary (yet already quite complicated) scenario (<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/communication_scenario.py">communication scenario</a>).
+This can be used to reconstruct the coupling between OMNeT++ and mosaik.
+The communication scenario can be configured by the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py">scenario configuration file</a>.
+The general idea and the configuration of scenarios are described in the following sections. <br />
+However, there are detailled descriptions available for the general scenario configuration and synchronisation in <a class="reference internal" href="Scenarios.html"><span class="std std-doc">Scenarios</span></a>,
+<a class="reference internal" href="Synchronization.html"><span class="std std-doc">Synchronization</span></a> and <a class="reference internal" href="MessageTypes.html"><span class="std std-doc">MessageTypes</span></a>. <br />
+The components of mosaik are described in <a class="reference internal" href="CommunicationSimulator.html"><span class="std std-doc">CommunicationSimulator</span></a> and <a class="reference internal" href="ICTController.html"><span class="std std-doc">ICT-Controller</span></a>. <br />
+The components of OMNeT++ are described in  <a class="reference internal" href="Networks.html"><span class="std std-doc">Networks</span></a>, <a class="reference internal" href="MosaikScheduler.html"><span class="std std-doc">MosaikScheduler</span></a> and <a class="reference internal" href="AgentApps.html"><span class="std std-doc">AgentApps</span></a>.</p>
+<section id="general-simulation-architecture">
+<h2>General Simulation Architecture<a class="headerlink" href="#general-simulation-architecture" title="Permalink to this heading"></a></h2>
+<p>cosima consists of a mosaik and an OMNeT++ side.
+On the mosaik side, agent simulators,
+a <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/communication_simulator.py">communication simulator</a> and a
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/collector.py">collector</a> are implemented. In OMNeT++ you find
+the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h">MosaikScheduler</a> which is responsible for message exchange with mosaik via
+TCP socket. The <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppUdp.cc">AgentApp</a> and
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.cc">AgentAppTcp</a> represent the implementation of the application layer
+(and transport layer) of the end devices, which represent the agents from mosaik on the OMNeT++ side. Example networks
+can also be found in the project folder. The executable file in OMNeT++
+is <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/mosaik.ini">mosaik.ini</a>.
+The integration is shown schematically in: <img alt="image" src="_images/architecture.png" />
+When an agent in mosaik sends a message to another agent, it does so through the agent simulator entities. Thus,
+client0 sends a message to client1 at time t1. However, this message is first received in the same step in
+mosaik by the CommunicationSimulator, which sends the message as a Protobuf object to OMNeT++ over a TCP connection. When the message
+is sent, the simTime in mosaik and the value max_advance is passed from mosaik to OMNeT++. This value specifies how far
+OMNeT++ may simulate until potentially new information could be available in mosaik. In OMNeT++ the message is received
+by the MosaikScheduler, which extracts the message content and inserts it as an event into the FES at the given simTime
+from mosaik. In addition, the value of max_advance is also inserted as an event. Now OMNeT++ simulates the message
+dispatch from client0 to client1 over the INET network. The resulting delay time is sent back to the MosaikScheduler and
+thus to mosaik. In mosaik the message is given to client1 after the determined end-to-end delay in OMNeT++.</p>
+</section>
+<section id="configure-a-scenario">
+<h2>Configure a Scenario<a class="headerlink" href="#configure-a-scenario" title="Permalink to this heading"></a></h2>
+<p>In the following, the simulations are described (see also <a class="reference internal" href="Scenarios.html"><span class="std std-doc">Scenarios</span></a> ), which can be performed by adapting the aforementioned <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py">scenario configuration file</a>.
+From the given networks it is possible to simulate the scenario with more than 2 agents (limited by the amount of clients in the selected OMNeT++ Network). If a correspondingly larger network
+is modeled, larger agent numbers are also possible.<br />
+Furthermore, it is possible to simulate non-parallel and parallel message
+sending behaviour. If parallel sending is simulated, two agents send messages simultaneously and time-shifted with 1 step difference.
+It is also possible to add a PV plant to the simulation. PV plants can be connected to agents and read their current power values from
+a given csv-file. Every 15 minutes, a new value is read and sent to the corresponding agent. The agent replies with an acknowledgement to
+this value.
+Moreover, some changes in the infrastructure can be simulated. It is possible to set times for disconnects and reconnects for clients, routers
+and switches.
+In addition, long calculation times can be passed for the agents.
+Multiple networks are implemented, for example to simulate TCP or UDP connections.</p>
+<section id="configuration-steps-and-parameters">
+<h3>Configuration Steps and Parameters<a class="headerlink" href="#configuration-steps-and-parameters" title="Permalink to this heading"></a></h3>
+<p>Create a folder ‘results’ under mosaik-integration (mosaik-integration/results).
+Before starting a simulation, choose simulation parameters:</p>
+<ul class="simple">
+<li><p>the used step size for the simulation (f.e. ms),</p></li>
+<li><p>the end time of the simulation (therefore the simulation duration),</p></li>
+<li><p>the number of agents,</p></li>
+<li><p>paths to store the simulation results and to load the content of the agent messages,</p></li>
+<li><p>the port to connect to OMNeT++,</p></li>
+<li><p>parallel or not,</p></li>
+<li><p>verbose or not to display information of the simulation run,</p></li>
+<li><p>the start mode,</p></li>
+<li><p>the simulated network,</p></li>
+<li><p>agents to be connected to pv plants,</p></li>
+<li><p>infrastructure changes,</p></li>
+<li><p>calculating times</p></li>
+<li><p>time-based or not (default is not time-based, as this is more performant).</p></li>
+</ul>
+</section>
+</section>
+<section id="run-simulation">
+<h2>Run simulation<a class="headerlink" href="#run-simulation" title="Permalink to this heading"></a></h2>
+<p>There exist different ways to run a simulation. In the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py">scenario configuration file</a>, it is possible to choose from ‘ide’, ‘qtenv’ and ‘cmd’ as start mode.</p>
+<ul class="simple">
+<li><p>Ide: start the simulation in OMNeT++ by running <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/mosaik.ini">mosaik.ini</a> with your preferred network and
+start the co-simulation in mosaik by running the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/communication_scenario.py">scenario</a></p></li>
+<li><p>Qtenv: start mosaik by running the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/osima_core/communication_scenario.py">scenario</a>. From within python, OMNeT++ will be started and a window will pop up in which
+the network can be chosen and the simulation can be started.</p></li>
+<li><p>Cmd: start mosaik by running the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/communication_scenario.py">scenario</a>. OMNeT++ will be started automatically as a console application.
+<strong>(note: This only works properly if the project is compiled with clang)</strong></p></li>
+</ul>
+<p>Simulation results</p>
+<ul class="simple">
+<li><p>The exchanged messages are stored in folder results with timestamp of the simulation start as name of the csv-file.</p></li>
+</ul>
+</section>
+<section id="modelling-a-new-network-in-omnet">
+<h2>Modelling a new network in OMNeT++<a class="headerlink" href="#modelling-a-new-network-in-omnet" title="Permalink to this heading"></a></h2>
+<p>All of the provided <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks">networks</a> contain an instance of the
+<em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikSchedulerModule.h">MosaikSchedulerModule</a></em>.
+When modeling an additional network, this module must also be inserted into the network to enable the
+<em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h">MosaikScheduler</a></em> to operate. <br />
+In addition, an instance of the <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/osima_omnetpp_project/modules/MosaikScenarioManager.h">MosaikScenarioManager</a></em>
+should be inserted into the network if changes on the infrastructure (for example disconnecting or reconnecting clients)
+should be possible at simulation time. <br />
+The network description file (.ned file) of a network in OMNeT++ should contain the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>MosaikSchedulerModule<span class="p">;</span>
+import<span class="w"> </span>MosaikScenarioManager<span class="p">;</span>
+
+<span class="w">  </span>scenarioManager:<span class="w"> </span>MosaikScenarioManager<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="o">}</span>
+
+<span class="w">  </span>schedulerModule:<span class="w"> </span>MosaikSchedulerModule<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="o">}</span>
+</pre></div>
+</div>
+<p>If a new .ini-file in OMNeT++ is created, the scheduler class must be registered in the .ini-file of the OMNeT++-project.<br />
+<code class="docutils literal notranslate"><span class="pre">[General]</span> </code><br />
+<code class="docutils literal notranslate"><span class="pre">scheduler-class</span> <span class="pre">=</span> <span class="pre">&quot;MosaikScheduler&quot;</span></code></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to cosima’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

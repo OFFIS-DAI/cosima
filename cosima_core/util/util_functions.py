@@ -9,19 +9,15 @@ from simpy.io.codec import JSON
 from termcolor import colored
 
 from cosima_core.messages.message_pb2 import CosimaMsgGroup, InitialMessage, InfoMessage, SynchronisationMessage, \
-    InfrastructureMessage
+    InfrastructureMessage, TrafficMessage, AttackMessage
 import cosima_core.util.general_config as cfg
 import scenario_config
-
-cwd = os.path.abspath(os.path.dirname(__file__))
-new_wd = os.path.abspath(cwd + "/../")
-os.chdir(new_wd)
 
 
 def start_omnet(start_mode, network):
     command = f"./cosima_omnetpp_project -n ../inet4/src/inet -f " \
               f"mosaik.ini -c {network}"
-    cwd = '../cosima_omnetpp_project/'
+    cwd = str(cfg.ROOT_PATH.parent) + '/cosima_omnetpp_project/'
     omnet_process = None
     if start_mode == 'cmd':
         command = command + " -u Cmdenv"
@@ -99,6 +95,10 @@ def make_protobuf_message_for_type(msg_group, message_type, message_dict, messag
         protobuf_msg = msg_group.infrastructure_messages.add()
     elif message_type == SynchronisationMessage:
         protobuf_msg = msg_group.synchronisation_messages.add()
+    elif message_type == TrafficMessage:
+        protobuf_msg = msg_group.traffic_messages.add()
+    elif message_type == AttackMessage:
+        protobuf_msg = msg_group.attack_messages.add()
     else:
         raise RuntimeError("unknown message type")
     get_protobuf_message_from_dict(message_dict, protobuf_msg)

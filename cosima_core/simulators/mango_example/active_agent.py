@@ -21,25 +21,25 @@ class ActiveAgent(Agent):
         log('Starting ActiveAgent.')
         self.schedule_instant_task(self.greet_all_neighbors())
 
-    async def greet_all_neighbors(self):
-        log('Greet all neighbors. ')
-        for neighbor in self._neighbors:
-            log(f'ActiveAgent sends message to {neighbor}')
-            await self.context.send_message(receiver_addr=neighbor[0], receiver_id=neighbor[1],
-                                               acl_metadata={'sender_id': self.aid},
-                                               create_acl=True, content='Lets go through the alphabet!',
-                                               )
-
-    def handle_msg(self, content, meta: Dict[str, Any]):
+    def handle_message(self, content, meta: Dict[str, Any]):
         log(f'ActiveAgent received message with content "{content}"')
         self.schedule_instant_task(
             self.reply_to_msg(receiver_id=meta['sender_id'], receiver_addr=meta['sender_addr'], last_content=content))
 
+    async def greet_all_neighbors(self):
+        log('Greet all neighbors. ')
+        for neighbor in self._neighbors:
+            log(f'ActiveAgent sends message to {neighbor}')
+            await self.send_acl_message(receiver_addr=neighbor[0], receiver_id=neighbor[1],
+                                        acl_metadata={'sender_id': self.aid},
+                                        create_acl=True, content='Lets go through the alphabet!',
+                                        )
+
     async def reply_to_msg(self, receiver_id, receiver_addr, last_content):
         log(f'ActiveAgent {self.aid} replies to message. ')
-        await self.context.send_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
-                                           acl_metadata={'sender_id': self.aid},
-                                           create_acl=True, content=self.get_next_content(last_content))
+        await self.send_acl_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
+                                    acl_metadata={'sender_id': self.aid},
+                                    create_acl=True, content=self.get_next_content(last_content))
 
     def get_next_content(self, message):
         """

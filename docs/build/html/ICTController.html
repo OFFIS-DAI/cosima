@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICTController &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OMNeT++ networks" href="Networks.html" />
+    <link rel="prev" title="CommunicationSimulator" href="CommunicationSimulator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ICTController</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-of-the-infrastructure-changes">Configuration of the infrastructure changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-of-cyberattacks">Configuration of cyberattacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-of-increased-traffic">Configuration of increased traffic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operating-principle">Operating Principle</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ICTController</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ICTController.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ictcontroller">
+<h1>ICTController<a class="headerlink" href="#ictcontroller" title="Permalink to this heading"></a></h1>
+<p>The <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/ict_controller_simulator.py">ICT Controller</a>
+is a mosaik simulator which is responsible for infrastructure changes of the modelled communication topology in OMNeT++.
+Here, a very simple version of such a controller is implemented, but it may be extended easily.</p>
+<section id="configuration-of-the-infrastructure-changes">
+<h2>Configuration of the infrastructure changes<a class="headerlink" href="#configuration-of-the-infrastructure-changes" title="Permalink to this heading"></a></h2>
+<p>The infrastructure changes (disconnecting devices and reconnecting devices) may be configured in the
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py">scenario configuration file</a>. <br />
+Under the attribute <code class="docutils literal notranslate"><span class="pre">INFRASTRUCTURE_CHANGES</span></code> a list of possible disconnects or/and reconnects can be defined. <br />
+For example, if the module of agent client1 should be disconnected at time 2, it would look like that:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">INFRASTRUCTURE_CHANGES</span> <span class="o">=</span> <span class="p">[</span>
+         <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Disconnect&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+          <span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;client1&#39;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'type'</span></code> of an infrastructure change might be <code class="docutils literal notranslate"><span class="pre">'Disconnect'</span></code> or <code class="docutils literal notranslate"><span class="pre">'Connect'</span></code>. <br />
+The <code class="docutils literal notranslate"><span class="pre">'start</span></code> attribute may take any integer value larger than zero. <br />
+The <code class="docutils literal notranslate"><span class="pre">'module</span></code> identifies the cModule in the OMNeT++ network, that is to be dis- or reconnected. That might be an end
+device, a router or a switch. In the dictionary, the module name of the module in the network should be used.<br />
+The <code class="docutils literal notranslate"><span class="pre">ÌNFRASTRUCTURE_CHANGES</span></code>are a list, therefore multiple dictionaries may also be added.</p>
+</section>
+<section id="configuration-of-cyberattacks">
+<h2>Configuration of cyberattacks<a class="headerlink" href="#configuration-of-cyberattacks" title="Permalink to this heading"></a></h2>
+<p>Modeling cyberattacks in energy system simulations is vital to assess vulnerabilities, strengthen security measures, and
+ensure the reliable and resilient operation of critical energy infrastructure in the face of emerging cyber threats.
+Therefore, cosima offers the possibility to easily add cyberattacks to the scenario. The cyberattacks may also be
+configured in the
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py">scenario configuration file</a>. <br />
+Under the attribute <code class="docutils literal notranslate"><span class="pre">ATTACK_CONFIGURATION</span></code> a list of possible attacks. There are three types of attacks that can be
+modeled out-of-the-box using cosima:</p>
+<ul class="simple">
+<li><p><strong>PacketDrop</strong> packets are dropped and will not be received by the receiving module with a given probability</p></li>
+<li><p><strong>PacketFalsification</strong> packets are marked as falsified with a given probability</p></li>
+<li><p><strong>PacketDelay</strong> packets are delayed with a given probability For example, if the packets at client1 should be delayed
+with a probability of 0.5 between time 2 and 10, it would look like that:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ATTACK_CONFIGURATION</span> <span class="o">=</span> <span class="p">[</span>
+         <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PacketDelay&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+          <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s1">&#39;attacked_module&#39;</span><span class="p">:</span> <span class="s1">&#39;client1&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;probability&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>As the modules on OMNeT++-side need a specific configuration in order to realise attacks, you need to use special
+network with modules of the type <code class="docutils literal notranslate"><span class="pre">Attacked_Ue</span></code>. An example may be found in
+the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/tree/master/cosima_omnetpp_project/networks">network folder</a>.</p>
+</section>
+<section id="configuration-of-increased-traffic">
+<h2>Configuration of increased traffic<a class="headerlink" href="#configuration-of-increased-traffic" title="Permalink to this heading"></a></h2>
+<p>Modeling increased network traffic in communication simulation for energy systems is essential because it enables us to
+understand and optimize the dynamic interactions between various components, uncover potential bottlenecks, and devise
+robust strategies to ensure seamless communication and efficient energy management. Therefore, cosima also enables the
+integration of increased network traffic in user-defined scenarios. The integration can also be done using the
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py">scenario configuration file</a>. An attack
+configuration may look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TRAFFIC_CONFIGURATION</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="p">{</span>
+         <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;traffic_device_0&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;destination&#39;</span><span class="p">:</span> <span class="s1">&#39;client1&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+         <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+         <span class="s1">&#39;interval&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+         <span class="s1">&#39;packet_length&#39;</span><span class="p">:</span> <span class="mi">1000</span>
+     <span class="p">}</span>
+ <span class="p">]</span>
+</pre></div>
+</div>
+<p>In this example, the end device called traffic_device_0 sends additional traffic to client 1 from time 1 to time 100 in
+an interval of 10ms and with packets of length 1000 Bytes.</p>
+</section>
+<section id="operating-principle">
+<h2>Operating Principle<a class="headerlink" href="#operating-principle" title="Permalink to this heading"></a></h2>
+<p>Whenever the ICTController is being initialized as part of a mosaik scenario, it receives the lists of the configured
+<code class="docutils literal notranslate"><span class="pre">ÌNFRASTRUCTURE_CHANGES</span></code>, <code class="docutils literal notranslate"><span class="pre">TRAFFIC_CONFIGURATION</span></code> and <code class="docutils literal notranslate"><span class="pre">ATTACK_CONFIGURATION</span></code>. <br />
+At every call of the <code class="docutils literal notranslate"><span class="pre">step()</span></code>-method, the simulator iters over its list of events and defines the <code class="docutils literal notranslate"><span class="pre">next_step</span></code> - value as
+the time of the next event. <br />
+In the <code class="docutils literal notranslate"><span class="pre">get_data()</span></code>-method of the simulator the corresponding event type is extracted for the given time. The <code class="docutils literal notranslate"><span class="pre">output</span></code>
+then contains a CosimaMsgGroup (for further details on message types see
+<a class="reference internal" href="MessageTypes.html"><span class="std std-doc">Message types</span></a>) with the information from the event-list for the given time. <br />
+This output is then given to the CommunicationSimulator (see also <a class="reference internal" href="CommunicationSimulator.html"><span class="std std-doc">CommunicationSimulator</span></a>)
+where its being sent to OMNeT++. <br />
+In OMNeT++
+the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScenarioManager.h">MosaikScenarioManager</a>
+handles the change of the modelled network.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="CommunicationSimulator.html" class="btn btn-neutral float-left" title="CommunicationSimulator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Networks.html" class="btn btn-neutral float-right" title="OMNeT++ networks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Scenarios" href="Scenarios.html" />
+    <link rel="prev" title="Installation" href="Installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#part-1-simulators-and-connection-to-omnet">Part 1: Simulators and connection to OMNeT++</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-simple-agent">Create a simple Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-a-basic-scenario">Build a basic scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-simple-network-in-omnet">Create a simple Network in OMNeT++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enhancing-the-simulation-wih-a-statistic-tracker">Enhancing the Simulation wih a Statistic-Tracker</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#part-2-using-the-scenario-helper-and-scenario-configuration-file">Part 2: Using the scenario helper and scenario configuration file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coupling_with_mango.html">Coupling with the agent framework mango</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Tutorial.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading"></a></h1>
+<p>In this tutorial, you will be guided through multiple examples, on how cosima integrates the (communication) simulator
+OMNeT++ into the co-simulation framework mosaik and on how to set up your own scenarios and simulators.
+The goal is to provide a basic understanding on how agents communicate within the simulation,
+as well as showing how agents are connected to mosaik through a simple scenario.</p>
+<p>The tutorial is based on scenarios, which you can find under <code class="docutils literal notranslate"><span class="pre">cosima_core/scenarios/tutorial/</span></code> in the official
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima">cosima gitlab repository</a>.
+To check if your installation (for details see <code class="docutils literal notranslate"><span class="pre">README.md</span></code>) was successful,
+you can run <code class="docutils literal notranslate"><span class="pre">cosima_core/scenarios/tutorial/simulators_and_connection_to_omnet.py</span></code>.</p>
+<p>However, this requires a basic understanding of how ONNeT++ works.
+Therefore, it is recommended, that new users first try out the TicToc example from <a class="reference external" href="https://docs.omnetpp.org/tutorials/tictoc/">OMNeT’s website</a>.
+Additionally, this tutorial will later provide an optional part, that will focus on the configuration and creation of a
+simple network, that can be used to test our scenario.
+In addition to knowledge of OMNeT++, it is advised to have a basic understanding of the programming language python.</p>
+<section id="part-1-simulators-and-connection-to-omnet">
+<h2>Part 1: Simulators and connection to OMNeT++<a class="headerlink" href="#part-1-simulators-and-connection-to-omnet" title="Permalink to this heading"></a></h2>
+<p>The first part of the tutorial is about learning the configuration of a simple scenario
+and the implementation of an agent simulator by means of an example.
+The util functions provided by cosima for simplification purposes are not used here yet,
+in order to learn the general functionality first.</p>
+<section id="create-a-simple-agent">
+<h3>Create a simple Agent<a class="headerlink" href="#create-a-simple-agent" title="Permalink to this heading"></a></h3>
+<p><strong>Initialization</strong></p>
+<p>The Process of managing messages is realised by entities of agents.
+That means, to send and receive messages, we first have to create an agent, that is capable of doing so.
+To do that, first create a python file under <code class="docutils literal notranslate"><span class="pre">cosima_core/simulators</span></code> named <code class="docutils literal notranslate"><span class="pre">agent_simulator.py</span></code>.
+Next put the following lines into that file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>import mosaik_api
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span>META = {
+<span class="linenos"> 4</span>    &#39;api_version&#39;: &#39;3.0&#39;,
+<span class="linenos"> 5</span>    &#39;type&#39;: &#39;event-based&#39;,
+<span class="linenos"> 6</span>    &#39;models&#39;: {
+<span class="linenos"> 7</span>        &#39;SimpleAgentModel&#39;: {
+<span class="linenos"> 8</span>            &#39;public&#39;: True,
+<span class="linenos"> 9</span>            &#39;params&#39;: [],
+<span class="linenos">10</span>            &#39;attrs&#39;: [&#39;message&#39;],
+<span class="linenos">11</span>        },
+<span class="linenos">12</span>    },
+<span class="linenos">13</span>}
+<span class="linenos">14</span>
+<span class="linenos">15</span>class SimpleAgent(mosaik_api.Simulator):
+<span class="linenos">16</span>    def __init__(self):
+<span class="linenos">17</span>        super().__init__(META)
+<span class="linenos">18</span>        self._sid = None
+<span class="linenos">19</span>        self._client_name = None
+<span class="linenos">20</span>        self._msg_counter = 0
+<span class="linenos">21</span>        self._outbox = []
+<span class="linenos">22</span>        self._output_time = 0
+<span class="linenos">23</span>        self._neighbor = None
+<span class="linenos">24</span>        self._connection_attr = None
+<span class="linenos">25</span>
+<span class="linenos">26</span>    def init(self, sid, **sim_params):
+<span class="linenos">27</span>        self._sid = sid
+<span class="linenos">28</span>        self._connection_attr = sim.params.get(“connect_attr”)
+<span class="linenos">29</span>        if &#39;client_name&#39; in sim_params.keys():
+<span class="linenos">30</span>            self.meta[&#39;models&#39;][&#39;SimpleAgentModel&#39;][&#39;attrs&#39;].append(f&#39;{self.connect_attr}{sim_params[&quot;client_name&quot;]}&#39;)
+<span class="linenos">31</span>            self._client_name = sim_params[&#39;client_name&#39;]
+<span class="linenos">32</span>        if &#39;neighbor&#39; in sim_params.keys():
+<span class="linenos">33</span>            self._neighbor = sim_params[&#39;neighbor&#39;]
+<span class="linenos">34</span>        return META
+</pre></div>
+</div>
+<p>Inside the file, we first must make sure that we include the mosaik api, because the agent is based on an <a class="reference external" href="https://mosaik.offis.de/docs/">mosaik simulator</a>.
+The variable META defines the general information about the agent.
+The string api_version defines which version of mosaik is used for the agent. For this Tutorial version 3.0 is used.
+The type specifies, how the simulator advances through time.
+In cosima this will be event-based. The model is defined with a simple attribute to store messages.</p>
+<p>The variables in the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> are storing the following data:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>sid = ID of the simulation</p>
+<p>client_name = name of the agent in the scenario</p>
+<p>msg_counter = counts the number of messages send</p>
+<p>outbox = stores the messages</p>
+<p>output_time = time where the message got send</p>
+<p>neighbor = Reciever of the message</p>
+<p>connection_attr = attribute which is exchanged between CommunicationSim and Agents</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">init()</span></code> Method initializes the simulator with the corresponding ID and simulation parameters, that are sent by mosaik.</p>
+<p><strong>The step method</strong></p>
+<p>The step method is called every time the next step for a given time should be performed.
+But before we can step an agent, we have to create a number of instances of the given model.
+To do that, insert the following method into the python file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">model_conf</span><span class="p">):</span>
+<span class="linenos">2</span>    <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;eid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sid</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>The Method gets the number of models as well as its parameters and returns a list of dictionaries, each with their own entity ID (eid).</p>
+<p>Now we can implement the actual <code class="docutils literal notranslate"><span class="pre">step</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">max_advance</span><span class="p">):</span>
+<span class="linenos"> 2</span>    <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_client_name</span><span class="si">}</span><span class="s1"> received input </span><span class="si">{</span><span class="n">inputs</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>    <span class="n">content</span> <span class="o">=</span> <span class="s1">&#39;Hi neighbor!&#39;</span>
+<span class="linenos"> 4</span>    <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;msg_id&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_client_name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_counter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="linenos"> 5</span>                         <span class="s1">&#39;max_advance&#39;</span><span class="p">:</span> <span class="n">max_advance</span><span class="p">,</span>
+<span class="linenos"> 6</span>                         <span class="s1">&#39;sim_time&#39;</span><span class="p">:</span> <span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+<span class="linenos"> 7</span>                         <span class="s1">&#39;sender&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_name</span><span class="p">,</span>
+<span class="linenos"> 8</span>                         <span class="s1">&#39;receiver&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbor</span><span class="p">,</span>
+<span class="linenos"> 9</span>                         <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="n">content</span><span class="p">,</span>
+<span class="linenos">10</span>                         <span class="s1">&#39;creation_time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
+<span class="linenos">11</span>                         <span class="p">})</span>
+<span class="linenos">12</span>    <span class="bp">self</span><span class="o">.</span><span class="n">_msg_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="linenos">13</span>    <span class="bp">self</span><span class="o">.</span><span class="n">_output_time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="linenos">14</span>    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>For our simple simulation, we just want the agent to queue the message “Hi neighbor” to another participant, whenever he steps.
+To do that, we just append our message, that we defined in the variable content, within a dictionary, to the agent’s outbox.
+The dictionary contains all the important information, that the simulation needs to send the message to the right client.
+The variable max_advance sets a time boundary of how far the simulation can advance, without going out of sync with the OMNeT++ Simulation component.
+That means, that no external step, will be performed within the given timeframe.</p>
+<p>To inform the user when a message is sent, we additionally use a helper function, that is implemented in cosima.
+To import it, you can simply add the following line, to the top, of the file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">cosima_core.util.util_functions</span> <span class="kn">import</span> <span class="n">log</span>
+</pre></div>
+</div>
+<p>Next up is a function called <code class="docutils literal notranslate"><span class="pre">get_data</span></code>. The function collects the messages in the outbox, so that they can be send by mosaik.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+<span class="linenos">2</span>    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">3</span>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span><span class="p">:</span>
+<span class="linenos">4</span>        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sid</span><span class="p">:</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span><span class="p">},</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_time</span><span class="p">}</span>
+<span class="linenos">5</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">6</span>    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>The last function, that we going to use in our sample agent, is called finalize.
+Normally this function is used, to clean up external processes.
+However, in our case that is not necessary, so we just use it to print the information, that the agent is finished, on the console with our log function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">2</span>    <span class="n">log</span><span class="p">(</span><span class="s1">&#39;Finalize SimpleAgent&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this, we now have a simple agent, that can send a basic string as a message.
+Next, we are going to implement a little scenario, that uses this agent.</p>
+<p>Download File: <a class="reference download internal" download="" href="_downloads/98cedebaaba329205de5f80299022bee/agent_simulator.py"><code class="xref download docutils literal notranslate"><span class="pre">agent_simulator.py</span></code></a></p>
+</section>
+<section id="build-a-basic-scenario">
+<h3>Build a basic scenario<a class="headerlink" href="#build-a-basic-scenario" title="Permalink to this heading"></a></h3>
+<p><strong>Configuration and Parameters</strong></p>
+<p>Now that we got our agent, we can use it in a simple scenario, that will create two entities of that agent as so-called clients.
+By the end of the simulation, these clients will both send a message to one another, with our defined content.
+First up we will demonstrate, how to configure our simulation and what parameters to set.
+To do that create a new file called <code class="docutils literal notranslate"><span class="pre">tutorial_scenario.py</span></code> in the <code class="docutils literal notranslate"><span class="pre">cosima_core</span></code> directory and copy these lines into it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">cosima_core.util.general_config</span> <span class="k">as</span> <span class="nn">cfg</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="n">SIMULATION_END</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="linenos"> 4</span><span class="n">START_MODE</span> <span class="o">=</span> <span class="s1">&#39;cmd&#39;</span>
+<span class="linenos"> 5</span><span class="n">NETWORK</span> <span class="o">=</span> <span class="s1">&#39;TutorialNetwork&#39;</span>
+<span class="linenos"> 6</span><span class="n">CONTENT_PATH</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ROOT_PATH</span> <span class="o">/</span> <span class="s1">&#39;simulators&#39;</span> <span class="o">/</span> <span class="s1">&#39;tic_toc_example&#39;</span> <span class="o">/</span> <span class="s1">&#39;content.csv&#39;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="n">SIM_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos"> 9</span>    <span class="s1">&#39;SimpleAgent&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos">10</span>        <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="s1">&#39;cosima_core.simulators.tutorial.simple_agent_simulator:SimpleAgent&#39;</span><span class="p">,</span>
+<span class="linenos">11</span>    <span class="p">},</span>
+<span class="linenos">12</span>    <span class="s1">&#39;CommunicationSimulator&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos">13</span>        <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="s1">&#39;cosima_core.simulators.communication_simulator:CommunicationSimulator&#39;</span><span class="p">,</span>
+<span class="linenos">14</span>    <span class="p">}</span>
+<span class="linenos">15</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The Variable <code class="docutils literal notranslate"><span class="pre">PORT</span></code> must be set to 4242, to connect the mosaik-scenario correctly to OMNeT++.
+<code class="docutils literal notranslate"><span class="pre">SIMULATION_END</span></code> defines the maximum time; the simulation can run.
+For the <code class="docutils literal notranslate"><span class="pre">START_MODE</span></code> we have 3 viable options. If we set it to “ide”, we must run the OMNeT++ simulation separately before running the scenario.
+If the mode “qtenv” is used, the OMNeT++ Simulation window will start automatically when running the scenario.
+For now, we will set the start mode to “cmd” that will start the OMNeT++ simulation directly in the command line.
+The variable <code class="docutils literal notranslate"><span class="pre">NETWORK</span></code> sets what network inside of the OMNeT++ Simulation will be used.
+At last, we will define, what simulators (or Agents in our case) will be used and were to find them, with the variable <code class="docutils literal notranslate"><span class="pre">SIM_CONFIG</span></code>.</p>
+<p>Now that our simulation parameters are set, we next have to connect our scenario to OMNeT++ with the following lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">cosima_core.util.util_functions</span> <span class="kn">import</span> <span class="n">start_omnet</span><span class="p">,</span> \
+<span class="linenos">2</span>    <span class="n">check_omnet_connection</span><span class="p">,</span> <span class="n">stop_omnet</span><span class="p">,</span> \
+<span class="linenos">3</span>    <span class="n">log</span>
+<span class="linenos">4</span><span class="n">omnet_process</span> <span class="o">=</span> <span class="n">start_omnet</span><span class="p">(</span><span class="n">START_MODE</span><span class="p">,</span> <span class="n">NETWORK</span><span class="p">)</span>
+<span class="linenos">5</span><span class="n">check_omnet_connection</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">PORT</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running this file, now should print a statement onto the console, that confirmes a positive connection to OMNeT++ like this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="go">mosaik: 02:37:02:623449 Connection to OMNeT++ possible: True</span>
+</pre></div>
+</div>
+<p><strong>Connection to agents and mosaik</strong></p>
+<p>In this step, we will implement the actual mosaik simulation.
+We start by creating the mosaic World as well as mapping the attributes of our two clients:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">mosaik</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">world</span> <span class="o">=</span> <span class="n">mosaik</span><span class="o">.</span><span class="n">World</span><span class="p">(</span><span class="n">SIM_CONFIG</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">time_resolution</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">4</span>
+<span class="linenos">5</span><span class="n">client_attribute_mapping</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos">6</span>    <span class="s1">&#39;client0&#39;</span><span class="p">:</span> <span class="s1">&#39;message_with_delay_for_client0&#39;</span><span class="p">,</span>
+<span class="linenos">7</span>    <span class="s1">&#39;client1&#39;</span><span class="p">:</span> <span class="s1">&#39;message_with_delay_for_client1&#39;</span>
+<span class="linenos">8</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>With this, now both simulations can be running simultaneously and in sync.
+Now we can add and start our clients by instantiate our agents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>simple_agent_1 = world.start(&#39;SimpleAgent&#39;,
+<span class="linenos"> 2</span>                             content_path=CONTENT_PATH,
+<span class="linenos"> 3</span>                             client_name=&#39;client0&#39;,
+<span class="linenos"> 4</span>                             neighbor=&#39;client1&#39;
+<span class="linenos"> 5</span>                             connection_attr=’message_with_delay_for_’).SimpleAgentModel()
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>simple_agent_2 = world.start(&#39;SimpleAgent&#39;,
+<span class="linenos"> 8</span>                             content_path=CONTENT_PATH,
+<span class="linenos"> 9</span>                             client_name=&#39;client1&#39;,
+<span class="linenos">10</span>                             neighbor=&#39;client0&#39;
+<span class="linenos">11</span>                             connection_attr=’message_with_delay_for_’).SimpleAgentModel()
+<span class="linenos">12</span>
+<span class="linenos">13</span>comm_sim = world.start(&#39;CommunicationSimulator&#39;,
+<span class="linenos">14</span>                       step_size=1,
+<span class="linenos">15</span>                       port=cfg.PORT,
+<span class="linenos">16</span>                       client_attribute_mapping=client_attribute_mapping).CommunicationModel()
+</pre></div>
+</div>
+<p>This will call the <code class="docutils literal notranslate"><span class="pre">create</span></code> and <code class="docutils literal notranslate"><span class="pre">init</span></code> functions, we created in our agent implementation and thereby setting up the clients with our defined messages.
+Even though we just want to use our two clients in our scenario, we actually have to set up one more Simulator, the so called CommunicationSimulator.
+The CommunicationSimulator synchronizes the schedulers between OMNeT++ and mosaik and manages the step methods for the other simulators.
+Therefore, it is essential to add it to our simulation above the world.connect statements, that are implemented as followed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">world</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">simple_agent_1</span><span class="p">,</span> <span class="n">comm_sim</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="n">weak</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">world</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">comm_sim</span><span class="p">,</span> <span class="n">simple_agent_1</span><span class="p">,</span> <span class="n">client_attribute_mapping</span><span class="p">[</span><span class="s1">&#39;client0&#39;</span><span class="p">])</span>
+<span class="linenos">3</span><span class="n">world</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">simple_agent_2</span><span class="p">,</span> <span class="n">comm_sim</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="n">weak</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">4</span><span class="n">world</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">comm_sim</span><span class="p">,</span> <span class="n">simple_agent_2</span><span class="p">,</span> <span class="n">client_attribute_mapping</span><span class="p">[</span><span class="s1">&#39;client1&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Running the simulation should print out the starting process of our agents:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="go">Starting “SimpleAgent” as “SimpleAgent-0” …</span>
+<span class="linenos">2</span><span class="go">Starting “SimpleAgent” as “SimpleAgent-1” …</span>
+<span class="linenos">3</span><span class="go">Starting “CommunicationSimulator” as “CommunicationSimulator -0” …</span>
+</pre></div>
+</div>
+<p>Now that everything is configured and set up, we can run our simulation by calling the run function of our mosaik world.
+The simulation will automatically start the process until the given end time is reached.
+When the simulation is finished, we have to make sure, that the connection to the OMNeT++ simulation is closed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;run until </span><span class="si">{</span><span class="n">SIMULATION_END</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">world</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">SIMULATION_END</span><span class="p">)</span>
+<span class="linenos">3</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;end of process&quot;</span><span class="p">)</span>
+<span class="linenos">4</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="linenos">5</span><span class="n">stop_omnet</span><span class="p">(</span><span class="n">omnet_process</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running our simulation should result in a simple message transfer from client0 to client1.
+The console will display the content of the message like this.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="go">mosaik:  03:18:41:106397 Communication Simulator steps in 1 with input</span>
+<span class="linenos">2</span><span class="go">[({&#39;msg_id&#39;: &#39;client0_0&#39;, &#39;max_advance&#39;: 10000, &#39;sim_time&#39;: 1, &#39;sender&#39;: &#39;client0&#39;, &#39;receiver&#39;: &#39;client1&#39;, &#39;content&#39;:</span>
+<span class="linenos">3</span><span class="go">&#39;Hi neighbor!&#39;, &#39;creation_time&#39;: 0}, &lt;class &#39;messages.message_pb2.InfoMessage&#39;&gt;)]</span>
+</pre></div>
+</div>
+<p>With this, our scenario is ready. Next up, we will implement a little example network inside of OMNeT++ to demonstrate
+how messages are transported on OMNeT’s side and how both simulators communicate with each other.</p>
+<p>Download File: <a class="reference download internal" download="" href="_downloads/bdf9ebe18bcb5e4bacdaeac539a0c7b1/simple_scenario.py"><code class="xref download docutils literal notranslate"><span class="pre">simple_scenario.py</span></code></a></p>
+</section>
+<section id="create-a-simple-network-in-omnet">
+<h3>Create a simple Network in OMNeT++<a class="headerlink" href="#create-a-simple-network-in-omnet" title="Permalink to this heading"></a></h3>
+<p>Now that we created our scenario, it is time to implement a Simulation inside of OMNeT++, so we can see how the communication between the clients are realised.
+To do that first we are creating a ned file, that stores the information about all our components.
+Additionally, we also are going to need a .ini file, that holds our simulation parameters and sets up the connection between OMNeT++ and cosima.</p>
+<p><strong>Creating the NED file</strong></p>
+<p>In this step, we are creating the simplest Network possible, that matches the components of our basic scenario.
+First, create a new NED file in the networks folder of our project inside of OMNeT++, by right clicking it and choosing <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">-&gt;</span> <span class="pre">Network</span> <span class="pre">Description</span> <span class="pre">File</span> <span class="pre">(NED)</span></code> and name it <code class="docutils literal notranslate"><span class="pre">TutorialNetwork.ned</span></code>.
+Click on the Source Tab in the bottom left corner, to get into the Source Mode and paste the following Code into it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">package</span> <span class="n">networks</span><span class="p">;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">modules.MosaikSchedulerModule</span><span class="p">;</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator</span><span class="p">;</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="n">network</span> <span class="n">TutorialNetwork</span>
+<span class="linenos"> 7</span><span class="p">{</span>
+<span class="linenos"> 8</span>    <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;bgb=500,500&quot;</span><span class="p">);</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="n">submodules</span><span class="p">:</span>
+<span class="linenos">11</span>        <span class="n">schedulerModule</span><span class="p">:</span> <span class="n">MosaikSchedulerModule</span> <span class="p">{</span>
+<span class="linenos">12</span>            <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;p=60,40&quot;</span><span class="p">);</span>
+<span class="linenos">13</span>        <span class="p">}</span>
+<span class="linenos">14</span>        <span class="n">configurator</span><span class="p">:</span> <span class="n">Ipv4NetworkConfigurator</span> <span class="p">{</span>
+<span class="linenos">15</span>            <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;p=180,40&quot;</span><span class="p">);</span>
+<span class="linenos">16</span>        <span class="p">}</span>
+<span class="linenos">17</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This creates a simple Environment, that has all the components, to set up our Mosaik connection in the Network.
+The MosaikSchedulerModule is mandatory, to schedule the events, specifically the max advance events, that ensures the synchronisation between the Frameworks.
+The ipv4NetworkConfigurator is used, to assign ipv4 addresses and manage the routing process of the network.
+Now we have to add our clients and connect them. Enhance the code, so that it looks like this.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">package</span> <span class="n">networks</span><span class="p">;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">modules.MosaikSchedulerModule</span><span class="p">;</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator</span><span class="p">;</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">inet.node.inet.StandardHost</span><span class="p">;</span>
+<span class="linenos"> 6</span><span class="kn">import</span> <span class="nn">inet.node.ethernet.Eth10M</span><span class="p">;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="n">network</span> <span class="n">TutorialNetwork</span>
+<span class="linenos"> 9</span><span class="p">{</span>
+<span class="linenos">10</span>    <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;bgb=500,500&quot;</span><span class="p">);</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>    <span class="n">submodules</span><span class="p">:</span>
+<span class="linenos">13</span>        <span class="n">schedulerModule</span><span class="p">:</span> <span class="n">MosaikSchedulerModule</span> <span class="p">{</span>
+<span class="linenos">14</span>            <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;p=60,40&quot;</span><span class="p">);</span>
+<span class="linenos">15</span>        <span class="p">}</span>
+<span class="linenos">16</span>        <span class="n">configurator</span><span class="p">:</span> <span class="n">Ipv4NetworkConfigurator</span> <span class="p">{</span>
+<span class="linenos">17</span>            <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;p=180,40&quot;</span><span class="p">);</span>
+<span class="linenos">18</span>        <span class="p">}</span>
+<span class="linenos">19</span>        <span class="n">client0</span><span class="p">:</span> <span class="n">StandardHost</span> <span class="p">{</span>
+<span class="linenos">20</span>            <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;p=120,240&quot;</span><span class="p">);</span>
+<span class="linenos">21</span>        <span class="p">}</span>
+<span class="linenos">22</span>        <span class="n">client1</span><span class="p">:</span> <span class="n">StandardHost</span> <span class="p">{</span>
+<span class="linenos">23</span>            <span class="nd">@display</span><span class="p">(</span><span class="s2">&quot;p=380,240&quot;</span><span class="p">);</span>
+<span class="linenos">24</span>        <span class="p">}</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span>    <span class="n">connections</span><span class="p">:</span>
+<span class="linenos">27</span>        <span class="n">client0</span><span class="o">.</span><span class="n">ethg</span><span class="o">++</span> <span class="o">&lt;--&gt;</span> <span class="n">Eth10M</span> <span class="o">&lt;--&gt;</span> <span class="n">client1</span><span class="o">.</span><span class="n">ethg</span><span class="o">++</span><span class="p">;</span>
+<span class="linenos">28</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The clients are represented as StandardHosts and MUST have the same name, as the agents in the scenario.
+They are connected by a 10MB/Sec Ethernet connection. If you change into Design Mode, it should look like this.</p>
+<img alt="Two clients connected by Ethernet" src="_images/network1.png" />
+<p><strong>Configuration of the .ini file</strong></p>
+<p>To use our new network, we have to include it in the mosaik.ini file, that is located outermost layer of our project structure.
+You can either add a new configuration to the mosaik.ini file or make your own.
+To start the simulation environment, the mosaik.ini has to contain the following content.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">[General]</span>
+<span class="linenos"> 2</span><span class="na">network</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">networks.TutorialNetwork</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="na">scheduler-class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;MosaikScheduler&quot;</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="na">*.*.ipv4.arp.typename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;GlobalArp&quot;</span>
+<span class="linenos"> 7</span><span class="na">*.*.ipv4.routingTable.netmaskRoutes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="linenos"> 8</span><span class="na">*.configurator.optimizeRoutes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="na">*.client*.numApps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+<span class="linenos">11</span><span class="na">*.client*.app[*].typename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;AgentAppTcp&quot;</span>
+<span class="linenos">12</span><span class="na">*.client0.app[0].localPort</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">7000</span>
+<span class="linenos">13</span><span class="na">*.client1.app[0].localPort</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">8000</span>
+</pre></div>
+</div>
+<p>The Code first ensures, that we are using the network we previously created.
+By setting the scheduler-class, we register our MosaikScheduler.
+Additionally, we set up some basic parameters for the clients, so they can communicate.</p>
+<p>Before we can run our simulation, we have to ensure that the variable START_MODE in the sample_scenario.py is set to “ide”, so we can run the OMNeT++ Simulation separately.
+Now we can finally test our simulation, by doing the following steps:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Run the mosaik.ini in OMNeT++ by pressing the Run Button in the Editor</p></li>
+<li><p>Run sample_Scenario.py until the output of the first step is shown the console</p></li>
+<li><p>Press the run Button in the newly opened simulation runtime GUI of OMNeT++</p></li>
+</ol>
+</div></blockquote>
+<p>You now should see that the clients are starting to send messages to each other for 10ms (Simulation time).</p>
+<img alt="The two clients sending messages" src="_images/network2.png" />
+<p>Download Files: <a class="reference download internal" download="" href="_downloads/904ba9bed4103a14964bba0410196a6d/TutorialNetwork.ned"><code class="xref download docutils literal notranslate"><span class="pre">TutorialNetwork.ned</span></code></a> <a class="reference download internal" download="" href="_downloads/25e29d3d4ea6527081d96ec1f11f5463/Mosaik.ini"><code class="xref download docutils literal notranslate"><span class="pre">Mosaik.ini</span></code></a></p>
+</section>
+<section id="enhancing-the-simulation-wih-a-statistic-tracker">
+<h3>Enhancing the Simulation wih a Statistic-Tracker<a class="headerlink" href="#enhancing-the-simulation-wih-a-statistic-tracker" title="Permalink to this heading"></a></h3>
+<p>Now that we have our base scenario, we can enhance it in multiple ways wth new Agents and Networks. n this section, we
+will introduce a new simulator into our scenario, that can track statistics (like package information) while the simulation
+is running.</p>
+<p><strong>Creating the tracking agent</strong></p>
+<p>Our first step, is to create a new File with the basic structure we already introduces in the first section of this tutorial.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">META</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos"> 2</span>    <span class="s1">&#39;api_version&#39;</span><span class="p">:</span> <span class="s1">&#39;3.0&#39;</span><span class="p">,</span>
+<span class="linenos"> 3</span>    <span class="s1">&#39;models&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos"> 4</span>        <span class="s1">&#39;Statistics&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos"> 5</span>            <span class="s1">&#39;public&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos"> 6</span>            <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="linenos"> 7</span>            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;stats&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">],</span>
+<span class="linenos"> 8</span>        <span class="p">},</span>
+<span class="linenos"> 9</span>    <span class="p">},</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;time-based&#39;</span><span class="p">}</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="k">class</span> <span class="nc">StatisticsSimulator</span><span class="p">(</span><span class="n">mosaik_api</span><span class="o">.</span><span class="n">Simulator</span><span class="p">):</span>
+<span class="linenos">13</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">14</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">META</span><span class="p">)</span>
+<span class="linenos">15</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_sid</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">16</span>        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">17</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">18</span>        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="linenos">19</span>        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">21</span>        <span class="bp">self</span><span class="o">.</span><span class="n">show_plots</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="linenos">22</span>        <span class="bp">self</span><span class="o">.</span><span class="n">save_plots</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_params</span><span class="p">):</span>
+<span class="linenos">25</span>        <span class="k">return</span> <span class="n">META</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">model_conf</span><span class="p">):</span>
+<span class="linenos">28</span>        <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;eid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sid</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">}]</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">max_advance</span><span class="p">):</span>
+<span class="linenos">31</span>        <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;StatisticsSimulator steps in </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1">. &#39;</span><span class="p">,</span> <span class="n">log_type</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
+<span class="linenos">32</span>        <span class="k">return</span> <span class="n">time</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+<span class="linenos">35</span>        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">36</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+<span class="linenos">37</span>            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sid</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;stats&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">}}</span>
+<span class="linenos">38</span>        <span class="k">return</span> <span class="n">data</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">41</span>        <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Finalize StatisticsSimulator&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Because it is not possible to access the packet information in OMNeT++ directly through the port connection, we read in,
+the file we data gets written into at runtime. To do that we enhance the init and step function, so that the simulator
+automatically gets the currently available information out of the .vec file in OMNeT++.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_params</span><span class="p">):</span>
+<span class="linenos"> 2</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_sid</span> <span class="o">=</span> <span class="n">sid</span>
+<span class="linenos"> 3</span>        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;cosima_omnetpp_project/results/&#39;</span><span class="p">)</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>        <span class="k">if</span> <span class="s1">&#39;network&#39;</span> <span class="ow">in</span> <span class="n">sim_params</span><span class="p">:</span>
+<span class="linenos"> 6</span>            <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>        <span class="k">return</span> <span class="n">META</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">max_advance</span><span class="p">):</span>
+<span class="linenos">11</span>        <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;StatisticsSimulator steps in </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1">. &#39;</span><span class="p">,</span> <span class="n">log_type</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span>        <span class="n">vec_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="si">}</span><span class="s2">-#0.vec&quot;</span><span class="p">)</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vec_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos">16</span>            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>        <span class="k">return</span> <span class="n">time</span>
+</pre></div>
+</div>
+<p>Other simulators can access the data, that got read out of the .vec file, through the stats attribute. The next step is,
+to implement a way for the user, to decide when this simulator gets stepped. The functionality will be controlled through
+the variable step_time. If step_time equals 0, the simulator will only step once at the end of the simulation. For any
+other value, it will determine, how many steps the simulator should wait, until it steps again.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_params</span><span class="p">):</span>
+<span class="linenos"> 2</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_sid</span> <span class="o">=</span> <span class="n">sid</span>
+<span class="linenos"> 3</span>        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;cosima_omnetpp_project/results/&#39;</span><span class="p">)</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>        <span class="k">if</span> <span class="s1">&#39;network&#39;</span> <span class="ow">in</span> <span class="n">sim_params</span><span class="p">:</span>
+<span class="linenos"> 6</span>            <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>        <span class="k">if</span> <span class="s1">&#39;step_time&#39;</span> <span class="ow">in</span> <span class="n">sim_params</span><span class="p">:</span>
+<span class="linenos"> 9</span>            <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;step_time&#39;</span><span class="p">]</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>        <span class="k">return</span> <span class="n">META</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">max_advance</span><span class="p">):</span>
+<span class="linenos">14</span>        <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;StatisticsSimulator steps in </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1">. &#39;</span><span class="p">,</span> <span class="n">log_type</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
+<span class="linenos">15</span>        <span class="k">if</span> <span class="n">time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">16</span>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">17</span>                <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mosaik</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">until</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="linenos">18</span>                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span>
+<span class="linenos">19</span>            <span class="k">else</span><span class="p">:</span>
+<span class="linenos">20</span>                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span>
+<span class="linenos">21</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">22</span>        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span>        <span class="n">vec_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="si">}</span><span class="s2">-#0.vec&quot;</span><span class="p">)</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vec_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos">27</span>            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span>        <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span>
+</pre></div>
+</div>
+<p>The next step is to implement our new simulator in the scenario.</p>
+<p>Download File: <a class="reference download internal" download="" href="_downloads/18794718e035d7bc8993b1b40dbda771/simple_stat_simulator.py"><code class="xref download docutils literal notranslate"><span class="pre">simple_stat_simulator.py</span></code></a></p>
+<p><strong>Enhance the scenario</strong></p>
+<p>Just like the simulator, enhancing the scenario requires the same steps that were already introduced in our second part
+of the tutorial. All we have todo is to add our new simulator to the SIM_CONFIG, start it and then connect it to our other
+simulators, so that they can use the data if necessary.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">SIM_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos"> 2</span>    <span class="s1">&#39;SimpleAgent&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos"> 3</span>        <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="s1">&#39;cosima_core.simulators.tutorial.simple_agent_simulator:SimpleAgent&#39;</span><span class="p">,</span>
+<span class="linenos"> 4</span>    <span class="p">},</span>
+<span class="linenos"> 5</span>    <span class="s1">&#39;CommunicationSimulator&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos"> 6</span>        <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="s1">&#39;cosima_core.simulators.communication_simulator:CommunicationSimulator&#39;</span><span class="p">,</span>
+<span class="linenos"> 7</span>    <span class="p">},</span>
+<span class="linenos"> 8</span>    <span class="s1">&#39;StatisticsSimulator&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos"> 9</span>        <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="s1">&#39;cosima_core.simulators.statistics_simulator:StatisticsSimulator&#39;</span><span class="p">,</span>
+<span class="linenos">10</span>    <span class="p">}</span>
+<span class="linenos">11</span><span class="p">}</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="n">stat_sim</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="s1">&#39;StatisticsSimulator&#39;</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">NETWORK</span><span class="p">,</span> <span class="n">step_time</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">Statistics</span><span class="p">()</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="n">world</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">simple_agent_1</span><span class="p">,</span> <span class="n">stat_sim</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="n">time_shifted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">initial_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+<span class="linenos">16</span><span class="n">world</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">stat_sim</span><span class="p">,</span> <span class="n">simple_agent_1</span><span class="p">,</span> <span class="s1">&#39;stats&#39;</span><span class="p">)</span>
+<span class="linenos">17</span><span class="n">world</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">stat_sim</span><span class="p">,</span> <span class="n">simple_agent_2</span><span class="p">,</span> <span class="s1">&#39;stats&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this our new simulator is already usable. But right now only other agents will be able to do anything with the data.
+In the next section we will enhance the StatisticsSimulator, so that it will use the collected data at the end of the
+simulation to provide diagrams.</p>
+<p>Download File: <a class="reference download internal" download="" href="_downloads/a6aa543bd121cb95797f363ba9aa7b90/extended_scenario.py"><code class="xref download docutils literal notranslate"><span class="pre">extended_scenario.py</span></code></a></p>
+<p><strong>Analyse data</strong></p>
+<p>To arrange the collected data, so that it is easy to use we first change the step function in the simulator as follows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">max_advance</span><span class="p">):</span>
+<span class="linenos"> 2</span>        <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;StatisticsSimulator steps in </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1">. &#39;</span><span class="p">,</span> <span class="n">log_type</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>        <span class="k">if</span> <span class="n">time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 4</span>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos"> 5</span>                <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mosaik</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">until</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="linenos"> 6</span>                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span>
+<span class="linenos"> 7</span>            <span class="k">else</span><span class="p">:</span>
+<span class="linenos"> 8</span>                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span>
+<span class="linenos"> 9</span>        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">10</span>        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>        <span class="n">vec_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="si">}</span><span class="s2">-#0.vec&quot;</span><span class="p">)</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vec_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos">15</span>            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+<span class="linenos">18</span>            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;vector&#39;</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+<span class="linenos">19</span>                <span class="n">client</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">20</span>                <span class="n">vector</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos">21</span>                <span class="n">vec_id</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">22</span>                <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+<span class="linenos">23</span>                    <span class="s1">&#39;client&#39;</span><span class="p">:</span> <span class="n">client</span><span class="p">,</span>
+<span class="linenos">24</span>                    <span class="s1">&#39;vector&#39;</span><span class="p">:</span> <span class="n">vector</span><span class="p">,</span>
+<span class="linenos">25</span>                    <span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="n">vec_id</span><span class="p">,</span>
+<span class="linenos">26</span>                <span class="p">})</span>
+<span class="linenos">27</span>        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span>        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+<span class="linenos">30</span>            <span class="n">value_vec</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">31</span>            <span class="n">time_vec</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">32</span>            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+<span class="linenos">33</span>                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]:</span>
+<span class="linenos">34</span>                    <span class="n">value_vec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]))</span>
+<span class="linenos">35</span>                    <span class="n">time_vec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]))</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span>            <span class="k">if</span> <span class="n">value_vec</span><span class="p">:</span>
+<span class="linenos">38</span>                <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+<span class="linenos">39</span>                    <span class="s1">&#39;client&#39;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">],</span>
+<span class="linenos">40</span>                    <span class="s1">&#39;vector&#39;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;vector&#39;</span><span class="p">],</span>
+<span class="linenos">41</span>                    <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value_vec</span><span class="p">,</span>
+<span class="linenos">42</span>                    <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time_vec</span>
+<span class="linenos">43</span>                <span class="p">})</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span>        <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span>
+</pre></div>
+</div>
+<p>Everytime the simulator steps, it will iterate through all of the collected data and arrange them into dictionary’s, that
+are stores in the stats variable. Every entry in this list will track what client it originates from, the name of the
+collected stat, thw value of the vector-entries and at what simulation time they where collected. The variable index is a
+helper-list, that makes it easier to iterate through the data. Next we will use take the arranged data, filter how many
+packets each client sent and display it in a diagram. To do this, we will add a new function called calc_client_sent.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="k">def</span> <span class="nf">calc_client_sent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 4</span>    <span class="n">clients</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 5</span>    <span class="n">pkts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>    <span class="k">for</span> <span class="n">stats</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+<span class="linenos"> 8</span>        <span class="k">if</span> <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;vector&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;packetSent&#39;</span><span class="p">:</span>
+<span class="linenos"> 9</span>            <span class="n">clients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">])</span>
+<span class="linenos">10</span>            <span class="n">pkts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]))</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="linenos">13</span>    <span class="n">bar_container</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">clients</span><span class="p">,</span> <span class="n">pkts</span><span class="p">)</span>
+<span class="linenos">14</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Number of Packets&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Packets Sent&#39;</span><span class="p">)</span>
+<span class="linenos">15</span>    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="linenos">16</span>    <span class="n">ax</span><span class="o">.</span><span class="n">bar_label</span><span class="p">(</span><span class="n">bar_container</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This function simply iterates through all of the our data and counts how many packet each client has sent. After the
+packet-count is determined, we will simply plot the data with the matplotlib library.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">2</span>    <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Finalize StatisticsSimulator&#39;</span><span class="p">)</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span>    <span class="bp">self</span><span class="o">.</span><span class="n">calc_client_sent</span><span class="p">()</span>
+<span class="linenos">5</span>    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Our new function will be called in the finalize method, so that it will be plotted once at the end of the simulation.
+A packetSent-Plot for our example simulation should look like this.</p>
+<img alt="packets that got sent by the clients" src="_images/PacketSent.png" />
+<p>The last feature that we want to implement, is the ability to make the plotting optional and save them if necessary.
+We extend the init method so that we can determine these options when initializing the simulator in the scenario.
+Then we change the calc_client_sent function so that if our save_plots option is enabled, so plots gets saves in the
+result folder.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_params</span><span class="p">):</span>
+<span class="linenos"> 2</span>    <span class="bp">self</span><span class="o">.</span><span class="n">_sid</span> <span class="o">=</span> <span class="n">sid</span>
+<span class="linenos"> 3</span>    <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;cosima_omnetpp_project/results/&#39;</span><span class="p">)</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>    <span class="k">if</span> <span class="s1">&#39;network&#39;</span> <span class="ow">in</span> <span class="n">sim_params</span><span class="p">:</span>
+<span class="linenos"> 6</span>        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="k">if</span> <span class="s1">&#39;step_time&#39;</span> <span class="ow">in</span> <span class="n">sim_params</span><span class="p">:</span>
+<span class="linenos"> 9</span>        <span class="bp">self</span><span class="o">.</span><span class="n">step_time</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;step_time&#39;</span><span class="p">]</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">if</span> <span class="s1">&#39;show_plots&#39;</span> <span class="ow">in</span> <span class="n">sim_params</span><span class="p">:</span>
+<span class="linenos">12</span>        <span class="bp">self</span><span class="o">.</span><span class="n">show_plots</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;show_plots&#39;</span><span class="p">]</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span>    <span class="k">if</span> <span class="s1">&#39;save_plots&#39;</span> <span class="ow">in</span> <span class="n">sim_params</span><span class="p">:</span>
+<span class="linenos">15</span>        <span class="bp">self</span><span class="o">.</span><span class="n">save_plots</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;save_plots&#39;</span><span class="p">]</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span>    <span class="k">return</span> <span class="n">META</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">20</span>    <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Finalize StatisticsSimulator&#39;</span><span class="p">)</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="bp">self</span><span class="o">.</span><span class="n">calc_client_sent</span><span class="p">()</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_plots</span><span class="p">:</span>
+<span class="linenos">25</span>        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="k">def</span> <span class="nf">calc_client_sent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">28</span>    <span class="n">clients</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">29</span>    <span class="n">pkts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span>    <span class="k">for</span> <span class="n">stats</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+<span class="linenos">32</span>        <span class="k">if</span> <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;vector&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;packetSent&#39;</span><span class="p">:</span>
+<span class="linenos">33</span>            <span class="n">clients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">])</span>
+<span class="linenos">34</span>            <span class="n">pkts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]))</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="linenos">37</span>    <span class="n">bar_container</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">clients</span><span class="p">,</span> <span class="n">pkts</span><span class="p">)</span>
+<span class="linenos">38</span>    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Number of Packets&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Packets Sent&#39;</span><span class="p">)</span>
+<span class="linenos">39</span>    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="linenos">40</span>    <span class="n">ax</span><span class="o">.</span><span class="n">bar_label</span><span class="p">(</span><span class="n">bar_container</span><span class="p">)</span>
+<span class="linenos">41</span>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_plots</span><span class="p">:</span>
+<span class="linenos">42</span>        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;../results/PacketSent.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The last thing that we have to do, is enabling our options in the scenario. The show_plots option is enabled be default
+but can be disabled here as well.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">stat_sim</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="s1">&#39;StatisticsSimulator&#39;</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">NETWORK</span><span class="p">,</span> <span class="n">save_plots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">step_time</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">Statistics</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Download File: <a class="reference download internal" download="" href="_downloads/8069c1177e99336d671a5a350de0a535/extended_stat_simulator.py"><code class="xref download docutils literal notranslate"><span class="pre">extended_stat_simulator.py</span></code></a></p>
+</section>
+</section>
+<section id="part-2-using-the-scenario-helper-and-scenario-configuration-file">
+<h2>Part 2: Using the scenario helper and scenario configuration file<a class="headerlink" href="#part-2-using-the-scenario-helper-and-scenario-configuration-file" title="Permalink to this heading"></a></h2>
+<p>In cosima, the user is provided with several options to simplify the creation of scenarios.
+In order to show these as an example, the tutorial scenario created previously will be modified in this part
+with the help of these options.
+The corresponding file can be found under <code class="docutils literal notranslate"><span class="pre">cosima_core/scenarios/tutorial/02_scenario_helper_and_scenario_config.py</span></code>.</p>
+<p>First, we introduce the <code class="docutils literal notranslate"><span class="pre">ScenarioHelper</span></code> class. The <code class="docutils literal notranslate"><span class="pre">ScenarioHelper</span></code> can be used in scenario files in order to
+simplify the scenario generation.</p>
+<p>Therefore, the previously created SIM_CONFIG can be simplified here to the extent that the CommunicationSimulator
+no longer needs to be explicitly included.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Simulation configuration -&gt; tells mosaik where to find the simulators</span>
+<span class="linenos">2</span><span class="n">SIM_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos">3</span>    <span class="s1">&#39;SimpleAgent&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos">4</span>        <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="s1">&#39;cosima_core.simulators.tutorial.simple_agent_simulator:SimpleAgent&#39;</span><span class="p">,</span>
+<span class="linenos">5</span>    <span class="p">},</span>
+<span class="linenos">6</span>    <span class="s1">&#39;StatisticsSimulator&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="linenos">7</span>        <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="s1">&#39;cosima_core.simulators.statistics_simulator:StatisticsSimulator&#39;</span><span class="p">,</span>
+<span class="linenos">8</span>    <span class="p">}</span>
+<span class="linenos">9</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Instead of this we now include the <code class="docutils literal notranslate"><span class="pre">ScenarioHelper</span></code> in the scenario by:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">scenario_helper</span> <span class="o">=</span> <span class="n">ScenarioHelper</span><span class="p">()</span>
+<span class="linenos">2</span><span class="n">world</span><span class="p">,</span> <span class="n">communication_simulator</span><span class="p">,</span> <span class="n">client_attribute_mapping</span><span class="p">,</span> <span class="n">sim_config</span> <span class="o">=</span> \
+<span class="linenos">3</span><span class="n">scenario_helper</span><span class="o">.</span><span class="n">prepare_scenario</span><span class="p">(</span><span class="n">sim_config</span><span class="o">=</span><span class="n">SIM_CONFIG</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following part of the scenario stays the same, as it is specific to the implemented use case.
+At the end of the scenario file you can use the <code class="docutils literal notranslate"><span class="pre">ScenarioHelper</span></code> again to run and shutdown your simulation by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">scenario_helper</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">()</span>
+<span class="linenos">2</span><span class="n">scenario_helper</span><span class="o">.</span><span class="n">shutdown_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Also note, that we have now used the <code class="docutils literal notranslate"><span class="pre">scenario_config.py</span></code> for the configuration of the scenario.
+In that config file you can specify parameters such as the number of communicating agents and the start mode of OMNeT++.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Scenarios.html" class="btn btn-neutral float-right" title="Scenarios" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

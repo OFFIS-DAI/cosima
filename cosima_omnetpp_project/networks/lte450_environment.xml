@@ -1,0 +1,22 @@
+<environment>
+	<object position="min 2815.2 3474.6 0" orientation="0 0 0" shape="cuboid 16 16 147" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 2882.6 3498.6 0" orientation="0 0 0" shape="cuboid 30 30 88" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 2964.6 3066.4 0" orientation="0 0 0" shape="cuboid 4 4 44" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 2972.6 3521.2 0" orientation="0 0 0" shape="cuboid 4 4 41" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 3496.4 2407.0 0" orientation="0 0 0" shape="cuboid 4 4 41" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 3150.6 4203.4 0" orientation="0 0 0" shape="cuboid 4 4 33" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 2894.8 3509.4 0" orientation="0 0 0" shape="cuboid 30 30 77" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 3010.4 3629.0 0" orientation="0 0 0" shape="cuboid 8 8 57" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 3077.8 2728.0 0" orientation="0 0 0" shape="cuboid 3 3 54" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+	<object position="min 2894.8 3509.4 0" orientation="0 0 0" shape="cuboid 4 4 50" 
+			material="concrete" fill-color="203 65 84" opacity="0.8"/> 
+</environment>

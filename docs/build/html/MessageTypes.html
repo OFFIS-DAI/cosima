@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message Types &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CommunicationSimulator" href="CommunicationSimulator.html" />
+    <link rel="prev" title="Synchronization of OMNeT++ and mosaik" href="Synchronization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Message Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#protocol-buffers">Protocol buffers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omnet-messages">OMNeT++ messages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mosaikschedulermessage">MosaikSchedulerMessage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mosaikapplicationchunk">MosaikApplicationChunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mosaikctrlevent">MosaikCtrlEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timer">Timer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Message Types</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/MessageTypes.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="message-types">
+<h1>Message Types<a class="headerlink" href="#message-types" title="Permalink to this heading"></a></h1>
+<p>There are different message types used in order to exchange information in this project. <br />
+In mosaik normal python-dictionaries are used for message exchange between the simulators. <br />
+For information exchange between mosaik and OMNeT++ Protocol buffers (in the following called Protobuf) are used and described in detail below. <br />
+For information exchange in OMNeT++ .msg-files are used and also described below.</p>
+<section id="protocol-buffers">
+<h2>Protocol buffers<a class="headerlink" href="#protocol-buffers" title="Permalink to this heading"></a></h2>
+<p><a class="reference external" href="https://developers.google.com/protocol-buffers/docs/overview">Protocol buffers</a> provide an easy way of serializing
+data. Here, a <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/messages/message.proto">Proto file</a> is used in order to define the different Protocol buffers. <br />
+A Protobuf message contains a <code class="docutils literal notranslate"><span class="pre">CosimaMsgGroup</span></code>, which is a list of individual message objects, in order to send multiple
+messages at once / in one time step.
+There are different types of protobuf messages with different values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">InitialMessage</span></code>: One message of this type is sent to OMNeT++ in the beginning of the simulation in order to inform OMNeT++ about important parameters in the simulation on mosaik side.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">msg_id</span></code> : a msg id identifies the message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_advance</span></code> : the current value of the mosaik-internal max advance value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span> <span class="pre">until</span></code> : the time of the simulation end in mosaik</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">is_time_based</span></code>: indicates whether the simulation in mosaik is time-based or not</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span> <span class="pre">step_size</span></code> : the step size used in the simulation, based on the step-size definition in mosaik (e.g., 1 mosaik step is equivalent to 1 millisecond)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">InfoMessage</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">msg_id</span></code> : a msg id identifies the message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_advance</span></code> : the current value of the mosaik-internal max advance value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span> <span class="pre">sim_time</span></code>: the simulation time in OMNeT++</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">sender</span></code> : the sender of a message, should be the name of the module in OMNeT++</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">receiver</span></code> : the receiver of a message, should be the name of the module in OMNeT++</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span> <span class="pre">size</span></code>: the size of the message in bytes (not containing the fields just used for synchronisation, e.g., <code class="docutils literal notranslate"><span class="pre">simTime</span></code>, <code class="docutils literal notranslate"><span class="pre">stepSize</span></code>…)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">content</span></code> : the content of the message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span> <span class="pre">creation_time</span></code> : the time of the creation of the message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">is_valid</span></code>: indicated whether the message was transmitted in a valid format</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SynchronizationMessage</span></code>: messages of this type are sent between mosaik and OMNeT++ in order to synchronize the clocks</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">enum</span> <span class="pre">MsgType</span> <span class="pre">{</span>&#160;&#160; <span class="pre">MAX_ADVANCE</span> <span class="pre">=</span> <span class="pre">0;</span>&#160;&#160; <span class="pre">WAITING</span> <span class="pre">=</span> <span class="pre">1;</span>&#160;&#160; <span class="pre">TRANSMISSION_ERROR</span> <span class="pre">=</span> <span class="pre">2;</span> <span class="pre">}</span></code>
+<code class="docutils literal notranslate"><span class="pre">MsgType</span> <span class="pre">msg_type</span></code>: the type/ cause of the message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">msg_id</span></code> : a msg id identifies the message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span> <span class="pre">sim_time</span></code>: the simulation time in OMNeT++</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">InfrastructureMessage</span></code>: these messages are used for information about infrastructure changes in OMNeT++ such as disconnects or reconnects of routers etc.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">enum</span> <span class="pre">MsgType</span> <span class="pre">{</span>&#160;&#160; <span class="pre">DISCONNECT</span> <span class="pre">=</span> <span class="pre">0;</span>&#160;&#160; <span class="pre">RECONNECT</span> <span class="pre">=</span> <span class="pre">1;</span> <span class="pre">}</span> <span class="pre">MsgType</span> <span class="pre">msg_type</span></code> : indicates whether the message is sent as disconnect or reconnect info</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">msg_id</span></code> : a msg id identifies the message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span> <span class="pre">sim_time</span></code>: the simulation time in OMNeT++</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">change_module</span></code> : identifies the module that has to be changed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">connection_change_successful</span></code> : indicates if a connection change in OMNeT++ has been successful
+A <code class="docutils literal notranslate"><span class="pre">CosimaMsgGroup</span></code> also contains
+information about the current time step in mosaik. \</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="omnet-messages">
+<h2>OMNeT++ messages<a class="headerlink" href="#omnet-messages" title="Permalink to this heading"></a></h2>
+<p>In OMNeT++ there are a number of defined messages or events, which are used for internal information exchange between modules and the scheduler in OMNeT++.</p>
+<section id="mosaikschedulermessage">
+<h3>MosaikSchedulerMessage<a class="headerlink" href="#mosaikschedulermessage" title="Permalink to this heading"></a></h3>
+<p>A <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/MosaikSchedulerMessage.msg">MosaikSchedulerMessage</a> is used for message exchange
+between the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h">MosaikScheduler</a> and the modules of the network. <br />
+If, for example, a message between client0 and client1 has to be sent, the MosaikScheduler sends a MosaikSchedulerMessage
+to client0 which then sends an inet packet to client1 over the modelled network.</p>
+</section>
+<section id="mosaikapplicationchunk">
+<h3>MosaikApplicationChunk<a class="headerlink" href="#mosaikapplicationchunk" title="Permalink to this heading"></a></h3>
+<p>The <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/MosaikApplicationChunk.msg">MosaikApplicationChunk</a> is used as a payload in an
+inet packet which is sent between two modules over the network in OMNeT++. It contains message specific information such
+as the content of the message, its sender and receiver and the message id.</p>
+</section>
+<section id="mosaikctrlevent">
+<h3>MosaikCtrlEvent<a class="headerlink" href="#mosaikctrlevent" title="Permalink to this heading"></a></h3>
+<p>The <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/MosaikCtrlEvent.msg">MosaikCtrlEvent</a> is used for control tasks such as max
+advance or until events. A MosaikCtrlEvent contains an enum
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/ControlType.msg">ControlType</a> what defines the type of control task.</p>
+</section>
+<section id="timer">
+<h3>Timer<a class="headerlink" href="#timer" title="Permalink to this heading"></a></h3>
+<p>The <a class="reference internal" href="#.https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/Timer.msg"><span class="xref myst">Timer message</span></a> is used in the implementation of the
+<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.h">SocketAgentAppTcp</a> in order to handle the TCP connections in the
+OMNeT++ network.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Synchronization.html" class="btn btn-neutral float-left" title="Synchronization of OMNeT++ and mosaik" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CommunicationSimulator.html" class="btn btn-neutral float-right" title="CommunicationSimulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

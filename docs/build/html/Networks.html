@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OMNeT++ networks &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="MosaikScheduler" href="MosaikScheduler.html" />
+    <link rel="prev" title="ICTController" href="ICTController.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OMNeT++ networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#provided-networks">Provided networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#winzentnetwork"><em>WinzentNetwork</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manyagentnetwork"><em>ManyAgentNetwork</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#largecosimanetwork"><em>LargeCosimaNetwork</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mosaiknetwork"><em>MosaikNetwork</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#singlecelllte"><em>SingleCellLTE</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wifinetwork"><em>WifiNetwork</em></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#modelling-a-new-network">Modelling a new network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">OMNeT++ networks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Networks.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="omnet-networks">
+<h1>OMNeT++ networks<a class="headerlink" href="#omnet-networks" title="Permalink to this heading"></a></h1>
+<p>As a starting point for own scenarios some networks are provided in the project, which contain different communication technologies and topologies. <br />
+The network description files can be found in the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/tree/master/cosima_omnetpp_project/networks">networks folder</a>.</p>
+<section id="provided-networks">
+<h2>Provided networks<a class="headerlink" href="#provided-networks" title="Permalink to this heading"></a></h2>
+<section id="winzentnetwork">
+<h3><em>WinzentNetwork</em><a class="headerlink" href="#winzentnetwork" title="Permalink to this heading"></a></h3>
+<p>The <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks/WinzentNetwork.ned">WinzentNetwork</a></em> consists of five routers, which form the core network. Four switches, each with one end device, are connected to the core network. The connections are wired Ethernet connections. The data rate of the <a class="reference external" href="https://doc.omnetpp.org/inet/api-old/neddoc/index.html?p=inet.node.ethernet.EtherLink.html">EtherLink</a> is set to 10Mbps. The distances between the individual network devices are defined manually, but can be easily adjusted by modifying the .ned file. In the network description file five networks are modeled in total, which are modifications of the initial <em>WinzentNetwork</em>.</p>
+</section>
+<section id="manyagentnetwork">
+<h3><em>ManyAgentNetwork</em><a class="headerlink" href="#manyagentnetwork" title="Permalink to this heading"></a></h3>
+<p>The <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks/ManyAgentNetwork.ned">ManyAgentNetwork</a></em> consists of two ring-shaped core networks of routers. These are connected to 20 end devices via switches.
+As in the <em>WinzentNetwork</em>, the communication technology is based on Ethernet cables.</p>
+</section>
+<section id="largecosimanetwork">
+<h3><em>LargeCosimaNetwork</em><a class="headerlink" href="#largecosimanetwork" title="Permalink to this heading"></a></h3>
+<p>The <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks/LargeCosimaNetwork.ned">LargeCosimaNetwork</a> consists of multiple rings of routers connected via Ethernet cables. 50 end devices are modelled.</p>
+</section>
+<section id="mosaiknetwork">
+<h3><em>MosaikNetwork</em><a class="headerlink" href="#mosaiknetwork" title="Permalink to this heading"></a></h3>
+<p>In the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks/MosaikNetwork.ned">MosaikNetwork</a>, an <a class="reference external" href="https://doc.omnetpp.org/inet/api-current/neddoc/src-inet-node-internetcloud-InternetCloud.ned.html">InternetCloud</a> from the inet library is used. It is used here to model a fixed delay time between the end devices. Ethernet cables with a data rate of 100Mbps are modeled as connections.</p>
+</section>
+<section id="singlecelllte">
+<h3><em>SingleCellLTE</em><a class="headerlink" href="#singlecelllte" title="Permalink to this heading"></a></h3>
+<p>The <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks/SingleCellLTE.ned">SingleCellLTE</a> network is based on the basic network of the SimuLTE library. The tutorial can be found under <a class="reference external" href="https://simulte.com/tutorial-basic.html">SimuLTE tutorial</a>. <br />
+The network is, as the name suggests, a LTE network. Four devices are within range of a base station and can thus communicate via the wireless network.</p>
+</section>
+<section id="wifinetwork">
+<h3><em>WifiNetwork</em><a class="headerlink" href="#wifinetwork" title="Permalink to this heading"></a></h3>
+<p>Another wireless network is the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks/WifiNetwork.ned">WifiNetwork</a>. Communication here takes place via Wifi.</p>
+</section>
+</section>
+<section id="modelling-a-new-network">
+<h2>Modelling a new network<a class="headerlink" href="#modelling-a-new-network" title="Permalink to this heading"></a></h2>
+<p>All of the previously described, provided networks contain an instance of the <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikSchedulerModule.h">MosaikSchedulerModule</a></em>.
+When modeling an additional network, this module must also be inserted into the network to enable the <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h">MosaikScheduler</a></em> to operate. For further information also see the <a class="reference internal" href="MosaikScheduler.html"><span class="std std-doc">documentation on the MosaikScheduler</span></a>. <br />
+In addition, an instance of the <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScenarioManager.h">MosaikScenarioManager</a></em> should be inserted into the network if changes on the infrastructure (for example disconnecting or reconnecting clients) should be possible at simulation time. For further information on infrastructure changes during simulation time see the <a class="reference internal" href="ICTController.html"><span class="std std-doc">documentation on the ICTController</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ICTController.html" class="btn btn-neutral float-left" title="ICTController" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="MosaikScheduler.html" class="btn btn-neutral float-right" title="MosaikScheduler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

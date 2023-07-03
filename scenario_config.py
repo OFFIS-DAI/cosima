@@ -1,12 +1,14 @@
+from data.traffic_configurations.traffic_config import ddos_traffic_configuration as traffic_configuration
+
 # indicates if message are sent over OMNeT++ network
 USE_COMMUNICATION_SIMULATION = True
 
 # can be 'warnings' (only warnings), 'info' (only important information), 'debug' (all information)
-LOGGING_LEVEL = 'info'
+LOGGING_LEVEL = 'debug'
 LOG_TO_FILE = True
 
 # end of simulation (in milliseconds)
-SIMULATION_END = 100
+SIMULATION_END = 1000000
 
 # number of agents (depends on chosen network in OMNeT++)
 NUMBER_OF_AGENTS = 2
@@ -37,3 +39,19 @@ INFRASTRUCTURE_CHANGES = [
     #      'module': 'client1'}
 ]
 
+# The traffic configuration can either be done directly in this file or can be imported from a traffic configuration
+# file. A traffic configuration may look like this:
+# TRAFFIC_CONFIGURATION = [
+#   {
+#         'source': 'traffic_device_0',
+#         'destination': 'client1',
+#         'start': 1,
+#         'stop': 100,
+#         'interval': 10,
+#         'packet_length': 1000
+#     }
+# ]
+# Always make sure that your chosen network contains the needed traffic devices.
+TRAFFIC_CONFIGURATION = []
+
+ATTACK_CONFIGURATION = []

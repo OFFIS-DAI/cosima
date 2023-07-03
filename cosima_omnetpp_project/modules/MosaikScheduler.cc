@@ -33,7 +33,9 @@
 #include "../messages/MosaikApplicationChunk_m.h"
 #include "../messages/message.pb.h"
 #include "../messages/MosaikCtrlEvent_m.h"
+#include "../messages/AttackEvent_m.h"
 #include "../messages/ControlType_m.h"
+#include "../messages/AttackType_m.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
 
 
@@ -265,11 +267,13 @@ void MosaikScheduler::log(std::string info, std::string logLevel) {
 
             // opening file using ofstream
             f.open("../log.txt", std::ios::app);
-            if (!f)
-                std::cout << "No such file found";
-            f << getCurrentTime() << " OMNeT++: " << info << "\n";
-            f.close();
-            written = true;
+            if (!f) {
+                return;
+            } else{
+                f << getCurrentTime() << " OMNeT++: " << info << "\n";
+                f.close();
+                written = true;
+            }
         } catch(...) {
         }
     }
@@ -302,6 +306,11 @@ void MosaikScheduler::setScenarioManager(cModule *manager) {
     log("MosaikScheduler: registered ScenarioManager.");
     scenarioManager = manager;
 }
+
+void MosaikScheduler::setAttackNetworkLayer(omnetpp::cModule *networkLayerModule) {
+    attackModules.push_back(networkLayerModule);
+}
+
 
 void MosaikScheduler::addModule(cModule *mod) {
     modules.push_back(mod);
@@ -339,6 +348,21 @@ cModule *MosaikScheduler::getReceiverModule(std::string module_name) {
         if (moduleNameCheck.compare(module_name) == 0) {
             matchingModule = module;
         }
+    }
+    return (matchingModule);
+}
+
+cModule *MosaikScheduler::getAttackNetworkLayerModule(std::string module_name) {
+    // get corresponding module to server name
+    cModule *matchingModule = nullptr;
+    for (auto const& module : attackModules) {
+        std::string moduleNameCheck = std::string(module->getParentModule()->getParentModule()->getName());
+        if (moduleNameCheck.compare(module_name) == 0) {
+            matchingModule = module;
+        }
+    }
+    if (matchingModule == nullptr) {
+        throw cRuntimeError("No network layer module found, that implements attack functionality. Make sure to use the special AttackUe module.");
     }
     return (matchingModule);
 }
@@ -512,6 +536,44 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
 
     }
 
+    // get traffic messages
+    for(auto i=0; i < pmsg_group.traffic_messages().size(); i++) {
+        TrafficMessage trafficMessage = pmsg_group.traffic_messages().Get(i);
+        MosaikCtrlEvent *trafficEvent = new MosaikCtrlEvent();
+        trafficEvent->setCtrlType(Traffic);
+        trafficEvent->setSource(trafficMessage.source().c_str());
+        trafficEvent->setDestination(trafficMessage.destination().c_str());
+        trafficEvent->setStart(trafficMessage.start());
+        trafficEvent->setStop(trafficMessage.stop());
+        trafficEvent->setInterval(trafficMessage.interval());
+        trafficEvent->setPacketLength(trafficMessage.packet_length());
+        auto arrivalTime = (trafficMessage.start() * 1.0) / 1000;
+        trafficEvent->setArrival(scenarioManagerObject->getId(), -1, simTime());
+        log("MosaikScheduler: traffic event inserted for simtime " + std::to_string(arrivalTime) + " for " + trafficMessage.source() + " to " + trafficMessage.destination() + ".");
+        getSimulation()->getFES()->insert(trafficEvent);
+    }
+
+    for(auto i=0; i < pmsg_group.attack_messages().size(); i++) {
+        AttackMessage attackMessage = pmsg_group.attack_messages().Get(i);
+        AttackEvent *attackEvent = new AttackEvent();
+        if(attackMessage.msg_type() == AttackMessage_MsgType_PACKET_DELAY) {
+            attackEvent->setAttackType(PacketDelay);
+        }
+        else if(attackMessage.msg_type()  == AttackMessage_MsgType_PACKET_DROP) {
+            attackEvent->setAttackType(PacketDrop);
+        }
+        else if(attackMessage.msg_type() == AttackMessage_MsgType_PACKET_FALSIFICATION) {
+            attackEvent->setAttackType(PacketFalsification);
+        }
+        attackEvent->setAttacked_module(attackMessage.attacked_module().c_str());
+        attackEvent->setStart(attackMessage.start());
+        attackEvent->setStop(attackMessage.stop());
+        double attackProbability = attackMessage.attack_probability();
+        attackEvent->setProbability(attackProbability);
+        attackEvent->setArrival(scenarioManagerObject->getId(), -1, simTime());
+        getSimulation()->getFES()->insert(attackEvent);
+    }
+
     if(disconnectModules.size() > 0) {
         disconnectEvent->setModuleNamesArraySize(disconnectModules.size());
         auto counter = 0;
@@ -519,7 +581,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
             disconnectEvent->setModuleNames(counter, module.c_str());
             counter++;
         }
-        disconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedMosaikSimTime);
+        disconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedMosaikSimTime); //TODO: set to time in msg
         getSimulation()->getFES()->insert(disconnectEvent);
         insertedEvent = true;
         eventScheduled = true;
@@ -536,7 +598,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
             reconnectEvent->setModuleNames(counter, module.c_str());
             counter++;
         }
-        reconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedMosaikSimTime);
+        reconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedMosaikSimTime); //TODO: set to time in msg
         getSimulation()->getFES()->insert(reconnectEvent);
         insertedEvent = true;
         eventScheduled = true;
@@ -827,6 +889,7 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
         auto content = replyMsg->getContent();
         auto msgId = replyMsg->getMsgId();
         auto creationTime = replyMsg->getCreationTime();
+        auto isFalsified = replyMsg->getFalsified();
 
         std::stringstream logContent;
 
@@ -904,6 +967,7 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             infoMessage.set_sim_time(currentStep);
             infoMessage.set_msg_id(msgId);
             infoMessage.set_creation_time(creationTime);
+            infoMessage.set_is_falsified(isFalsified);
 
             Message message;
             message.setMessage(infoMessage);

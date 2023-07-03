@@ -4,6 +4,9 @@ from pathlib import Path
 # max size per message group
 MAX_BYTE_SIZE_PER_MSG_GROUP = 1000
 
+# units conversion factor for mango scenarios
+MANGO_CONVERSION_FACTOR = 1000
+
 # path to load content for agent messages from
 ROOT_PATH = Path(abspath(__file__)).parent.parent
 
@@ -18,7 +21,7 @@ GRID_NAME = "large grid"
 CHP_DATA = str(ROOT_PATH.parent / 'data')
 
 # path to store results to
-RESULTS_FILENAME = str(ROOT_PATH.parent / 'results' / 'result')
+RESULTS_FILENAME = str(ROOT_PATH.parent / 'cosima_core' / 'results' / 'result_')
 
 # port for OMNeT++ connection
 PORT = 4242

@@ -97,6 +97,9 @@ echo "-------------------------------------------------------------"
 echo "Installing pip requirements"
 # install python pip requirements
 cd "$workdir"
+pip install virtualenv
+virtualenv venv
+source venv/bin/activate
 pip install -r requirements.txt
 pip install testresources
 

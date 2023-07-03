@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MosaikScheduler &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Agent Apps" href="AgentApps.html" />
+    <link rel="prev" title="OMNeT++ networks" href="Networks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MosaikScheduler</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-mosaikscheduler">Using the MosaikScheduler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operating-principle">Operating Principle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-mosaikschedulermodule">The MosaikSchedulerModule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scheduling-tasks">Scheduling tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">MosaikScheduler</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/MosaikScheduler.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mosaikscheduler">
+<h1>MosaikScheduler<a class="headerlink" href="#mosaikscheduler" title="Permalink to this heading"></a></h1>
+<p>The default scheduler cSequentialScheduler in OMNeT++ can be replaced by a custom scheduler implementation (such as a
+real-time scheduler). The custom scheduler class must implement the abstract cScheduler class. For further details on
+schedulers in OMNeT++ see the <a class="reference external" href="https://doc.omnetpp.org/omnetpp/manual/">Simulation Manual of OMNeT++</a>.<br />
+The MosaikScheduler is the interface to mosaik and therefore, holds the TCP socket connection to python and receives /
+sends messages from/ to the CommunicationSimulator (see <a class="reference internal" href="CommunicationSimulator.html"><span class="std std-doc">CommunicationSimulator</span></a>) in mosaik.</p>
+<section id="using-the-mosaikscheduler">
+<h2>Using the MosaikScheduler<a class="headerlink" href="#using-the-mosaikscheduler" title="Permalink to this heading"></a></h2>
+<p>If the MosaikScheduler is used as the event scheduler during the simulation, its method <code class="docutils literal notranslate"><span class="pre">startRun()</span></code> is called in the
+beginning of the simulation in OMNeT++. By that, the listener TCP socket is initialized in order to wait for incoming
+connections from the OmnetppConnection (see <a class="reference download internal" download="" href="_downloads/1b020be8e38323aab49d1efa7ba00969/omnetpp_connection.py"><span class="xref download myst">OmnetppConnection</span></a>) on mosaik side.</p>
+</section>
+<section id="operating-principle">
+<h2>Operating Principle<a class="headerlink" href="#operating-principle" title="Permalink to this heading"></a></h2>
+<p>As soon as the connection to mosaik is established, messages between OMNeT++ and mosaik can be sent and received.
+The MosaikScheduler must forward messages from mosaik to the correct modules in the OMNeT++ network.
+For this the scheduler needs knowledge about the modules. For this reason, the end devices register at the
+MosaikScheduler at the beginning of the simulation by calling the method <code class="docutils literal notranslate"><span class="pre">setInterfaceModule()</span></code>. That way the scheduler
+can keep a list of the registered modules during runtime. <br />
+Whenever the MosaikScheduler receives a message from mosaik (that has to be sent from client0 to client1 for example),
+it must only search for the corresponding module of client0 in its list of the registered modules. <br />
+The representative module of agent client1 then sends the message over the modelled network
+(e.g., <a class="reference internal" href="#../../cosima_omnetpp_project/networks/MosaikNetwork.ned"><span class="xref myst">MosaikNetwork</span></a>) in OMNeT++. <br />
+As soon as client1 receives the message, it forwards that information back to the MosaikScheduler, which then sends
+a message back to the CommunicationSimulator in mosaik. <br />
+In addition to normal messages, control messages can also be sent by mosaik. The different message types are explained
+in <a class="reference internal" href="MessageTypes.html"><span class="std std-doc">Message Types</span></a>. <br />
+If the MosaikScheduler receives a <code class="docutils literal notranslate"><span class="pre">SynchronisationMessage</span></code> of the type <code class="docutils literal notranslate"><span class="pre">WAITING</span></code>,
+that means that mosaik is waiting for messages in OMNeT++ to be
+simulated and the simulation is being continued. <br />
+If the MosaikScheduler receives a message from the ICT-Controller the infrastructure of the simulation network has
+to be changed. These infrastructure changes (e.g., disconnect and reconnect of router, switches clients) are then
+conducted by the <a class="reference download internal" download="" href="_downloads/162288abd1e2efb642c5c8a31d45153e/MosaikScenarioManager.h"><span class="xref download myst">MosaikScenarioManager</span></a>. <br />
+Until and maxAdvance information (for further details see <a class="reference internal" href="Synchronization.html"><span class="std std-doc">Synchronisation</span></a>) is handled by the
+<a class="reference download internal" download="" href="_downloads/8c9f7f14a497554139b04b934783da63/MosaikSchedulerModule.h"><span class="xref download myst">MosaikSchedulerModule</span></a> (for further details see below).</p>
+</section>
+<section id="the-mosaikschedulermodule">
+<h2>The MosaikSchedulerModule<a class="headerlink" href="#the-mosaikschedulermodule" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference download internal" download="" href="_downloads/8c9f7f14a497554139b04b934783da63/MosaikSchedulerModule.h"><span class="xref download myst">MosaikSchedulerModule</span></a> is a cModule that works as a helper module for the MosaikScheduler, because a cModule is needed in OMNeT++ for event scheduling.
+Whenever the MosaikScheduler receives information about maxAdvance or until values from mosaik, that information is
+transferred into events at the given time. These events are then scheduled for the MosaikSchedulerModule.</p>
+</section>
+<section id="scheduling-tasks">
+<h2>Scheduling tasks<a class="headerlink" href="#scheduling-tasks" title="Permalink to this heading"></a></h2>
+<p>As the used scheduler in the simulation, the MosaikScheduler also has to take over the scheduling tasks of the default
+event scheduler. <br />
+Therefore, the method <code class="docutils literal notranslate"><span class="pre">takeNextEvent()</span></code>is implemented. This method is by default called by the simulation kernel in
+OMNeT++ whenever the next event from the Future Event Set (FES) (for further information on the concept of the FES in OMNeT++ see <a class="reference external" href="https://doc.omnetpp.org/omnetpp/manual/#sec:simple-modules:event-loop">manual</a>) might be taken for execution. As soon as the initial
+message from mosaik has arrived at the MosaikScheduler, the scheduler takes the events in the scheduled order from the FES. Additional to that the method
+<code class="docutils literal notranslate"><span class="pre">receiveUntil()</span></code> is called here. In <code class="docutils literal notranslate"><span class="pre">receiveUntil()</span></code> the MosaikScheduler waits for messages from mosaik and inserts the received messages as events into the FES.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Networks.html" class="btn btn-neutral float-left" title="OMNeT++ networks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="AgentApps.html" class="btn btn-neutral float-right" title="Agent Apps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
