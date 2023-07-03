@@ -3,7 +3,7 @@ import mosaik_api
 from cosima_core.util.general_config import MAX_BYTE_SIZE_PER_MSG_GROUP
 import scenario_config
 from cosima_core.messages.message_pb2 import InitialMessage, InfoMessage, SynchronisationMessage, \
-    InfrastructureMessage
+    InfrastructureMessage, TrafficMessage, AttackMessage
 from cosima_core.simulators.omnetpp_connection import OmnetppConnection
 from cosima_core.util.util_functions import log, create_protobuf_messages, get_dict_from_protobuf_message
 
@@ -319,7 +319,12 @@ class CommunicationSimulator(mosaik_api.Simulator):
                 for values in sources_to_values.values():
                     if 'ict_message' in attribute:
                         for value in values:
-                            messages_to_send.append((value, InfrastructureMessage))
+                            if 'Traffic' in value['msg_id']:
+                                messages_to_send.append((value, TrafficMessage))
+                            elif 'Attack' in value['msg_id']:
+                                messages_to_send.append((value, AttackMessage))
+                            else:
+                                messages_to_send.append((value, InfrastructureMessage))
                     elif type(values) is list:
                         for value in values:
                             if not self._use_communication_simulation:

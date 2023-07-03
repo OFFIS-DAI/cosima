@@ -18,6 +18,7 @@ message InitialMessage {
     int32 size = 6;
     string content = 7;
     int32 creation_time = 8;
+    bool is_falsified = 9;
   }
 
   message SynchronisationMessage {
@@ -46,14 +47,42 @@ message InitialMessage {
     bool connection_change_successful = 5;
   }
 
+  message TrafficMessage {
+  string msg_id = 1;
+  int32 sim_time = 2;
+  string source = 3;
+  string destination = 4;
+  int32 start = 5;
+  int32 stop = 6;
+  int32 interval = 7;
+  int32 packet_length = 8;
+  }
+
+  message AttackMessage {
+  enum MsgType {
+      PACKET_DROP = 0;
+      PACKET_FALSIFICATION = 1;
+      PACKET_DELAY = 2;
+    }
+  MsgType msg_type = 1;
+  string msg_id = 2;
+  int32 sim_time = 3;
+  string attacked_module = 4;
+  int32 start = 5;
+  int32 stop = 6;
+  int32 attack_probability = 7;
+  }
+
 message CosimaMsgGroup {
   repeated InitialMessage initial_messages = 1;
   repeated InfoMessage info_messages = 2;
   repeated SynchronisationMessage synchronisation_messages = 3;
   repeated InfrastructureMessage infrastructure_messages = 4;
-  int32 current_mosaik_step = 5;
-  int32 number_of_message_groups = 6;
-  int32 number_of_messages = 7;
+  repeated TrafficMessage traffic_messages = 5;
+  repeated AttackMessage attack_messages = 6;
+  int32 current_mosaik_step = 7;
+  int32 number_of_message_groups = 8;
+  int32 number_of_messages = 9;
 }
 
 

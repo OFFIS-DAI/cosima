@@ -10,6 +10,7 @@
 #include <omnetpp.h>
 #include <algorithm>
 #include "../messages/MosaikCtrlEvent_m.h"
+#include "../messages/AttackEvent_m.h"
 
 Define_Module(MosaikScenarioManager);
 
@@ -33,12 +34,17 @@ void MosaikScenarioManager::handleMessage(cMessage *msg) {
     if (msg == nullptr or msg->getDisplayString() == nullptr) {
         throw cRuntimeError("MosaikScenarioManager: Received nullptr message");
     }
-    std::string msgStr = msg->getDisplayString();
 
-    scheduler->log("MosaikScenarioManager: received message " + msgStr);
     std::list<MosaikSchedulerMessage *> notificationMessages;
     if (typeid(*msg) == typeid(MosaikCtrlEvent)) {
         MosaikCtrlEvent *event = dynamic_cast<MosaikCtrlEvent *>(msg);
+        if (event->getCtrlType() == 6) {
+            cModule *receiverModule = scheduler->getReceiverModule(event->getSource());
+            if (receiverModule == nullptr) {
+                throw cRuntimeError("MosaikScenarioManager: Can't resolve traffic sender module.");
+            }
+            handleTraffic(receiverModule, event->getSource(), event->getDestination(), event->getPacketLength(), event->getStop(), event->getInterval());
+        }
         for (int i = 0; i < event->getModuleNamesArraySize(); i++) {
             if (strcmp(event->getModuleNames(i), "") == 0) {
                 throw cRuntimeError("MosaikScenarioManager: Received message without module name.");
@@ -51,6 +57,13 @@ void MosaikScenarioManager::handleMessage(cMessage *msg) {
                 notificationMessages.push_back(connect(event->getModuleNames(i)));
             }
         }
+    } else if (typeid(*msg) == typeid(AttackEvent)) {
+        AttackEvent *event = dynamic_cast<AttackEvent *>(msg);
+        auto moduleName = event->getAttacked_module();
+        auto moduleObj = scheduler->getAttackNetworkLayerModule(moduleName);
+        auto newEvent = event->dup();
+        newEvent->setArrival(moduleObj->getId(), -1, simTime());
+        getSimulation()->getFES()->insert(newEvent);
     }
 
     for (auto const& msg : notificationMessages) {
@@ -60,6 +73,32 @@ void MosaikScenarioManager::handleMessage(cMessage *msg) {
     }
 
     delete msg;
+}
+
+void MosaikScenarioManager::handleTraffic(cModule *sourceModule, const char *source, const char *destination, int packet_length, int stop, int interval) {
+    MosaikCtrlEvent *trafficEvent = new MosaikCtrlEvent();
+    trafficEvent->setCtrlType(Traffic);
+    trafficEvent->setDestination(destination);
+
+    // is time < stop: schedule new event
+    trafficEvent->setPacketLength(packet_length);
+    trafficEvent->setArrival(sourceModule->getId(), -1, simTime());
+    getSimulation()->getFES()->insert(trafficEvent);
+
+    if (simTime().inUnit(SimTimeUnit::SIMTIME_MS) + interval <= stop) {
+        double intervalDbl = interval * 1.0;
+        intervalDbl = intervalDbl/1000;
+        omnetpp::simtime_t newTrafficTime = simTime() + intervalDbl;
+
+        MosaikCtrlEvent *newTrafficEvent = new MosaikCtrlEvent();
+        newTrafficEvent->setCtrlType(Traffic);
+        newTrafficEvent->setSource(source);
+        newTrafficEvent->setDestination(destination);
+        newTrafficEvent->setStop(stop);
+        newTrafficEvent->setInterval(interval);
+        newTrafficEvent->setPacketLength(packet_length);
+        scheduleAt(newTrafficTime, newTrafficEvent);
+    }
 }
 
 MosaikSchedulerMessage *MosaikScenarioManager::disconnect(const char *moduleName) {

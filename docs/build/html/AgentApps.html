@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Apps &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Privacy Policies" href="Privacy.html" />
+    <link rel="prev" title="MosaikScheduler" href="MosaikScheduler.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommunicationSimulator.html">CommunicationSimulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Agent Apps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#agentappudp"><em>AgentAppUdp</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#agentapptcp"><em>AgentAppTcp</em></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Agent Apps</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/AgentApps.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="agent-apps">
+<h1>Agent Apps<a class="headerlink" href="#agent-apps" title="Permalink to this heading"></a></h1>
+<p>The <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppUdp.h">AgentAppUdp</a></em> and <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.h">AgentAppTcp</a></em> represent the implementation of the application layer
+(and transport layer) of the end devices, which represent the agents from mosaik on the OMNeT++ side. <br />
+The <em>AgentAppUdp</em> is used for communication via UDP and the <em>AgentAppTcp</em> is used for communication via TCP. The protocol (UDP or TCP) used by the clients can be configured by choosing the corresponding <em>AgentApp(TCP/UDP)</em> in the .ini-file of the project.</p>
+<section id="agentappudp">
+<h2><em>AgentAppUdp</em><a class="headerlink" href="#agentappudp" title="Permalink to this heading"></a></h2>
+<p>When the one instance of the <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppUdp.h">AgentAppUdp</a></em> class is initialised, the corresponding module is registered with the scheduler. This way, the scheduler has knowledge about the modules in the network and can forward messages from mosaik accordingly. <br />
+The <em>AgentAppUdp</em> inherits from the class cSimpleModule and thus receives messages via the method handleMessage().  A received message can either have been received via the modelled network or given to the <em>AgentAppUdp</em> by the scheduler. <br />
+If the message has been placed by the scheduler, a packet with the content of the message is generated and sent over the network. For this purpose, the <em>AgentAppUdp</em> holds a UDP socket of the library inet. <br />
+If the message has been received over the network, the information is returned to the scheduler.</p>
+</section>
+<section id="agentapptcp">
+<h2><em>AgentAppTcp</em><a class="headerlink" href="#agentapptcp" title="Permalink to this heading"></a></h2>
+<p>When the one instance of the <em><a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.h">AgentAppTcp</a></em> class is initialised, the corresponding module is also registered with the scheduler. The other concepts are also very similar to the implementation of the AgentApp. <br />
+The main difference lies in the protocol used. Due to the more complex functioning of TCP compared to UDP, the concept of timer messages has been used here. For further details on messages see <a class="reference internal" href="MessageTypes.html"><span class="std std-doc">Message Types</span></a>. <br />
+Timer messages assist in establishing connections and sending messages over the network. Depending on the type of timer, these trigger the connection to another socket, the sending of messages via the network, the closing of a connection or the renewal of a socket.<br />
+The <em>AgentAppTcp</em> holds a map of timers for different modules. That way, a list of Timer messages for each established connection exists.<br />
+The <em>AgentAppTcp</em> has a server TCP socket for receiving messages and a map of client TCP sockets for sending messages.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="MosaikScheduler.html" class="btn btn-neutral float-left" title="MosaikScheduler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Privacy.html" class="btn btn-neutral float-right" title="Privacy Policies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

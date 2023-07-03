@@ -50,6 +50,8 @@ protected:
     int numModules;
     std::list<omnetpp::cModule*> modules = {};
 
+    std::list<omnetpp::cModule*> attackModules = {};
+
     // event at socket
     omnetpp::cMessage *socketEvent;
 
@@ -112,6 +114,12 @@ public:
      */
     virtual void setInterfaceModule(omnetpp::cModule *module, bool isMosaikSchedulerModule);
 
+    /***
+     * Register network layer for attack at MosaikScheduler.
+     */
+    void setAttackNetworkLayer(omnetpp::cModule *networkLayerModule);
+
+
     /**
      * Register scenario manager at scheduler module.
      */
@@ -133,6 +141,7 @@ public:
      * To be called to get receiver module from message.
      */
     virtual omnetpp::cModule *getReceiverModule(std::string module_name);
+    omnetpp::cModule *getAttackNetworkLayerModule(std::string module_name);
 
 
     /**

@@ -27,6 +27,7 @@
 #include "../messages/MosaikApplicationChunk_m.h"
 #include "../messages/MosaikSchedulerMessage_m.h"
 #include "../messages/MosaikCtrlEvent_m.h"
+
 #include "AgentAppTcp.h"
 
 
@@ -88,8 +89,47 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
         return false;
     }
 
+    if (typeid(*msg) == typeid(MosaikCtrlEvent)) {
+        // is traffic event
+        MosaikCtrlEvent *msgCasted = dynamic_cast<MosaikCtrlEvent *>(msg);
+        auto receiverName = msgCasted->getDestination();
+
+        // get corresponding port for receiver name
+        auto receiverPort = scheduler->getPortForModule(receiverName);
+
+        if (receiverPort == -1) {
+            delete msg;
+            return false;
+        }
+
+        scheduler->log(nameStr + ": send traffic to " + receiverName + " at time " + simTime().str() + ".", "info");
+
+        auto packet = new inet::Packet();
+        const auto &payload = inet::makeShared<MosaikApplicationChunk>();
+        auto msgSize = msgCasted->getPacketLength();
+        payload->setChunkLength(inet::B(msgSize));
+        payload->setIsTrafficMessage(true);
+        packet->insertAtBack(payload);
+        auto clientId = getModuleIdByName(receiverName);
+        setPacketForModuleId(clientId, packet);
+
+
+        auto timerMsg = getTimerForModuleId(clientId);
+        // type 0 means connect
+        timerMsg->setTimerType(0);
+        timerMsg->setReceiverName(receiverName);
+        timerMsg->setReceiverPort(receiverPort);
+
+        // schedule timer as self message
+        scheduleAt(simTime(), timerMsg);
+
+        delete msg;
+        return true;
+    }
+
     // make packet
     if (typeid(*msg) == typeid(MosaikSchedulerMessage)) {
+        // is "normal" message
         MosaikSchedulerMessage *msgCasted = dynamic_cast<MosaikSchedulerMessage *>(msg);
         auto content = msgCasted->getContent();
 
@@ -123,6 +163,7 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
         payload->setCreationTime(mosaikSimTime);
         payload->setMsgId(msgId);
         payload->setCreationTimeMosaik(creation_time);
+        payload->setIsTrafficMessage(false);
         packet->insertAtBack(payload);
         packet->setTimestamp(mosaikSimTime);
 
@@ -326,9 +367,6 @@ void AgentAppTcp::connect(const char *receiverName, int receiverPort, const char
             timerMsg->setReceiverPort(receiverPort);
             timerMsg->setMessageId(messageIdStr.c_str());
 
-            // schedule timer as self message
-            // scheduleAt(simTime() + 10, timerMsg);
-
         }
         clientSockets[clientId] = clientSocket;
     } catch(...) {
@@ -409,70 +447,83 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                                     const inet::SliceChunk *encapsulatedSliceChunk = dynamic_cast<const inet::SliceChunk *>(itemget);
                                     auto appChunkInSliceChunk = encapsulatedSliceChunk->getChunk();
                                     auto appChunk = appChunkInSliceChunk->peek<MosaikApplicationChunk>(inet::b(0), appChunkInSliceChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
-                                    bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
-                                    if (alreadyReceived) {
-                                        // std::cout << "already received msg " << appChunk->getMsgId() << endl;
+                                    if (appChunk->isTrafficMessage()) {
+                                        scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                                         return;
+                                    } else {
+                                        bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
+                                        if (alreadyReceived) {
+                                            return;
+                                        }
+                                        answer->setContent(appChunk->getContent());
+                                        answer->setReceiver(appChunk->getReceiver());
+                                        answer->setFalsified(appChunk->isFalsified());
+                                        simtime_t delay =
+                                                simTime() - appChunk->getCreationTime();
+                                        auto delay_i = 0U;
+                                        delay_i = ceil(delay.dbl()*1000);
+                                        answer->setDelay(delay_i);
+                                        answer->setSender(appChunk->getSender());
+                                        answer->setMsgId(appChunk->getMsgId());
+                                        answer->setCreationTime(appChunk->getCreationTimeMosaik());
+                                        foundApplicationChunk = true;
+                                        receivedMsgIds.push_back(appChunk->getMsgId());
+                                        sendReply(answer);
                                     }
-                                    answer->setContent(appChunk->getContent());
-                                    answer->setReceiver(appChunk->getReceiver());
-                                    simtime_t delay =
-                                            simTime() - appChunk->getCreationTime();
-                                    auto delay_i = 0U;
-                                    delay_i = ceil(delay.dbl()*1000);
-                                    answer->setDelay(delay_i);
-                                    answer->setSender(appChunk->getSender());
-                                    answer->setMsgId(appChunk->getMsgId());
-                                    answer->setCreationTime(appChunk->getCreationTimeMosaik());
-                                    foundApplicationChunk = true;
-                                    receivedMsgIds.push_back(appChunk->getMsgId());
-                                    sendReply(answer);
                                 }
-
                             }
                         }
                     } else {
                         auto appChunk = encapsulatedChunk->peek<MosaikApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
-                        bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
-                        if (alreadyReceived) {
-                            // std::cout << "already received msg " << appChunk->getMsgId() << endl;
+                        if (appChunk->isTrafficMessage()) {
+                            scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                             return;
+                        } else {
+                            bool alreadyReceived = (std::find(receivedMsgIds.begin(), receivedMsgIds.end(), appChunk->getMsgId()) != receivedMsgIds.end());
+                            if (alreadyReceived) {
+                                return;
+                            }
+                            answer->setFalsified(appChunk->isFalsified());
+                            answer->setContent(appChunk->getContent());
+                            answer->setReceiver(appChunk->getReceiver());
+                            simtime_t delay =
+                                    simTime() - appChunk->getCreationTime();
+                            auto delay_i = 0U;
+                            delay_i = ceil(delay.dbl()*1000);
+                            answer->setDelay(delay_i);
+                            answer->setSender(appChunk->getSender());
+                            answer->setMsgId(appChunk->getMsgId());
+                            answer->setCreationTime(appChunk->getCreationTimeMosaik());
+                            foundApplicationChunk = true;
+                            receivedMsgIds.push_back(appChunk->getMsgId());
+                            sendReply(answer);
                         }
-                        answer->setContent(appChunk->getContent());
-                        answer->setReceiver(appChunk->getReceiver());
-                        simtime_t delay =
-                                simTime() - appChunk->getCreationTime();
-                        auto delay_i = 0U;
-                        delay_i = ceil(delay.dbl()*1000);
-                        answer->setDelay(delay_i);
-                        answer->setSender(appChunk->getSender());
-                        answer->setMsgId(appChunk->getMsgId());
-                        answer->setCreationTime(appChunk->getCreationTimeMosaik());
-                        foundApplicationChunk = true;
-                        receivedMsgIds.push_back(appChunk->getMsgId());
-                        sendReply(answer);
                     }
-
-
                 } else if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
                     auto mosaikApplicationChunk = recvPacket->peekAt<MosaikApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
-                    replyContent = mosaikApplicationChunk->getContent();
-                    simtime_t delay = simTime() - mosaikApplicationChunk->getCreationTime();
-                    auto delay_i = 0U;
-                    delay_i = ceil(delay.dbl()*1000);
-                    replyReceiver = mosaikApplicationChunk->getReceiver();
-                    auto replySender = mosaikApplicationChunk->getSender();
-                    auto msgId = mosaikApplicationChunk->getMsgId();
-                    auto creationTime = mosaikApplicationChunk->getCreationTimeMosaik();
-                    answer->setContent(replyContent);
-                    answer->setReceiver(replyReceiver);
-                    answer->setDelay(delay_i);
-                    answer->setSender(replySender);
-                    answer->setMsgId(msgId);
-                    answer->setCreationTime(creationTime);
-                    foundApplicationChunk = true;
-                    receivedMsgIds.push_back(msgId);
-                    sendReply(answer);
+                    if (mosaikApplicationChunk->isTrafficMessage()) {
+                        scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
+                        return;
+                    } else {
+                        replyContent = mosaikApplicationChunk->getContent();
+                        simtime_t delay = simTime() - mosaikApplicationChunk->getCreationTime();
+                        auto delay_i = 0U;
+                        delay_i = ceil(delay.dbl()*1000);
+                        replyReceiver = mosaikApplicationChunk->getReceiver();
+                        auto replySender = mosaikApplicationChunk->getSender();
+                        auto msgId = mosaikApplicationChunk->getMsgId();
+                        auto creationTime = mosaikApplicationChunk->getCreationTimeMosaik();
+                        answer->setFalsified(mosaikApplicationChunk->isFalsified());
+                        answer->setContent(replyContent);
+                        answer->setReceiver(replyReceiver);
+                        answer->setDelay(delay_i);
+                        answer->setSender(replySender);
+                        answer->setMsgId(msgId);
+                        answer->setCreationTime(creationTime);
+                        foundApplicationChunk = true;
+                        receivedMsgIds.push_back(msgId);
+                        sendReply(answer);
+                    }
 
                 } else {
                     offset += chunk->getChunkLength();

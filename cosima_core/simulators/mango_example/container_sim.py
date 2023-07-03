@@ -4,10 +4,6 @@ from copy import deepcopy
 
 import mosaik_api
 
-from cosima_core.simulators.mango_example.reply_agent import ReplyAgent
-from cosima_core.simulators.mango_example.unit_agent import UnitAgent
-from cosima_core.util.general_config import CONNECT_ATTR
-from cosima_core.util.util_functions import log
 from mango import create_container
 from mango.agent.role import RoleAgent
 from mango_library.coalition.core import CoalitionParticipantRole, CoalitionInitiatorRole
@@ -16,6 +12,11 @@ from mango_library.negotiation.cohda.cohda_solution_aggregation import CohdaSolu
 from mango_library.negotiation.cohda.cohda_starting import CohdaNegotiationDirectStarterRole
 from mango_library.negotiation.termination import NegotiationTerminationDetectorRole, \
     NegotiationTerminationParticipantRole
+
+from cosima_core.simulators.mango_example.reply_agent import ReplyAgent
+from cosima_core.simulators.mango_example.unit_agent import UnitAgent
+from cosima_core.util.general_config import CONNECT_ATTR
+from cosima_core.util.util_functions import log
 
 # The simulator meta data that we return in "init()":
 META = {
@@ -53,6 +54,8 @@ class ContainerSimulator(mosaik_api.Simulator):
         self._conversion_factor = 1
         self._message_counter = 0
 
+        self._agent_roles = []
+
     def init(self, sid, time_resolution=1., **sim_params):
         if 'client_name' in sim_params.keys():
             self.meta['models']['ContainerModel']['attrs'].append(f'{CONNECT_ATTR}{sim_params["client_name"]}')
@@ -60,26 +63,26 @@ class ContainerSimulator(mosaik_api.Simulator):
         if 'port' in sim_params.keys():
             self._port = sim_params['port']
         self._loop = asyncio.get_event_loop()
-        if 'client_agent_mapping' in sim_params.keys() and 'codec' in sim_params.keys():
-            self._client_agent_mapping = sim_params['client_agent_mapping']
-            self._loop.run_until_complete(self.create_container_and_agent_model(sim_params['codec']))
         if 'conversion_factor' in sim_params.keys():
             self._conversion_factor = sim_params['conversion_factor']
+        if 'agent_roles' in sim_params.keys():
+            self._agent_roles = sim_params['agent_roles']
+        if 'client_agent_mapping' in sim_params.keys() and 'codec' in sim_params.keys():
+            self._client_agent_mapping = sim_params['client_agent_mapping']
+            self._loop.run_until_complete(self.create_container_and_agent(sim_params['codec']))
+        if 'connect_attributes' in sim_params:
+            self.meta['models']['ContainerModel']['attrs'].extend(sim_params['connect_attributes'])
 
         return self.meta
 
-    async def create_agent_model(self, neighbors, agent_id):
-        pass
-
-    async def create_container_and_agent_model(self, codec):
+    async def create_container_and_agent(self, codec):
         # container for agent
         self._container = await create_container(addr=self._sid, connection_type='mosaik', codec=codec)
         agent_id = self._client_agent_mapping[self._sid]
-        neighbors = deepcopy(self._client_agent_mapping)
-        del neighbors[self._sid]
-        neighbors = [(key, value) for key, value in neighbors.items()]
 
-        await self.create_agent_model(neighbors=neighbors, agent_id=agent_id)
+        self._agent = RoleAgent(self._container, suggested_aid=agent_id)
+        for role in self._agent_roles:
+            self._agent.add_role(role)
 
     @property
     def agent(self):
@@ -100,7 +103,9 @@ class ContainerSimulator(mosaik_api.Simulator):
                             value_in_bytes = str.encode(value['content'])
                             mango_inputs.append(value_in_bytes)
                     else:
-                        self._agent.set_inputs(inputs)
+                        for role in self._agent_roles:
+                            if hasattr(role, 'handle_simulator_input'):
+                                role.handle_simulator_input(sources_to_values)
 
         self._buffered_mango_inputs.extend(mango_inputs)
         output = self._loop.run_until_complete(
@@ -162,6 +167,15 @@ class ContainerSimulator(mosaik_api.Simulator):
                 raise ValueError(f"Output time is the same as current simulator time ({self._current_simulator_time}).")
             del self._outputs[minimal_output_time]
             log(f'Container Sim {self._sid} returns data for time {data["time"]}', 'info')
+        for role in self._agent_roles:
+            if hasattr(role, 'get_data'):
+                agent_data = role.get_data(outputs=outputs)
+
+                for key, value in agent_data.items():
+                    if key in data.keys():
+                        data[key].update(value)
+                    else:
+                        data[key] = agent_data[key]
         return data
 
     def finalize(self):

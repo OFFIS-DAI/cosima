@@ -12,6 +12,10 @@ import scenario_config
 import cosima_core.util.general_config as cfg
 from cosima_core.util.util_functions import log
 
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 META = {
     'type': 'event-based',
     'models': {
@@ -84,13 +88,21 @@ class Collector(mosaik_api.Simulator):
                     for value in values.values():
                         if 'ICTController' in sim and len(value[0]) > 0:
                             value = value[0][0]
-                            change_type = ""
-                            if value['msg_type'] == 0:
-                                change_type = "DISCONNECT"
-                            elif value['msg_type'] == 1:
-                                change_type = "RECONNECT"
-                            new_row = {"Simulator": sim, "message id": value['msg_id'], "creation time": value['sim_time'],
-                                       "infrastructure change": change_type, "changed module": value['change_module']}
+                            if 'Traffic' in value['msg_id']:
+                                new_row = {"Simulator": sim, "message id": value['msg_id'],
+                                           "creation time": value['sim_time']}
+                            else:
+                                if value['msg_type'] == 0:
+                                    new_row = {"Simulator": sim, "message id": value['msg_id'],
+                                               "creation time": value['sim_time'],
+                                               "infrastructure change": "DISCONNECT",
+                                               "changed module": value['change_module']}
+                                elif value['msg_type'] == 1:
+                                    new_row = {"Simulator": sim, "message id": value['msg_id'],
+                                               "creation time": value['sim_time'],
+                                               "infrastructure change": "RECONNECT",
+                                               "changed module": value['change_module']}
+
                             final_data = final_data.append(new_row, ignore_index=True)
                         elif 'CommunicationSimulator' in sim:
                             if value is not None and type(value) is list and type(value[0]) is list:

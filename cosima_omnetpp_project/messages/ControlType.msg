@@ -22,4 +22,5 @@ enum ControlType
     Disconnect = 3;
     Reconnect = 4; 
     ContinueWaiting = 5;
+    Traffic = 6;
 }

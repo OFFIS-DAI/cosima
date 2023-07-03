@@ -15,7 +15,7 @@ META = {
         'SimpleAgentModel': {
             'public': True,
             'params': [],
-            'attrs': ['message'],
+            'attrs': ['message', 'stats'],
         },
     },
 }

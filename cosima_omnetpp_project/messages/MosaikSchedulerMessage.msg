@@ -12,4 +12,5 @@ packet MosaikSchedulerMessage{
    	bool reconnected_event;  
    	bool connection_change_successful; 
    	int creationTime; 
+   	bool falsified = false;
 }

@@ -28,4 +28,6 @@ class MosaikApplicationChunk extends inet::FieldsChunk
    	string sender;
    	string msgId;
    	int creationTimeMosaik; 
+   	bool isTrafficMessage;
+   	bool isFalsified;
 };

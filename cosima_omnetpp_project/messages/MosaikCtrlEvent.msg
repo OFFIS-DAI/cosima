@@ -20,5 +20,11 @@ enum ControlType;
 
 packet MosaikCtrlEvent {
     int ctrlType @enum(ControlType);
+    string source;
+    string destination;
+    int start;
+    int stop;
+    int interval;
+    int packetLength;
     string moduleNames[]; 
 };

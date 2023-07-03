@@ -1,22 +1,11 @@
 import random
-from time import sleep
 import string
-import os
-
-from mosaik import scenario
 
 import cosima_core.util.general_config as cfg
 import scenario_config
-from cosima_core.util.util_functions import start_omnet, \
-    check_omnet_connection, stop_omnet, \
-    get_host_names, log, set_up_file_logging
+from cosima_core.util.scenario_setup_util import ScenarioHelper
+from cosima_core.util.util_functions import get_host_names
 from householdsim.mosaik import meta as household_meta
-
-# change working directory because the main is called from the
-# test folder now
-cwd = os.path.abspath(os.path.dirname(__file__))
-new_wd = os.path.abspath(cwd + "/../")
-os.chdir(new_wd)
 
 # agents send messages parallel with given offset
 PARALLEL = True
@@ -36,37 +25,16 @@ CALCULATING_TIMES = {
     'client2': 0
 }
 
+# length of the content string sent by the agents
+CONTENT_LENGTH = None
 CONTENT_PATH = cfg.ROOT_PATH / 'simulators' / 'tic_toc_example' / 'content.csv'
 
 
-def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=None, agents_with_household=None,
-         offset=0, sim_end=None, infrastructure_changes=None, content_length=None):
-    if num_agents:
-        scenario_config.NUMBER_OF_AGENTS = num_agents
-    if infrastructure_changes:
-        scenario_config.INFRASTRUCTURE_CHANGES = infrastructure_changes
-    if omnet_network:
-        scenario_config.START_MODE = "cmd"
-        scenario_config.NETWORK = omnet_network
-    if parallel is None:
-        parallel = PARALLEL
-        offset = OFFSET
-    if sim_end:
-        scenario_config.SIMULATION_END = sim_end
-    if agents_with_pv is not None:
-        # could also be an empty list
-        scenario_config.AGENTS_WITH_PV_PLANT = agents_with_pv
-    if agents_with_household is not None:
-        scenario_config.AGENTS_WITH_HOUSEHOLDS = agents_with_household
-    # length of the content string sent by the agents
-    CONTENT_LENGTH = None
-    if content_length:
-        CONTENT_LENGTH = content_length
-
+def main():
+    # Simulation configuration -> tells mosaik where to find the simulators
     sim_config = {
         'Collector': {
             'python': 'cosima_core.simulators.collector:Collector'},
-        'CommunicationSimulator': {'python': 'cosima_core.simulators.communication_simulator:CommunicationSimulator'},
         'Agent': {
             'python': 'cosima_core.simulators.tic_toc_example.agent_simulator:Agent'},
         'ICTController': {
@@ -74,41 +42,28 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
         'CSV': {'python': 'cosima_core.simulators.tic_toc_example.mosaik_csv:CSV'},
         'Household': {'python': 'householdsim.mosaik:HouseholdSim'},
     }
-    if scenario_config.USE_COMMUNICATION_SIMULATION:
-        omnet_process = start_omnet(scenario_config.START_MODE, scenario_config.NETWORK)
-        check_omnet_connection(cfg.PORT)
-    if scenario_config.TRACK_PERFORMANCE:
-        from cosima_core.util.track_performance import PerformanceTracker
-        tracker = PerformanceTracker()
+    scenario_helper = ScenarioHelper()
+    world, communication_simulator, client_attribute_mapping, sim_config = \
+        scenario_helper.prepare_scenario(sim_config=sim_config)
 
     if CONTENT_LENGTH:
         message_content = ''.join(random.choices(string.ascii_lowercase + string.digits, k=CONTENT_LENGTH))
     else:
         message_content = None
 
-    set_up_file_logging()
-
-    world = scenario.World(sim_config, time_resolution=0.001,
-                           cache=False)
-
-    agent_names = get_host_names(num_hosts=scenario_config.NUMBER_OF_AGENTS)
-    client_attribute_mapping = {}
-    # for each client in OMNeT++, save the connect-attribute for mosaik
-    for agent_name in agent_names:
-        client_attribute_mapping[agent_name] = cfg.CONNECT_ATTR + agent_name
+    use_ict_simulator = (len(scenario_config.INFRASTRUCTURE_CHANGES) > 0
+                         or len(scenario_config.TRAFFIC_CONFIGURATION) > 0
+                         or len(scenario_config.ATTACK_CONFIGURATION) > 0) and \
+                        scenario_config.USE_COMMUNICATION_SIMULATION
 
     agents = {}
     collector = world.start('Collector').Monitor()
     agent_prefix = 'client'
-    communication_simulator = world.start('CommunicationSimulator',
-                                          port=cfg.PORT,
-                                          client_attribute_mapping=client_attribute_mapping,
-                                          use_communication_simulation=scenario_config.USE_COMMUNICATION_SIMULATION) \
-        .CommunicationModel()
 
-    if len(scenario_config.INFRASTRUCTURE_CHANGES) > 0 and scenario_config.USE_COMMUNICATION_SIMULATION:
+    if use_ict_simulator:
         ict_controller = world.start('ICTController',
-                                     infrastructure_changes=scenario_config.INFRASTRUCTURE_CHANGES).ICT()
+                                     infrastructure_changes=scenario_config.INFRASTRUCTURE_CHANGES,
+                                     traffic_configuration=scenario_config.TRAFFIC_CONFIGURATION).ICT()
 
     for idx in range(scenario_config.NUMBER_OF_AGENTS):
         current_agent_name = agent_prefix + str(idx)
@@ -118,8 +73,8 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
                                                  agent_names=
                                                  get_host_names(
                                                      num_hosts=scenario_config.NUMBER_OF_AGENTS),
-                                                 parallel=parallel,
-                                                 offset=offset,
+                                                 parallel=PARALLEL,
+                                                 offset=OFFSET,
                                                  message_content=message_content).A()
 
     if len(AGENTS_WITH_PV_PLANT) > 0:
@@ -136,7 +91,6 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
                                                        profile_file=cfg.HOUSEHOLD_DATA,
                                                        grid_name="medium grid")[0]
 
-
     for idx, agent in enumerate(agents.values()):
         if agent.eid in AGENTS_WITH_PV_PLANT:
             world.connect(pv_models[idx], agents[agent.eid], 'P', time_shifted=True, initial_data={'P': 0})
@@ -150,15 +104,22 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
         else:
             world.set_initial_event(agent.sid, time=0)
 
-    if len(scenario_config.INFRASTRUCTURE_CHANGES) > 0 and scenario_config.USE_COMMUNICATION_SIMULATION:
+    if use_ict_simulator:
         world.set_initial_event(ict_controller.sid)
 
-    if parallel:
-        world.set_initial_event(agents['client1'].sid, time=offset)
+    if PARALLEL:
+        world.set_initial_event(agents['client1'].sid, time=OFFSET)
 
     for agent_name, agent in agents.items():
         # connect agents with communication_models
         world.connect(agent, communication_simulator, f'message', weak=True)
+
+    if use_ict_simulator:
+        # connect ict controller to collector
+        world.connect(ict_controller, collector, f'ict_message')
+        # connect ict controller with communication_simulator
+        world.connect(ict_controller, communication_simulator, f'ict_message', weak=True)
+        world.connect(communication_simulator, ict_controller, f'ctrl_message')
 
     for client_name, attr in client_attribute_mapping.items():
         # connect communication_models with agents
@@ -166,22 +127,9 @@ def main(num_agents=None, omnet_network=None, parallel=False, agents_with_pv=Non
                       attr)
         world.connect(communication_simulator, collector,
                       attr)
-    if len(scenario_config.INFRASTRUCTURE_CHANGES) > 0 and scenario_config.USE_COMMUNICATION_SIMULATION:
-        # connect ict controller to collector
-        world.connect(ict_controller, collector, f'ict_message')
-        # connect ict controller with communication_simulator
-        world.connect(ict_controller, communication_simulator, f'ict_message')
-        world.connect(communication_simulator, ict_controller, f'ctrl_message', weak=True)
 
-    until = scenario_config.SIMULATION_END
-    log(f'run until {until}')
-    world.run(until=until)
-    log("end of process")
-    sleep(5)
-    if scenario_config.USE_COMMUNICATION_SIMULATION:
-        stop_omnet(omnet_process)
-    if scenario_config.TRACK_PERFORMANCE:
-        tracker.save_results()
+    scenario_helper.run_simulation()
+    scenario_helper.shutdown_simulation()
 
 
 if __name__ == '__main__':

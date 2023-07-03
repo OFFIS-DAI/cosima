@@ -1,67 +1,37 @@
 """
-    Scenario file for tutorial of cosima.
+    Scenario file for negotiation scenario.
 """
-from os.path import abspath
-from pathlib import Path
-from time import sleep
-
 import matplotlib.pyplot as plt
-import mosaik
 import networkx as nx
 from householdsim.mosaik import meta as household_meta
 
-from cosima_core.util.general_config import PV_DATA, START, HOUSEHOLD_DATA
-from cosima_core.util.util_functions import start_omnet, \
-    check_omnet_connection, stop_omnet, \
-    log, set_up_file_logging
-from scenario_config import NUMBER_OF_AGENTS, USE_COMMUNICATION_SIMULATION
+from cosima_core.util.general_config import START, HOUSEHOLD_DATA, ROOT_PATH
+from cosima_core.util.scenario_setup_util import ScenarioHelper
+from scenario_config import NUMBER_OF_AGENTS, USE_COMMUNICATION_SIMULATION, INFRASTRUCTURE_CHANGES
 
-PORT = 4242
-SIMULATION_END = 10000
-START_MODE = 'cmd'
-NETWORK = 'StarTopologyNetwork'
-
-# Simulation configuration -> tells mosaik where to find the simulators
-SIM_CONFIG = {
-    'Agent': {
-        'python': 'cosima_core.simulators.negotiation_example.agent_simulator:Agent',
-    },
-    'Collector': {
-        'python': 'cosima_core.simulators.collector:Collector'},
-    'CommunicationSimulator': {
-        'python': 'cosima_core.simulators.communication_simulator:CommunicationSimulator',
-    },
-    'CSV': {'python': 'cosima_core.simulators.tic_toc_example.mosaik_csv:CSV'},
-    'Household': {'python': 'householdsim.mosaik:HouseholdSim'},
-    'ICTController': {
-        'python': 'cosima_core.simulators.ict_controller_simulator:ICTController'},
-
-}
 THRESHOLD = 700
 CHECK_INBOX_INTERVAL = 50
-# path to load content for agent messages from
-ROOT_PATH = Path(abspath(__file__)).parent.parent
 PV_DATA = str(ROOT_PATH.parent / 'data' / 'pv_paper.csv')
 
-INFRASTRUCTURE_CHANGES = [
-    # {'type': 'Disconnect',
-    #  'time': 10,
-    #  'module': 'client1'}
-]
 
+def main():
+    # Simulation configuration -> tells mosaik where to find the simulators
+    sim_config = {
+        'Agent': {
+            'python': 'cosima_core.simulators.negotiation_example.agent_simulator:Agent',
+        },
+        'Collector': {
+            'python': 'cosima_core.simulators.collector:Collector'},
+        'CSV': {'python': 'cosima_core.simulators.tic_toc_example.mosaik_csv:CSV'},
+        'Household': {'python': 'householdsim.mosaik:HouseholdSim'},
+        'ICTController': {
+            'python': 'cosima_core.simulators.ict_controller_simulator:ICTController'},
+    }
+    scenario_helper = ScenarioHelper()
+    world, communication_simulator, client_attribute_mapping, sim_config = \
+        scenario_helper.prepare_scenario(sim_config=sim_config)
 
-def main(start_mode=START_MODE, number_of_agents=NUMBER_OF_AGENTS, network=NETWORK, simulation_end=SIMULATION_END,
-         threshold=THRESHOLD, check_inbox_interval=CHECK_INBOX_INTERVAL, infrastructure_changes=INFRASTRUCTURE_CHANGES):
-    if USE_COMMUNICATION_SIMULATION:
-        omnet_process = start_omnet(start_mode, network)
-        check_omnet_connection(PORT)
-
-    set_up_file_logging()
-
-    # Create mosaik World
-    world = mosaik.World(SIM_CONFIG, time_resolution=0.001, cache=False)
-
-    G = nx.newman_watts_strogatz_graph(n=number_of_agents, k=2, p=0.5, seed=42)
+    G = nx.newman_watts_strogatz_graph(n=NUMBER_OF_AGENTS, k=2, p=0.5, seed=42)
     pos = nx.circular_layout(G)
     plt.figure(figsize=(16, 8))
     nx.draw_networkx(G, pos, with_labels=True, font_size=12, node_color="#b4c7e7", edgecolors="#44546a",
@@ -71,34 +41,25 @@ def main(start_mode=START_MODE, number_of_agents=NUMBER_OF_AGENTS, network=NETWO
 
     collector = world.start('Collector').Monitor()
     agents = {}
-    client_attribute_mapping = {}
-    for i in range(number_of_agents):
-        client_attribute_mapping[f'client{i}'] = f'message_with_delay_for_client{i}'
+    for i in range(NUMBER_OF_AGENTS):
         neighbors = [f'client{x}' for x in list(nx.all_neighbors(G, i))]
         # Start agent simulator models
         start_negotiation = i == 0
         agents[f'client{i}'] = world.start('Agent',
                                            client_name=f'client{i}',
                                            neighbors=neighbors,
-                                           threshold=threshold,
-                                           check_inbox_interval=check_inbox_interval,
+                                           threshold=THRESHOLD,
+                                           check_inbox_interval=CHECK_INBOX_INTERVAL,
                                            start_negotiation=start_negotiation).AgentModel()
-
-    # start communication simulator
-    comm_sim = world.start('CommunicationSimulator',
-                           step_size=1,
-                           port=4242,
-                           client_attribute_mapping=client_attribute_mapping,
-                           use_communication_simulation=USE_COMMUNICATION_SIMULATION).CommunicationModel()
-
-    if len(infrastructure_changes) > 0 and USE_COMMUNICATION_SIMULATION:
+    if len(INFRASTRUCTURE_CHANGES) > 0 and USE_COMMUNICATION_SIMULATION:
         ict_controller = world.start('ICTController',
-                                     infrastructure_changes=infrastructure_changes).ICT()
+                                     infrastructure_changes=INFRASTRUCTURE_CHANGES).ICT()
     pv_sim = world.start('CSV', sim_start=START, datafile=PV_DATA,
                          delimiter=',', mosaik_attrs=['ACK', 'P'])
     pv_models = pv_sim.PV.create(len(agents))
 
-    for idx, agent in enumerate(agents.values()):
+    for idx, agent in enumerate(agents.
+                                        values()):
         world.connect(pv_models[idx], agents[agent.eid], 'P', time_shifted=True, initial_data={'P': 0})
         world.connect(agents[agent.eid], pv_models[idx], 'ACK')
         world.set_initial_event(pv_models[idx].sid)
@@ -118,9 +79,9 @@ def main(start_mode=START_MODE, number_of_agents=NUMBER_OF_AGENTS, network=NETWO
 
     # Connect entities of simple agents
     for agent in agents.values():
-        world.connect(agent, comm_sim, f'message', weak=True)
-        world.connect(comm_sim, agent, client_attribute_mapping[agent.eid])
-        world.connect(comm_sim, collector, client_attribute_mapping[agent.eid])
+        world.connect(agent, communication_simulator, f'message', weak=True)
+        world.connect(communication_simulator, agent, client_attribute_mapping[agent.eid])
+        world.connect(communication_simulator, collector, client_attribute_mapping[agent.eid])
 
     world.set_initial_event(agents['client0'].sid, time=CHECK_INBOX_INTERVAL)
 
@@ -129,17 +90,11 @@ def main(start_mode=START_MODE, number_of_agents=NUMBER_OF_AGENTS, network=NETWO
         # connect ict controller to collector
         world.connect(ict_controller, collector, f'ict_message')
         # connect ict controller with communication_simulator
-        world.connect(ict_controller, comm_sim, f'ict_message')
-        world.connect(comm_sim, ict_controller, f'ctrl_message', weak=True)
+        world.connect(ict_controller, communication_simulator, f'ict_message')
+        world.connect(communication_simulator, ict_controller, f'ctrl_message', weak=True)
 
-    # Run simulation
-    log(f'run until {SIMULATION_END}')
-    world.run(until=SIMULATION_END)
-    log("end of process")
-    sleep(5)
-
-    if USE_COMMUNICATION_SIMULATION:
-        stop_omnet(omnet_process)
+    scenario_helper.run_simulation()
+    scenario_helper.shutdown_simulation()
 
 
 if __name__ == '__main__':

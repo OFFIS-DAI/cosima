@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CommunicationSimulator &mdash; cosima 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ICTController" href="ICTController.html" />
+    <link rel="prev" title="Message Types" href="MessageTypes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cosima
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Scenarios.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Synchronization.html">Synchronization of OMNeT++ and mosaik</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MessageTypes.html">Message Types</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CommunicationSimulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#concept">Concept</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operating-principle">Operating Principle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-function">Step function</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ICTController.html">ICTController</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Networks.html">OMNeT++ networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MosaikScheduler.html">MosaikScheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AgentApps.html">Agent Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Privacy.html">Privacy Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Legals.html">Legals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Datenschutz.html">Datenschutz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Impressum.html">Impressum</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cosima</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">CommunicationSimulator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/CommunicationSimulator.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="communicationsimulator">
+<h1>CommunicationSimulator<a class="headerlink" href="#communicationsimulator" title="Permalink to this heading"></a></h1>
+<p>To understand the role of the <a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/communication_simulator.py">CommunicationSimulator</a>, the meaning of the max advance
+value and the concept of the synchronization between OMNeT++ and mosaik is
+useful. Explanations of these can be found in (<a class="reference internal" href="Synchronization.html"><span class="std std-doc">Synchronization</span></a>).</p>
+<section id="concept">
+<h2>Concept<a class="headerlink" href="#concept" title="Permalink to this heading"></a></h2>
+<p>The CommunicationSimulator is the interface to OMNeT++ for simulators from python and
+therefore the connection between mosaik and OMNeT++. It takes messages from
+mosaik simulators, sends them to OMNeT++ and receives messages from OMNeT++
+which it then forwards to the corresponding mosaik simulators.
+The CommunicationSimulator saves an instance of the class (<a class="reference external" href="https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/omnetpp_connection.py">OmnetppConnection</a>),
+which opens up TCP-Connection to OMNeT++ and is used to send and receive messages to and from OMNeT++.
+This instance keeps an active connection to OMNeT++ and waits for messages independently of the step logic of mosaik.
+This way, messages that arrive while the CommunicationSimulator is not in its step function (so while another simulator is in step function) will still be considered.
+Whenever a message is received from OMNeT++, the class OmnetppConnection stores the message in a list which
+is accessible by the CommunicationSimulator.</p>
+</section>
+<section id="operating-principle">
+<h2>Operating Principle<a class="headerlink" href="#operating-principle" title="Permalink to this heading"></a></h2>
+<p>If a message should be sent to OMNeT++, the CommunicationSimulator receives this message from other
+simulators by mosaik in the step-function as input. The message is then send by the
+instance of the OmnetppConnection, which sends the message via the opened
+TCP connection.
+All simulators connected to the CommunicationSimulator always step first and send their messages.
+The CommunicationSimulator receives these messages from other simulators one mosaik step
+later and therefore after all the steps of other simulators.
+Thus, it is ensured that the CommunicationSimulator considers all messages from other simulators in its step.</p>
+<p>When the CommunicationSimulator steps, it also checks whether there are messages in the list
+in the OmnetppConnection, so if there are some messages from OMNeT++ which
+should be forwarded to mosaik simulators. If this is the case, the CommunicationSimulator
+takes the messages and sends them to the corresponding receivers of the
+messages through mosaik. This is done by sending the message via the
+get_data-method from mosaik.
+The CommunicationSimulator is furthermore responsible for the synchronization to OMNeT++.
+It therefore checks in its mosaik-step after sending the received messages to
+OMNeT++, whether it should wait for further messages from OMNeT++ or not. It
+always counts the number of agent messages sent to OMNeT++ and received from
+OMNeT++. Therefore, it can determine, whether there are currently still
+messages simulated in OMNeT++. This means that there are still relevant messages for
+the agent simulators.
+When the simulated messages are then being sent back to mosaik, this might
+cause further events (messages) from the receiving agent of the simulated message.</p>
+</section>
+<section id="step-function">
+<h2>Step function<a class="headerlink" href="#step-function" title="Permalink to this heading"></a></h2>
+<p>An example simulation step of the CommunicationSimulator could look like this.<br />
+<img alt="image" src="_images/commsim_step.png" /></p>
+<ul class="simple">
+<li><p>If the CommunicationSimulator has messages in its inputs in the step function from mosaik,
+it sends them to OMNeT++ via the class OmnetppConnection.</p></li>
+<li><p>If the CommunicationSimulator received a message for any of the agents, it directly ends
+its step and sends the message to the receiving agent by its get-data-method.</p></li>
+<li><p>If there are no further messages being simulated in OMNeT++, the CommunicationSimulator does
+not wait for any messages from OMNeT++ and it ends its step.</p></li>
+<li><p>If there are still messages being simulated in OMNeT++, the CommunicationSimulator waits for
+these messages, it checks whether the next step is
+determined by the agents. If this is the case, the CommunicationSimulator directly ends its
+step to make sure these actions of the actions are simulated.</p></li>
+<li><p>If the next step is not determined by the agents, the CommunicationSimulator sends a
+<em>WaitingMessage</em> (see <a class="reference internal" href="MessageTypes.html"><span class="std std-doc">Message Types</span></a>) to OMNeT++,
+to point out to OMNeT++ that the mosaik-side is still waiting for messages.
+After that, the CommunicationSimulator is actively waiting until a message was received from
+OMNeT++ (either an AgentMessage, a message to point out a synchronization point
+is reached from OMNeT++ (see <a class="reference internal" href="Synchronization.html"><span class="std std-doc">Synchronization</span></a>) or an
+error message). If a message from OMNeT++ which is pointing out that max
+advance is reached was received, the CommunicationSimulator ends its step and tells mosaik that
+its next step will be one step after the time for max advance (therefore max advance + 1). Therefore, it is
+ensured that the event in mosaik which influenced the max advance value has
+taken place. The CommunicationSimulator continues to wait for messages from OMNeT++ afterwards.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="MessageTypes.html" class="btn btn-neutral float-left" title="Message Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ICTController.html" class="btn btn-neutral float-right" title="ICTController" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, OFFIS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
