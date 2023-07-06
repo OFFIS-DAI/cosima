@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for cosima_omnetpp_project
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -O out -KINET_PROJ=../inet4 -KLTE_PROJ=../simulte -DINET_IMPORT -I/home/pg-arek/PycharmProjects/mosaik-integration/Simu5G-1.1.0/src -I/home/pg-arek/PycharmProjects/mosaik-integration/Simu5G-1.1.0 -I/home/pg-arek/PycharmProjects/mosaik-integration/simulte/src -I/home/pg-arek/PycharmProjects/mosaik-integration/inet -I/home/pg-arek/PycharmProjects/mosaik-integration/simulte -I$$\(INET_PROJ\)/src -I$$\(LTE_PROJ\) -I/home/malin/PycharmProjects/mosaik-integration/inet -I$$\(LTE_PROJ\)/src -L$$\(INET_PROJ\)/src -L$$\(LTE_PROJ\)/src -lINET$$\(D\) -llte$$\(D\) -Xtests -- -lpthread -lprotobuf
+#  opp_makemake -f --deep -O out -KINET_PROJ=../inet4 -KLTE_PROJ=/home/malin/PycharmProjects/cosima/simulte-1.2.0-src/simulte -DINET_IMPORT -I$$\(INET_PROJ\)/src -I$$\(LTE_PROJ\)/src -L$$\(INET_PROJ\)/src -L$$\(LTE_PROJ\)/src -lINET$$\(D\) -llte$$\(D\) -Xtests -- -lpthread -lprotobuf
 #
 
 # Name of target to be created (-o option)
@@ -16,16 +16,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LI
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = \
-    -I/home/pg-arek/PycharmProjects/mosaik-integration/Simu5G-1.1.0/src \
-    -I/home/pg-arek/PycharmProjects/mosaik-integration/Simu5G-1.1.0 \
-    -I/home/pg-arek/PycharmProjects/mosaik-integration/simulte/src \
-    -I/home/pg-arek/PycharmProjects/mosaik-integration/inet \
-    -I/home/pg-arek/PycharmProjects/mosaik-integration/simulte \
-    -I$(INET_PROJ)/src \
-    -I$(LTE_PROJ) \
-    -I/home/malin/PycharmProjects/mosaik-integration/inet \
-    -I$(LTE_PROJ)/src
+INCLUDE_PATH = -I$(INET_PROJ)/src -I$(LTE_PROJ)/src
 
 # Additional object and library files to link with
 EXTRA_OBJS = -lpthread -lprotobuf
@@ -72,7 +63,7 @@ SMFILES =
 
 # Other makefile variables (-K)
 INET_PROJ=../inet4
-LTE_PROJ=../simulte
+LTE_PROJ=/home/malin/PycharmProjects/cosima/simulte-1.2.0-src/simulte
 
 #------------------------------------------------------------------------------
 
