@@ -31,7 +31,7 @@ def main():
     # Simulation configuration -> tells mosaik where to find the simulators
     sim_config = {
         'ContainerSim': {
-            'python': 'cosima_core.simulators.mango_example.container_sim:COHDAContainerSimulator',
+            'python': 'cosima_core.simulators.mango_example.container_sim:ContainerSimulator',
         },
     }
 

@@ -15,7 +15,7 @@ import scenario_config
 
 
 def start_omnet(start_mode, network):
-    command = f"./cosima_omnetpp_project -n ../inet4/src/inet -f " \
+    command = f"./cosima_omnetpp_project -n {cfg.INET_INSTALLATION_PATH} -f " \
               f"mosaik.ini -c {network}"
     cwd = str(cfg.ROOT_PATH.parent) + '/cosima_omnetpp_project/'
     omnet_process = None
@@ -52,12 +52,13 @@ def check_omnet_connection(port):
             client_socket.connect((servername, observer_port))
             # no ConnectionRefusedError
             connection_possible = True
-            log(f'Connection to OMNeT++ possible: {connection_possible}')
+            log('Connection to OMNeT++ successful!')
             # shutdown connection to not keep it open
             client_socket.shutdown(socket.SHUT_RDWR)
             client_socket.close()
         except ConnectionRefusedError:
-            log(f'Connection to OMNeT++ possible: {connection_possible}')
+            log('Connection to OMNeT++ failed! Please make sure, that OMNeT++ has startet and the Qtenv window is '
+                'running, when not using cmd mode')
             time.sleep(1)
             continue
 
@@ -89,7 +90,7 @@ def make_protobuf_message_for_type(msg_group, message_type, message_dict, messag
         elif 'content_bytes' in message_dict.keys():
             message_dict['size'] = len(message_dict['content_bytes'])
         else:
-            raise ValueError("Message has no content!")
+            raise ValueError("Message has no content! A Simulator might have tried to send an empty message.")
         message_count += 1
     elif message_type == InfrastructureMessage:
         protobuf_msg = msg_group.infrastructure_messages.add()
@@ -100,7 +101,8 @@ def make_protobuf_message_for_type(msg_group, message_type, message_dict, messag
     elif message_type == AttackMessage:
         protobuf_msg = msg_group.attack_messages.add()
     else:
-        raise RuntimeError("unknown message type")
+        raise RuntimeError("Unknown message type! Acceptable types are Info-, Infrastructure-, Synchronisation- or "
+                           "Traffic Messages.")
     get_protobuf_message_from_dict(message_dict, protobuf_msg)
     return msg_group, message_count
 
@@ -166,3 +168,21 @@ def log(text, log_type='debug'):
         except:
             pass
 
+
+class SynchronizationError(Exception):
+    """Raised when a synchronization problem between OMNeT++ and Mosaik occurs.
+
+    Attributes:
+        message_time -- OMNeT++ Time
+        time -- mosaik Time
+        message -- explanation of the problem
+    """
+
+    def __init__(self, omnet_time, mosaik_time, mes):
+        self.omnet_time = omnet_time
+        self.mosaik_time = mosaik_time
+        self.mes = mes
+        message = mes + "Simulation time in OMNeT++ and mosaik are out of sync! OMNeT++ Time: " + omnet_time + ", mosaik " \
+                  "Time: " + mosaik_time + "Please contact the Cosima Developer Team: https://cosima.offis.de/pages/contact"
+        self.message = message
+        super().__init__(self.message)

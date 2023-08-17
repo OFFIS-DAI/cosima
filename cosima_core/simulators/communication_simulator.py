@@ -5,7 +5,7 @@ import scenario_config
 from cosima_core.messages.message_pb2 import InitialMessage, InfoMessage, SynchronisationMessage, \
     InfrastructureMessage, TrafficMessage, AttackMessage
 from cosima_core.simulators.omnetpp_connection import OmnetppConnection
-from cosima_core.util.util_functions import log, create_protobuf_messages, get_dict_from_protobuf_message
+from cosima_core.util.util_functions import log, create_protobuf_messages, get_dict_from_protobuf_message, SynchronizationError
 
 META = {
     'models': {
@@ -190,8 +190,7 @@ class CommunicationSimulator(mosaik_api.Simulator):
                         elif latest_sim_time == time:
                             next_step = self.get_next_step(next_step, time + 1)
                         else:
-                            raise ValueError(f'mosaik time: {time}, max advance'
-                                             f' time from OMNeT: {msg.sim_time}')
+                            raise SynchronizationError(time, msg.sim_time, "")
 
                     elif type(msg) == SynchronisationMessage \
                             and msg.msg_type == SynchronisationMessage.MsgType.WAITING:
@@ -292,15 +291,12 @@ class CommunicationSimulator(mosaik_api.Simulator):
                 if not message_time:
                     message_time = message.sim_time
                 elif (message_time != message.sim_time) and (message_time < until) and (message.sim_time < until):
-                    raise RuntimeError(f'Received messages with different times: {message_time} and {message.sim_time}')
+                    raise SynchronizationError(message_time, message.sim_time, 'Received messages with different times.')
             elif type(message) is not InfrastructureMessage:
                 raise ValueError(
-                    f'Message from OMNeT has invalid type {type(message)}')
+                    f'Message from OMNeT has invalid type {type(message)}. Message has to be an InfrastructureMessage.')
         if message_time and time > message_time:
-            raise RuntimeError(
-                'Simulation time in OMNeT++ is is behind the simulation '
-                'time in mosaik.')
-
+            raise SynchronizationError(message_time, time, 'Simulation time in OMNeT++ is behind the simulation !')
         return messages
 
     def step(self, time, inputs, max_advance):
@@ -335,7 +331,7 @@ class CommunicationSimulator(mosaik_api.Simulator):
                     else:
                         raise ValueError(
                             f'Type error of msgs! Received msg from mosaik'
-                            f'with type {type(values)}')
+                            f'with type {type(values)}. Type has to be a list.')
 
         log(f'Communication Simulator steps in {time}.', log_type='info')
         log(f'Communication Simulator steps in {time} with input {messages_to_send}')

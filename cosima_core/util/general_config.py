@@ -20,6 +20,8 @@ GRID_NAME = "large grid"
 
 CHP_DATA = str(ROOT_PATH.parent / 'data')
 
+INET_INSTALLATION_PATH = '../inet4/src/inet'
+
 # path to store results to
 RESULTS_FILENAME = str(ROOT_PATH.parent / 'cosima_core' / 'results' / 'result_')
 

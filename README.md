@@ -13,7 +13,7 @@ We recommend reading the detailled documentation on [readthedocs](https://cosima
 
 To use the project, an installation of mosaik (at least version 3.0), OMNeT++ and protobuf are required.
 
-If you use Ubuntu: 
+If you use Ubuntu in version 20.04: 
 You can use the [Installation Shell Script](install-requirements.sh) via
 ```bash
 chmod +x install-requirements.sh
@@ -73,6 +73,22 @@ mv inet4 inet
 cd inet
 make makefiles
  ```
+For the paths defined in the project to work correctly, inet and SimuLTE (optional, see below) should be in the project. 
+This means that the folder structure should look something like this: 
+
+**cosima**
+- **cosima_core**
+- **cosima_omnetpp_project**
+- **data**
+- **docs**
+- **simulte**
+- **inet4**
+- **...**
+
+If (for whatever reason) the projects are located in other places, the paths should be adjusted accordingly. 
+Please adjust the `ned-path = ../simulte/src;.` in the [mosaik.ini file](cosima_omnetpp_project/mosaik.ini) and
+your `INET_INSTALLATION_PATH` path in the [general_config](cosima_core/util/general_config.py).
+
 After your installation, open the OMNeT++ IDE via
 ```bash
 omnetpp
@@ -118,15 +134,22 @@ Install the protobuf compiler version 3.6.1 (on Ubuntu) via
 sudo apt-get install libprotobuf-dev protobuf-compiler 
 ```
 
-The used [protobuf message](cosima_core/messages/message.proto) is already compiled. If you want to compile the .proto file or another one
-use
+The used [protobuf message](cosima_core/messages/message.proto) is already compiled. 
+However, errors may occur with the compiled file as it is system and version dependent.
+Therefore, it is recommended to compile the files again.
+If you want to compile the .proto file or another one use
 
 ```bash
 protoc cosima_core/messages/message.proto --cpp_out=. --python_out=.
 ```
 
+
 The output are the classes [message_pb2.py](cosima_core/messages/message_pb2.py) for python and message.pb.cc and message.pb.h for C++. Put
-the C++ files in the [OMNeT++ folder](cosima_omnetpp_project).
+the C++ files in the [OMNeT++ messages folder](cosima_omnetpp_project/messages).
+
+```bash
+mv -t cosima_omnetpp_project/messages/ cosima_core/messages/message.pb.cc cosima_core/messages/message.pb.h
+```
 
 Now the generated files can be used in python via
 
@@ -135,6 +158,18 @@ from message_pb2 import InfoMessage
 ```
 
 and in C++ via
+
+```bash
+#include "message.pb.h"
+```
+
+If the generated files should be used, in cosima_omnetpp_project/messages/message_pb2.cc, the include path for the
+header-file needs to be changed from
+```bash
+#include "cosima_core/messages/message.pb.h"
+```
+
+to
 
 ```bash
 #include "message.pb.h"
@@ -204,8 +239,6 @@ Now all that is left, is to rebuild the project and then executing it. The Tests
 
 
 ## Run simulation
-In order to run a simulation, you have to execute a scenario from the [scenarios folder](cosima_core/scenarios).
-
 There exist different ways to run a simulation. In the [scenario configuration file](scenario_config.py), it is possible to choose from 'ide', 'qtenv' and 'cmd' as start mode.
 * Ide: start the simulation in OMNeT++ by running [mosaik.ini](cosima_omnetpp_project/mosaik.ini) with your preferred network and 
   start the co-simulation in mosaik by running the [scenario](cosima_core/scenarios/communication_scenario.py) 
@@ -213,6 +246,59 @@ There exist different ways to run a simulation. In the [scenario configuration f
   the network can be chosen and the simulation can be started.
 * Cmd: start mosaik by running the [scenario](cosima_core/scenarios/communication_scenario.py). OMNeT++ will be started automatically as a console application. 
 **(note: This only works properly if the project is compiled with clang)**
+
+
+Now, in order to start a simulation, you have two options.
+You can either execute a scenario from the [scenarios folder](cosima_core/scenarios) or run the [run.py script](run.py)
+with command line arguments.
+
+### Executing a scenario file
+Choose a scenario from the [scenarios folder](cosima_core/scenarios) and execute the main-method.
+Make sure, that the base directory is the cloned repository folder. 
+
+### Executing a scenario by command line
+The [run.py script](run.py) script provides a flexible way to run different simulation scenarios using command-line 
+arguments. 
+It allows you to specify various parameters to customize the behavior of the simulation. 
+Below are the steps to execute the [run.py script](run.py) script and run different scenarios.
+
+To execute the `run.py` script, use the following command structure:
+
+```bash
+python run.py [-h] [-s SCENARIO] [-c COMMUNICATION_SIMULATION] [-e END] [-n NETWORK] [-a AGENTS] [-l LOGGING_LEVEL]
+```
+
+**Arguments**
+
+- `-h, --help`: Show the help message and exit.
+- `-s, --scenario`: Specify the name of the scenario you want to run. Available options are:
+  - `communication_scenario`
+  - `negotiation_scenario`
+  - `mango_cohda_scenario`
+  - `mango_simple_scenario`
+  - `mango_units_scenario`
+- `-c, --communication_simulation`: Set to `True` or `False` to enable or disable communication simulation.
+- `-e, --end`: Specify the simulation end time in milliseconds.
+- `-n, --network`: Specify the name of the network in OMNeT++.
+- `-a, --agents`: Specify the number of agents in the simulation.
+- `-l, --logging_level`: Specify the logging level (options: `debug`, `info`, `warning`).
+
+**Example Usage**
+
+1. Run the default scenario:
+```bash
+python run.py
+```
+
+2. Run a specific scenario with custom parameters:
+```bash
+python run.py -s mango_cohda_scenario -c True -e 10000 -n LargeLTENetwork -a 5 -l debug
+```
+
+**Note**
+
+If you do not specify a scenario using the `-s` option, the script will default to the `communication_scenario`.
+If you encounter any issues or errors, make sure you have provided valid values for the arguments.
 
 **Simulation results**
 * The exchanged messages are stored in folder results with timestamp of the simulation start as name of the csv-file.

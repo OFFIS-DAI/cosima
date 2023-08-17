@@ -6,14 +6,7 @@ import mosaik_api
 
 from mango import create_container
 from mango.agent.role import RoleAgent
-from mango_library.coalition.core import CoalitionParticipantRole, CoalitionInitiatorRole
-from mango_library.negotiation.cohda.cohda_negotiation import COHDANegotiationRole, CohdaNegotiationModel
-from mango_library.negotiation.cohda.cohda_solution_aggregation import CohdaSolutionAggregationRole
-from mango_library.negotiation.cohda.cohda_starting import CohdaNegotiationDirectStarterRole
-from mango_library.negotiation.termination import NegotiationTerminationDetectorRole, \
-    NegotiationTerminationParticipantRole
 
-from cosima_core.simulators.mango_example.unit_agent import UnitAgent
 from cosima_core.util.general_config import CONNECT_ATTR
 from cosima_core.util.util_functions import log
 
@@ -163,7 +156,7 @@ class ContainerSimulator(mosaik_api.Simulator):
             output_object = self._outputs[minimal_output_time]
             data = {self._sid: {f'message': output_object}, 'time': minimal_output_time + 1}
             if self._current_simulator_time == minimal_output_time + 1:
-                raise ValueError(f"Output time is the same as current simulator time ({self._current_simulator_time}).")
+                raise ValueError(f"Output time ({minimal_output_time + 1})is the same as current simulator time ({self._current_simulator_time}).")
             del self._outputs[minimal_output_time]
             log(f'Container Sim {self._sid} returns data for time {data["time"]}', 'info')
         for role in self._agent_roles:
@@ -190,101 +183,3 @@ class ContainerSimulator(mosaik_api.Simulator):
         await asyncio.gather(*futs)
         log('done.')
 
-
-class COHDAContainerSimulator(ContainerSimulator):
-
-    def __init__(self):
-        super().__init__()
-        self._schedule_provider = None
-        self._is_controller_agent = False
-        self._target = None
-        self._is_starter = False
-
-    def init(self, sid, time_resolution=1., **sim_params):
-        if 'schedule_provider' in sim_params.keys():
-            self._schedule_provider = sim_params['schedule_provider']
-        if 'is_controller_agent' in sim_params.keys():
-            self._is_controller_agent = sim_params['is_controller_agent']
-        if 'is_starter' in sim_params.keys():
-            self._is_starter = sim_params['is_starter']
-            if 'target' in sim_params.keys():
-                self._target = sim_params['target']
-
-        return super().init(sid=sid, time_resolution=time_resolution, **sim_params)
-
-    async def create_agent_model(self, neighbors, agent_id):
-        self._agent = RoleAgent(self._container, suggested_aid=agent_id)
-        if not self._is_controller_agent:
-            cohda_role = COHDANegotiationRole(schedules_provider=self._schedule_provider,
-                                              local_acceptable_func=lambda s: True)
-            self._agent.add_role(cohda_role)
-            self._agent.add_role(CoalitionParticipantRole())
-
-    def setup_done(self):
-        if self._is_controller_agent:
-            addrs = [(key, value) for key, value in self._client_agent_mapping.items() if key != 'client0']
-            self._agent.add_role(CoalitionInitiatorRole(addrs, 'cohda', 'cohda-negotiation'))
-            self._agent.add_role(NegotiationTerminationDetectorRole())
-            self._agent.add_role(CohdaSolutionAggregationRole())
-        elif self._is_starter:
-            self._agent.add_role(CohdaNegotiationDirectStarterRole(target_params=self._target))
-            self._agent.add_role(NegotiationTerminationParticipantRole())
-        else:
-            self._agent.add_role(NegotiationTerminationParticipantRole())
-
-    def finalize(self):
-        negotiations = self._agent._role_context.get_or_create_model(CohdaNegotiationModel)._negotiations
-        if len(negotiations) > 0:
-            cohda_negotiation = list(negotiations.values())[0]
-            result_schedules = cohda_negotiation._memory.solution_candidate.schedules
-            log(
-                f'Finalize. Schedule for agent {self._agent.aid}: '
-                f'{result_schedules[cohda_negotiation._memory.solution_candidate.agent_id]}', 'info')
-        else:
-            log(f'Finalize. No active negotiations for {self._agent.aid}.', 'info')
-        super().finalize()
-
-
-class UnitContainerSimulator(ContainerSimulator):
-
-    def __init__(self):
-        super().__init__()
-
-    def init(self, sid, time_resolution=1., **sim_params):
-        meta = super().init(sid=sid, time_resolution=time_resolution, **sim_params)
-        if 'connect_attributes' in sim_params:
-            meta['models']['ContainerModel']['attrs'].extend(sim_params['connect_attributes'])
-        return meta
-
-    async def create_agent_model(self, neighbors, agent_id):
-        self._agent = UnitAgent(container=self._container, neighbors=neighbors, aid=agent_id)
-
-    def get_data(self, outputs):
-        super_data = super().get_data(outputs=outputs)
-        agent_data = self._agent.get_data(outputs=outputs)
-
-        for key, value in agent_data.items():
-            if key in super_data.keys():
-                super_data[key].update(value)
-            else:
-                super_data[key] = agent_data[key]
-        return super_data
-
-
-class SimpleContainerSimulator(ContainerSimulator):
-
-    def __init__(self):
-        super().__init__()
-        self._agent_type = ReplyAgent
-
-    def init(self, sid, time_resolution=1., **sim_params):
-        if 'agent_type' in sim_params.keys():
-            self._agent_type = sim_params['agent_type']
-        return super().init(sid=sid, time_resolution=time_resolution, **sim_params)
-
-    async def create_agent_model(self, neighbors, agent_id):
-        self._agent = self._agent_type(container=self._container, neighbors=neighbors,
-                                       aid=agent_id)
-
-    def setup_done(self):
-        self._agent.start()

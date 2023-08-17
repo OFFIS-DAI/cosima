@@ -158,7 +158,7 @@ struct Receiver {
         SOCKET sock = accept(listenerSocket, (sockaddr *)&sinRemote,
                 (socklen_t *)&addrSize);
         if (sock == INVALID_SOCKET)
-            throw cRuntimeError("MosaikScheduler: accept() failed");
+            throw cRuntimeError("MosaikScheduler: accept() failed. Invalid Socket!");
         EV << "MosaikScheduler: connected!\n" << endl;
         int bytes = recv(sock, buf.data(), buf.size(), 0);
         return buf;
@@ -191,12 +191,12 @@ void MosaikScheduler::startRun() {
 void MosaikScheduler::setupListener() {
     listenerSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (listenerSocket == INVALID_SOCKET)
-        throw cRuntimeError("MosaikScheduler: cannot create socket");
+        throw cRuntimeError("MosaikScheduler: cannot create socket. Socket is invalid");
 
     int enable = 1;
     if (setsockopt(listenerSocket, SOL_SOCKET, SO_REUSEADDR,
             (const char *)&enable, sizeof(int)) < 0)
-        throw cRuntimeError("MosaikScheduler: cannot set socket option");
+        throw cRuntimeError("MosaikScheduler: cannot set socket option. Socket is invalid");
 
     sockaddr_in sinInterface;
     sinInterface.sin_family = AF_INET;
@@ -204,7 +204,7 @@ void MosaikScheduler::setupListener() {
     sinInterface.sin_port = htons(PORT);
     if (bind(listenerSocket, (sockaddr *)&sinInterface, sizeof(sockaddr_in)) ==
             SOCKET_ERROR)
-        throw cRuntimeError("MosaikScheduler: socket bind() failed");
+        throw cRuntimeError("MosaikScheduler: socket bind() failed. Please check if another instance of the simulation is already running.");
 
     listen(listenerSocket, SOMAXCONN);
 
@@ -475,7 +475,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
             }
 
         } else {
-            throw cRuntimeError("Can't find module in modules array.");
+            throw cRuntimeError("MosaikScheduler: Can't find module in modules array. Please make sure, that the number of agents matchers the number of modules in the scenario.");
         }
     }
 
@@ -697,7 +697,7 @@ cEvent *MosaikScheduler::takeNextEvent() {
         simtime_t eventSimtime = event->getArrivalTime();
         if(eventSimtime < lastEventTime) {
             log("ATTENTION! MosaikScheduler: try to execute event for simtime " + eventSimtime.str() + ", but last event was at time " + lastEventTime.str() );
-            throw cRuntimeError("Wrong simulation order.");
+            throw cRuntimeError("Wrong simulation order. Please contact the Cosima Developer Team: https://cosima.offis.de/pages/contact");
         }
         lastEventTime = eventSimtime;
     } else {
