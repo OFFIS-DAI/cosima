@@ -4,14 +4,14 @@ from data.traffic_configurations.traffic_config import ddos_traffic_configuratio
 USE_COMMUNICATION_SIMULATION = True
 
 # can be 'warnings' (only warnings), 'info' (only important information), 'debug' (all information)
-LOGGING_LEVEL = 'debug'
+LOGGING_LEVEL = 'info'
 LOG_TO_FILE = True
 
 # end of simulation (in milliseconds)
 SIMULATION_END = 1000000
 
 # number of agents (depends on chosen network in OMNeT++)
-NUMBER_OF_AGENTS = 2
+NUMBER_OF_AGENTS = 21
 
 WRITE_RESULTS = False
 
@@ -27,8 +27,8 @@ START_MODE = 'cmd'
 
 # Network to simulate
 # Networks are stored in cosima_omnetpp_project/networks.
-# Configurations can be found in cosima_omnetpp_project/mosaik.ini.
-NETWORK = 'SimpleNetworkTCP'
+# Configurations can be found in cosima_omnetpp_project/cosima.ini.
+NETWORK = 'StarTopologyNetwork'
 
 # each entry must contain values for type of infrastructure change
 # (Disconnect, Connect), time in ms and module. Module can be switch, client

@@ -18,8 +18,8 @@ package networks;
 import inet.node.ethernet.Eth100M;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
-import modules.MosaikSchedulerModule;
-import modules.MosaikScenarioManager;
+import modules.CosimaSchedulerModule;
+import modules.CosimaScenarioManager;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 
 
@@ -27,13 +27,13 @@ network StarTopologyNetwork
 {
     @display("bgb=1104,604");
     submodules:
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
             @display("p=216.6825,136.52249");
         }
         configurator: Ipv4NetworkConfigurator {
             @display("p=128.31155,45.08244;is=s");
         }
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=68.8875,129.00749");
         }
         client0: StandardHost {

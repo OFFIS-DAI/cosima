@@ -1,6 +1,7 @@
 # Agent Apps
 The *[AgentAppUdp](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppUdp.h)* and *[AgentAppTcp](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.h)* represent the implementation of the application layer
-(and transport layer) of the end devices, which represent the agents from mosaik on the OMNeT++ side. \
+(and transport layer) of the end devices, which represent the agents in the coupled simulation (mosaik or mango) 
+on the OMNeT++ side. \
 The *AgentAppUdp* is used for communication via UDP and the *AgentAppTcp* is used for communication via TCP. The protocol (UDP or TCP) used by the clients can be configured by choosing the corresponding *AgentApp(TCP/UDP)* in the .ini-file of the project. 
 
 ## *AgentAppUdp*

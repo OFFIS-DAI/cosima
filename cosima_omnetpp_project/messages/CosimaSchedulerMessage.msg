@@ -1,4 +1,4 @@
-packet MosaikSchedulerMessage{   	
+packet CosimaSchedulerMessage{   	
    	string sender;
    	string receiver;
    	int size;

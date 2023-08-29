@@ -16,7 +16,7 @@ import scenario_config
 
 def start_omnet(start_mode, network):
     command = f"./cosima_omnetpp_project -n {cfg.INET_INSTALLATION_PATH} -f " \
-              f"mosaik.ini -c {network}"
+              f"cosima.ini -c {network}"
     cwd = str(cfg.ROOT_PATH.parent) + '/cosima_omnetpp_project/'
     omnet_process = None
     if start_mode == 'cmd':
@@ -80,7 +80,7 @@ def get_dict_from_protobuf_message(protobuf_message):
     return google.protobuf.json_format.MessageToDict(protobuf_message, preserving_proto_field_name=True)
 
 
-def make_protobuf_message_for_type(msg_group, message_type, message_dict, message_count):
+def make_protobuf_message_for_type(msg_group, message_type, message_dict):
     if message_type == InitialMessage:
         protobuf_msg = msg_group.initial_messages.add()
     elif message_type == InfoMessage:
@@ -91,7 +91,6 @@ def make_protobuf_message_for_type(msg_group, message_type, message_dict, messag
             message_dict['size'] = len(message_dict['content_bytes'])
         else:
             raise ValueError("Message has no content! A Simulator might have tried to send an empty message.")
-        message_count += 1
     elif message_type == InfrastructureMessage:
         protobuf_msg = msg_group.infrastructure_messages.add()
     elif message_type == SynchronisationMessage:
@@ -104,7 +103,7 @@ def make_protobuf_message_for_type(msg_group, message_type, message_dict, messag
         raise RuntimeError("Unknown message type! Acceptable types are Info-, Infrastructure-, Synchronisation- or "
                            "Traffic Messages.")
     get_protobuf_message_from_dict(message_dict, protobuf_msg)
-    return msg_group, message_count
+    return msg_group
 
 
 def create_protobuf_messages(messages, current_step):
@@ -112,11 +111,11 @@ def create_protobuf_messages(messages, current_step):
     msg_groups = list()
     msg_ids = list()
     msg_group = CosimaMsgGroup()
-    message_count = 0
+    message_count = len([msg for (msg, type) in messages if type == InfoMessage])
     for index, (message_dict, message_type) in enumerate(messages):
         msg_ids.append(message_dict['msg_id'])
         # fill protobuf message group msg_group
-        msg_group, message_count = make_protobuf_message_for_type(msg_group, message_type, message_dict, message_count)
+        msg_group = make_protobuf_message_for_type(msg_group, message_type, message_dict)
         byte_size = msg_group.ByteSize()
         # if size of msg_group exceeds max -> make new msg group, add protobuf message to new message group
         # if size of msg_group is within boundaries -> keep msg_group, add current to list
@@ -125,10 +124,9 @@ def create_protobuf_messages(messages, current_step):
                 msg_groups.pop()
         else:
             msg_group.Clear()
-            msg_group, message_count = make_protobuf_message_for_type(msg_group, message_type, message_dict,
-                                                                      message_count)
+            msg_group = make_protobuf_message_for_type(msg_group, message_type, message_dict)
         msg_group_copy = CosimaMsgGroup()
-        msg_group.current_mosaik_step = int(current_step)
+        msg_group.current_time_step = int(current_step)
         msg_group_copy.CopyFrom(msg_group)
         msg_groups.append(msg_group_copy)
 
@@ -148,21 +146,21 @@ def set_up_file_logging():
 def log(text, log_type='debug'):
     if log_type == 'warning':
         print(datetime.now(), end='')
-        print(colored('  | WARNING | mosaik: ', 'red'), end='')
+        print(colored('  | WARNING | coupled simulation: ', 'red'), end='')
         print(text)
     elif log_type == 'info' and scenario_config.LOGGING_LEVEL == 'info':
         print(datetime.now(), end='')
-        print(colored('  | INFO    | mosaik: ', 'blue'), end='')
+        print(colored('  | INFO    | coupled simulation: ', 'blue'), end='')
         print(text)
     elif scenario_config.LOGGING_LEVEL == 'debug':
-        print(f'{datetime.now()} | DEBUG   | mosaik: {text}')
+        print(f'{datetime.now()} | DEBUG   | coupled simulation: {text}')
     if log_type == 'debug':
         return
     written = False
     while not written:
         try:
             f = open(f'{cfg.ROOT_PATH.parent}/log.txt', 'a')
-            f.write(f'{datetime.now()} mosaik: ' + text + '\n')
+            f.write(f'{datetime.now()} coupled simulation: ' + text + '\n')
             written = True
             f.close()
         except:
@@ -170,11 +168,11 @@ def log(text, log_type='debug'):
 
 
 class SynchronizationError(Exception):
-    """Raised when a synchronization problem between OMNeT++ and Mosaik occurs.
+    """Raised when a synchronization problem between OMNeT++ and coupled simulation occurs.
 
     Attributes:
         message_time -- OMNeT++ Time
-        time -- mosaik Time
+        time -- time of coupled simulation (mosaik or mango)
         message -- explanation of the problem
     """
 
@@ -182,7 +180,8 @@ class SynchronizationError(Exception):
         self.omnet_time = omnet_time
         self.mosaik_time = mosaik_time
         self.mes = mes
-        message = mes + "Simulation time in OMNeT++ and mosaik are out of sync! OMNeT++ Time: " + omnet_time + ", mosaik " \
-                  "Time: " + mosaik_time + "Please contact the Cosima Developer Team: https://cosima.offis.de/pages/contact"
+        message = mes + "Simulation time in OMNeT++ and coupled simulation are out of sync! OMNeT++ time: " + \
+                  omnet_time + ", coupled simulation time: " + mosaik_time + \
+                  "Please contact the cosima Developer Team: https://cosima.offis.de/pages/contact"
         self.message = message
         super().__init__(self.message)

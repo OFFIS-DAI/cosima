@@ -24,8 +24,8 @@ import inet.node.ethernet.EtherSwitch;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
 import inet.visualizer.integrated.IntegratedCanvasVisualizer;
-import modules.MosaikSchedulerModule;
-import modules.MosaikScenarioManager;
+import modules.CosimaSchedulerModule;
+import modules.CosimaScenarioManager;
 
 
 network TrafficNetwork
@@ -33,12 +33,12 @@ network TrafficNetwork
     @display("bgb=1332.5,1063.4");
     submodules:
 
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
 
             @display("p=97.5,317.19998");
         }
 
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=200,100");
         }
 

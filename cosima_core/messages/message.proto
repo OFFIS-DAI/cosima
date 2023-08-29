@@ -80,7 +80,7 @@ message CosimaMsgGroup {
   repeated InfrastructureMessage infrastructure_messages = 4;
   repeated TrafficMessage traffic_messages = 5;
   repeated AttackMessage attack_messages = 6;
-  int32 current_mosaik_step = 7;
+  int32 current_time_step = 7;
   int32 number_of_message_groups = 8;
   int32 number_of_messages = 9;
 }

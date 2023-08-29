@@ -1,3 +1,4 @@
+import time
 from copy import deepcopy
 from os import listdir
 import pandas as pd
@@ -24,7 +25,17 @@ for serializer in cohda_serializers:
 # [3200, 3200, 3200, 3200, 4000], same weight
 # Target 20 agents DayAhead:
 # [4000, 4000, 4000, 4000, 4000], same weight
-target = ([20000, 20000, 20000, 20000], [1, 1, 1, 1])
+target = ([110, 110, 110, 110, 110], [1, 1, 1, 1, 1, ],)
+
+s_array = [
+    [
+        [1, 1, 1, 1, 1],
+        [4, 3, 3, 3, 3],
+        [6, 6, 6, 6, 6],
+        [9, 8, 8, 8, 8],
+        [11, 11, 11, 11, 11],
+    ]
+]
 
 
 def main():
@@ -35,20 +46,15 @@ def main():
         },
     }
 
+    start = time.time()
+
     scenario_helper = ScenarioHelper()
     world, communication_simulator, client_attribute_mapping, sim_config = \
         scenario_helper.prepare_scenario(sim_config=sim_config)
 
     # adapt maximal byte size per msg group, since message get bigger if more agents are involved
     # TODO: change for other number of agents
-    if 5 <= NUMBER_OF_AGENTS < 10:
-        cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 3000
-    elif 10 <= NUMBER_OF_AGENTS < 20:
-        cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 6000
-    elif 20 <= NUMBER_OF_AGENTS < 50:
-        cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 8000
-    elif NUMBER_OF_AGENTS >= 50:
-        cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 30000
+    cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 10000
 
     filenames = listdir(cfg.CHP_DATA)
     all_schedule_names = [filename for filename in filenames if filename.startswith("CHP")]
@@ -98,8 +104,7 @@ def main():
             # is normal participant
             cohda_roles.append(NegotiationTerminationParticipantRole())
 
-            cohda_roles.append(COHDANegotiationRole(schedules_provider=schedule_provider(idx),
-                                                    local_acceptable_func=lambda s: True))
+            cohda_roles.append(COHDANegotiationRole(lambda: s_array[0], lambda s: True))
             cohda_roles.append(CoalitionParticipantRole())
 
         agent_models[current_container_name] = \
@@ -120,6 +125,8 @@ def main():
 
     scenario_helper.run_simulation()
     scenario_helper.shutdown_simulation()
+
+    print('time: ', time.time() - start)
 
 
 if __name__ == '__main__':

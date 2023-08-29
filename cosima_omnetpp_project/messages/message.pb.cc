@@ -263,7 +263,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, infrastructure_messages_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, traffic_messages_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, attack_messages_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, current_mosaik_step_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, current_time_step_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, number_of_message_groups_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::CosimaMsgGroup, number_of_messages_),
 };
@@ -338,7 +338,7 @@ void AddDescriptorsImpl() {
       "acked_module\030\004 \001(\t\022\r\n\005start\030\005 \001(\005\022\014\n\004sto"
       "p\030\006 \001(\005\022\032\n\022attack_probability\030\007 \001(\005\"F\n\007M"
       "sgType\022\017\n\013PACKET_DROP\020\000\022\030\n\024PACKET_FALSIF"
-      "ICATION\020\001\022\020\n\014PACKET_DELAY\020\002\"\203\003\n\016CosimaMs"
+      "ICATION\020\001\022\020\n\014PACKET_DELAY\020\002\"\201\003\n\016CosimaMs"
       "gGroup\022)\n\020initial_messages\030\001 \003(\0132\017.Initi"
       "alMessage\022#\n\rinfo_messages\030\002 \003(\0132\014.InfoM"
       "essage\0229\n\030synchronisation_messages\030\003 \003(\013"
@@ -346,12 +346,12 @@ void AddDescriptorsImpl() {
       "ure_messages\030\004 \003(\0132\026.InfrastructureMessa"
       "ge\022)\n\020traffic_messages\030\005 \003(\0132\017.TrafficMe"
       "ssage\022\'\n\017attack_messages\030\006 \003(\0132\016.AttackM"
-      "essage\022\033\n\023current_mosaik_step\030\007 \001(\005\022 \n\030n"
-      "umber_of_message_groups\030\010 \001(\005\022\032\n\022number_"
-      "of_messages\030\t \001(\005b\006proto3"
+      "essage\022\031\n\021current_time_step\030\007 \001(\005\022 \n\030num"
+      "ber_of_message_groups\030\010 \001(\005\022\032\n\022number_of"
+      "_messages\030\t \001(\005b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1625);
+      descriptor, 1623);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "cosima_core/messages/message.proto", &protobuf_RegisterTypes);
 }
@@ -3410,7 +3410,7 @@ const int CosimaMsgGroup::kSynchronisationMessagesFieldNumber;
 const int CosimaMsgGroup::kInfrastructureMessagesFieldNumber;
 const int CosimaMsgGroup::kTrafficMessagesFieldNumber;
 const int CosimaMsgGroup::kAttackMessagesFieldNumber;
-const int CosimaMsgGroup::kCurrentMosaikStepFieldNumber;
+const int CosimaMsgGroup::kCurrentTimeStepFieldNumber;
 const int CosimaMsgGroup::kNumberOfMessageGroupsFieldNumber;
 const int CosimaMsgGroup::kNumberOfMessagesFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -3432,16 +3432,16 @@ CosimaMsgGroup::CosimaMsgGroup(const CosimaMsgGroup& from)
       traffic_messages_(from.traffic_messages_),
       attack_messages_(from.attack_messages_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&current_mosaik_step_, &from.current_mosaik_step_,
+  ::memcpy(&current_time_step_, &from.current_time_step_,
     static_cast<size_t>(reinterpret_cast<char*>(&number_of_messages_) -
-    reinterpret_cast<char*>(&current_mosaik_step_)) + sizeof(number_of_messages_));
+    reinterpret_cast<char*>(&current_time_step_)) + sizeof(number_of_messages_));
   // @@protoc_insertion_point(copy_constructor:CosimaMsgGroup)
 }
 
 void CosimaMsgGroup::SharedCtor() {
-  ::memset(&current_mosaik_step_, 0, static_cast<size_t>(
+  ::memset(&current_time_step_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&number_of_messages_) -
-      reinterpret_cast<char*>(&current_mosaik_step_)) + sizeof(number_of_messages_));
+      reinterpret_cast<char*>(&current_time_step_)) + sizeof(number_of_messages_));
 }
 
 CosimaMsgGroup::~CosimaMsgGroup() {
@@ -3478,9 +3478,9 @@ void CosimaMsgGroup::Clear() {
   infrastructure_messages_.Clear();
   traffic_messages_.Clear();
   attack_messages_.Clear();
-  ::memset(&current_mosaik_step_, 0, static_cast<size_t>(
+  ::memset(&current_time_step_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&number_of_messages_) -
-      reinterpret_cast<char*>(&current_mosaik_step_)) + sizeof(number_of_messages_));
+      reinterpret_cast<char*>(&current_time_step_)) + sizeof(number_of_messages_));
   _internal_metadata_.Clear();
 }
 
@@ -3566,14 +3566,14 @@ bool CosimaMsgGroup::MergePartialFromCodedStream(
         break;
       }
 
-      // int32 current_mosaik_step = 7;
+      // int32 current_time_step = 7;
       case 7: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(56u /* 56 & 0xFF */)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &current_mosaik_step_)));
+                 input, &current_time_step_)));
         } else {
           goto handle_unusual;
         }
@@ -3688,9 +3688,9 @@ void CosimaMsgGroup::SerializeWithCachedSizes(
       output);
   }
 
-  // int32 current_mosaik_step = 7;
-  if (this->current_mosaik_step() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->current_mosaik_step(), output);
+  // int32 current_time_step = 7;
+  if (this->current_time_step() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->current_time_step(), output);
   }
 
   // int32 number_of_message_groups = 8;
@@ -3765,9 +3765,9 @@ void CosimaMsgGroup::SerializeWithCachedSizes(
         6, this->attack_messages(static_cast<int>(i)), deterministic, target);
   }
 
-  // int32 current_mosaik_step = 7;
-  if (this->current_mosaik_step() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->current_mosaik_step(), target);
+  // int32 current_time_step = 7;
+  if (this->current_time_step() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->current_time_step(), target);
   }
 
   // int32 number_of_message_groups = 8;
@@ -3863,11 +3863,11 @@ size_t CosimaMsgGroup::ByteSizeLong() const {
     }
   }
 
-  // int32 current_mosaik_step = 7;
-  if (this->current_mosaik_step() != 0) {
+  // int32 current_time_step = 7;
+  if (this->current_time_step() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->current_mosaik_step());
+        this->current_time_step());
   }
 
   // int32 number_of_message_groups = 8;
@@ -3917,8 +3917,8 @@ void CosimaMsgGroup::MergeFrom(const CosimaMsgGroup& from) {
   infrastructure_messages_.MergeFrom(from.infrastructure_messages_);
   traffic_messages_.MergeFrom(from.traffic_messages_);
   attack_messages_.MergeFrom(from.attack_messages_);
-  if (from.current_mosaik_step() != 0) {
-    set_current_mosaik_step(from.current_mosaik_step());
+  if (from.current_time_step() != 0) {
+    set_current_time_step(from.current_time_step());
   }
   if (from.number_of_message_groups() != 0) {
     set_number_of_message_groups(from.number_of_message_groups());
@@ -3958,7 +3958,7 @@ void CosimaMsgGroup::InternalSwap(CosimaMsgGroup* other) {
   CastToBase(&infrastructure_messages_)->InternalSwap(CastToBase(&other->infrastructure_messages_));
   CastToBase(&traffic_messages_)->InternalSwap(CastToBase(&other->traffic_messages_));
   CastToBase(&attack_messages_)->InternalSwap(CastToBase(&other->attack_messages_));
-  swap(current_mosaik_step_, other->current_mosaik_step_);
+  swap(current_time_step_, other->current_time_step_);
   swap(number_of_message_groups_, other->number_of_message_groups_);
   swap(number_of_messages_, other->number_of_messages_);
   _internal_metadata_.Swap(&other->_internal_metadata_);

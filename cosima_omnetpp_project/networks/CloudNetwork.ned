@@ -18,8 +18,8 @@ import inet.node.ethernet.Eth100M;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
 import inet.node.internetcloud.InternetCloud;
-import modules.MosaikSchedulerModule;
-import modules.MosaikScenarioManager;
+import modules.CosimaSchedulerModule;
+import modules.CosimaScenarioManager;
 
 
 network CloudNetwork
@@ -27,10 +27,10 @@ network CloudNetwork
     @display("bgb=998.7494,586.0717;bgg=1;bgi=background/streetmap");
 
     submodules:
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
             @display("p=216.6825,136.52249");
         }
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=68.8875,129.00749");
         }
 

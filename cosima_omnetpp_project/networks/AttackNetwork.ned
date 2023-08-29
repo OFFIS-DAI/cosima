@@ -27,8 +27,8 @@ import lte.world.radio.LteChannelControl;
 import lte.epc.PgwStandardSimplified;
 import lte.common.LteNetworkConfigurator;
 
-import modules.MosaikScenarioManager;
-import modules.MosaikSchedulerModule;
+import modules.CosimaScenarioManager;
+import modules.CosimaSchedulerModule;
 import modules.attacks.Attacked_Ue;
 
 
@@ -37,12 +37,12 @@ network AttackNetwork
     parameters:
         @display("i=block/network2;bgb=991,558;bgi=background/budapest");
     submodules:
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
 
             @display("p=97.5,317.19998");
         }
 
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=19582.516,1151.9127");
         }
         channelControl: LteChannelControl {

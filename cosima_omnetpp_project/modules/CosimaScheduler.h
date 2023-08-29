@@ -1,25 +1,25 @@
 /*
- * MosaikScheduler.h
+ * CosimaScheduler.h
  *
  *  Created on: 11 Apr 2021
  *      Author: malin
  *
- *  The MosaikScheduler replaces the OMNeT++ internal scheduler.
+ *  The CosimaScheduler replaces the OMNeT++ internal scheduler.
  *  In addition to the usual functions of a scheduler,
- *  a TCP connection to mosaik can be established and incoming messages
+ *  a TCP connection to python can be established and incoming messages
  *  can be inserted into the simulation as events.
  *
  */
 
-#ifndef __MOSAIKSCHEDULER_H__
-#define __MOSAIKSCHEDULER_H__
+#ifndef __COSIMASCHEDULER_H__
+#define __COSIMASCHEDULER_H__
 
 #include <omnetpp.h>
 #include <omnetpp/platdep/sockets.h>
 
-#include "../messages/MosaikSchedulerMessage_m.h"
+#include "../messages/CosimaSchedulerMessage_m.h"
 
-class MosaikScheduler : public omnetpp::cScheduler
+class CosimaScheduler : public omnetpp::cScheduler
 {
 public:
     /**
@@ -32,7 +32,7 @@ public:
      */
     std::list<omnetpp::cModule*> getModuleList();
     omnetpp::cModule *getSchedulerModule() { return schedulerModule; }
-    bool socketToMosaikInitialized() { return listenerSocket != -1; }
+    bool socketToCoupledSimulationInitialized() { return listenerSocket != -1; }
 
 protected:
     omnetpp::cModule *schedulerModule;
@@ -41,12 +41,12 @@ protected:
     // save time of last event
     omnetpp::simtime_t lastEventTime;
 
-    // TCP port to mosaik
+    // TCP port to coupled simulation
     auto static const PORT = 4242;
 
     SOCKET listenerSocket;
 
-    // registered modules that represent agents in mosaik
+    // registered modules that represent agents in coupled simulation
     int numModules;
     std::list<omnetpp::cModule*> modules = {};
 
@@ -57,7 +57,7 @@ protected:
 
 
     /**
-     * Initialize socket in order to listen to incoming connections from mosaik.
+     * Initialize socket in order to listen to incoming connections from coupled simulation.
      */
     virtual void setupListener();
     /**
@@ -70,12 +70,12 @@ public:
     /**
      * Constructor.
      */
-    MosaikScheduler();
+    CosimaScheduler();
 
     /**
      * Destructor.
      */
-    virtual ~MosaikScheduler();
+    virtual ~CosimaScheduler();
 
     /**
      * Return a description for the GUI.
@@ -112,10 +112,10 @@ public:
      * socket. The method must be called from the module's initialize()
      * function.
      */
-    virtual void setInterfaceModule(omnetpp::cModule *module, bool isMosaikSchedulerModule);
+    virtual void setInterfaceModule(omnetpp::cModule *module, bool isCosimaSchedulerModule);
 
     /***
-     * Register network layer for attack at MosaikScheduler.
+     * Register network layer for attack at CosimaScheduler.
      */
     void setAttackNetworkLayer(omnetpp::cModule *networkLayerModule);
 
@@ -163,27 +163,27 @@ public:
      */
     void writeSimulationSnapshot();
     /**
-     * Is being called at the end of the simulation in mosaik in order to finish simulation in OMNeT++.
+     * Is being called at the end of the simulation in coupled simulation in order to finish simulation in OMNeT++.
      */
     virtual void endSimulation();
     /**
-     * Is called in order to inform mosaik about continued waiting from OMNeT++ side.
+     * Is called in order to inform coupled simulation about continued waiting from OMNeT++ side.
      */
-    void informMosaikAboutWaiting();
+    void informCoupledSimulationAboutWaiting();
     /**
-     * Add message to message group in order to send message back to mosaik.
+     * Add message to message group in order to send message back to coupled simulation.
      */
-    virtual void sendToMosaik(omnetpp::cMessage *reply);
+    virtual void sendToCoupledSimulation(omnetpp::cMessage *reply);
 
     /**
-     * Send message group back to mosaik.
+     * Send message group back to coupled simulation.
      */
-    virtual void sendMsgGroupToMosaik(bool isWaitingMsg);
+    virtual void sendMsgGroupToCoupledSimulation(bool isWaitingMsg);
 
     /**
-     * Handle message from mosaik
+     * Handle message from coupled simulation
      */
-    int handleMsgFromMosaik(std::vector<char> data);
+    int handleMsgFromCoupledSimulation(std::vector<char> data);
     /**
      * Setter methods.
      */

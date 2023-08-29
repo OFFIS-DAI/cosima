@@ -19,20 +19,20 @@ import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.inet.AdhocHost;
 import inet.physicallayer.unitdisk.UnitDiskRadioMedium;
 import inet.visualizer.contract.IIntegratedVisualizer;
-import modules.MosaikSchedulerModule;
-import modules.MosaikScenarioManager;
+import modules.CosimaSchedulerModule;
+import modules.CosimaScenarioManager;
 
 network AdHocNetwork
 {
     parameters:
         @display("bgb=650,450");
     submodules:
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
 
             @display("p=110,44");
         }
 
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=59,44");
         }
 

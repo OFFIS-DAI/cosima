@@ -21,19 +21,19 @@ import lte.epc.PgwStandardSimplified;
 import lte.common.LteNetworkConfigurator;
 import inet.node.inet.StandardHost;
 
-import modules.MosaikScenarioManager;
-import modules.MosaikSchedulerModule;
+import modules.CosimaScenarioManager;
+import modules.CosimaSchedulerModule;
 
 network LargeLTENetwork
 {
     parameters:
         @display("i=block/network2;bgb=464,328;bgi=background/terrain;bgu=m");
     submodules:
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
             @display("p=65,146;i=abstract/logo_icon_small");
         }
 
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=65,111;i=abstract/logo_icon_small");
         }
         channelControl: LteChannelControl {

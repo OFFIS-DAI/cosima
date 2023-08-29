@@ -11,23 +11,20 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-//
-import inet.common.INETDefs;
-import inet.common.packet.chunk.Chunk;
-
-cplusplus{{
-    const inet::B CHUNK_LENGTH; 
+// 
+cplusplus {{
+#include "ControlType_m.h"
 }}
 
-class MosaikApplicationChunk extends inet::FieldsChunk
-{
-    chunkLength = CHUNK_LENGTH; 
-    simtime_t creationTime;
-    string content;
-   	string receiver;
-   	string sender;
-   	string msgId;
-   	int creationTimeMosaik; 
-   	bool isTrafficMessage;
-   	bool isFalsified;
+enum ControlType;
+
+packet CosimaCtrlEvent {
+    int ctrlType @enum(ControlType);
+    string source;
+    string destination;
+    int start;
+    int stop;
+    int interval;
+    int packetLength;
+    string moduleNames[]; 
 };

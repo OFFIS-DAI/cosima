@@ -5,7 +5,7 @@
  *      Author: malin
  *
  *  The AgentAppTCP represents the implementation of the application layer (and transport layer)
- *  of the end devices, which represent the agents in mosaik on the OMNeT++ side.
+ *  of the end devices, which represent the agents in coupled simulation on the OMNeT++ side.
  *  The AgentAppTCP sends messages in OMNeT++ over TCP.
  */
 
@@ -15,7 +15,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "../modules/MosaikScheduler.h"
+#include "../modules/CosimaScheduler.h"
 #include "../messages/Timer_m.h"
 #include "inet/applications/tcpapp/TcpAppBase.h"
 #include "inet/common/lifecycle/LifecycleOperation.h"
@@ -41,7 +41,7 @@ public:
 
 protected:
 
-    MosaikScheduler *scheduler;
+    CosimaScheduler *scheduler;
 
     std::map<int, std::list<inet::Packet *>> packetToClient;
 
@@ -54,17 +54,17 @@ protected:
      */
     int numInitStages() const override { return (inet::NUM_INIT_STAGES); }
     /**
-     * Overwrites message of TcpAppBase to be able to receive messages from MosaikScheduler
+     * Overwrites message of TcpAppBase to be able to receive messages from CosimaScheduler
      */
     void handleMessageWhenUp(cMessage *msg) override;
     /**
-     * Handle event from socket to mosaik.
+     * Handle event from socket to coupled simulation.
      */
-    bool handleSocketEvent(cMessage *msg, double mosaikSimTime);
+    bool handleSocketEvent(cMessage *msg, double couplingSimTime);
     /**
-     * Handle reply with delay to mosaik.
+     * Handle reply with delay to coupled simulation.
      */
-    void sendReply(MosaikSchedulerMessage *reply);  // const char *reply
+    void sendReply(CosimaSchedulerMessage *reply);
     /**
      * Timer objects are saved in a map, this method returns the timer for a given client id
      */
@@ -81,7 +81,7 @@ protected:
     inet::Packet *getPacketForModuleId(int clientId);
     /**
      * Convenience method to get id of module by module name.
-     * Returns ID of module if module can be found as a registered module at the MosaikObserver,
+     * Returns ID of module if module can be found as a registered module at the CosimaScheduler,
      * otherwise returns -1.
      */
     int getModuleIdByName(const char *module_name);
@@ -94,8 +94,8 @@ protected:
      */
     virtual void socketEstablished(inet::TcpSocket *socket) override;
     /**
-     * Data arrived at the socket over inet network.
-     * The delay is to be calculated and send back to mosaik.
+     * Data arrived at the socket over network.
+     * The delay is to be calculated and send back to coupled simulation.
      */
     virtual void socketDataArrived(inet::TcpSocket *socket, inet::Packet *msg, bool urgent) override;
     /**
@@ -139,7 +139,7 @@ protected:
     void connect(const char *receiver_name, int receiver_port, const char *messageId);
 
     /**
-     * Send a notification to mosaik because a transmission error was detected.
+     * Send a notification to coupled simulation because a transmission error was detected.
      */
     void sendTransmissionErrorNotification(const char *receiverName, const char *msgId, bool timeout);
 

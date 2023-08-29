@@ -2,7 +2,7 @@ from os.path import abspath
 from pathlib import Path
 
 # max size per message group
-MAX_BYTE_SIZE_PER_MSG_GROUP = 1000
+MAX_BYTE_SIZE_PER_MSG_GROUP = 30000
 
 # units conversion factor for mango scenarios
 MANGO_CONVERSION_FACTOR = 1000

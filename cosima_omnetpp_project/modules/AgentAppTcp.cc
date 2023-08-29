@@ -23,12 +23,12 @@
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/transportlayer/contract/udp/UdpSocket.h"
 
-#include "../modules/MosaikScheduler.h"
-#include "../messages/MosaikApplicationChunk_m.h"
-#include "../messages/MosaikSchedulerMessage_m.h"
-#include "../messages/MosaikCtrlEvent_m.h"
-
+#include "../messages/CosimaSchedulerMessage_m.h"
 #include "AgentAppTcp.h"
+
+#include "../messages/CosimaApplicationChunk_m.h"
+#include "../messages/CosimaCtrlEvent_m.h"
+#include "CosimaScheduler.h"
 
 
 Define_Module(AgentAppTcp);
@@ -55,9 +55,9 @@ AgentAppTcp::~AgentAppTcp() {
 void AgentAppTcp::initialize(int stage) {
     TcpAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
-        // get intern socket scheduler from simulation and cast to MosaikScheduler
+        // get intern socket scheduler from simulation and cast to CosimaScheduler
         scheduler =
-                check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
+                check_and_cast<CosimaScheduler *>(getSimulation()->getScheduler());
         // register module at scheduler
         scheduler->setInterfaceModule(this, false);
         // get name of parent module as string for logging
@@ -72,7 +72,7 @@ void AgentAppTcp::handleMessageWhenUp(cMessage *msg)
         handleTimer(msg);
     }
     else if (msg->getKind() == 0 and msg->getArrivalGate() != gate("socketIn")) {
-        // message is an event from the scheduler (from mosaik)
+        // message is an event from the scheduler
         handleSocketEvent(msg, msg->getArrivalTime().dbl());
     }
     else {
@@ -81,17 +81,17 @@ void AgentAppTcp::handleMessageWhenUp(cMessage *msg)
     }
 }
 
-bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
+bool AgentAppTcp::handleSocketEvent(cMessage *msg, double couplingSimTime) {
 
-    // mosaik simTime should have positive value
-    if (mosaikSimTime < 0) {
+    // simTime of coupled framework should have positive value
+    if (couplingSimTime < 0) {
         delete msg;
         return false;
     }
 
-    if (typeid(*msg) == typeid(MosaikCtrlEvent)) {
+    if (typeid(*msg) == typeid(CosimaCtrlEvent)) {
         // is traffic event
-        MosaikCtrlEvent *msgCasted = dynamic_cast<MosaikCtrlEvent *>(msg);
+        CosimaCtrlEvent *msgCasted = dynamic_cast<CosimaCtrlEvent *>(msg);
         auto receiverName = msgCasted->getDestination();
 
         // get corresponding port for receiver name
@@ -105,7 +105,7 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
         scheduler->log(nameStr + ": send traffic to " + receiverName + " at time " + simTime().str() + ".", "info");
 
         auto packet = new inet::Packet();
-        const auto &payload = inet::makeShared<MosaikApplicationChunk>();
+        const auto &payload = inet::makeShared<CosimaApplicationChunk>();
         auto msgSize = msgCasted->getPacketLength();
         payload->setChunkLength(inet::B(msgSize));
         payload->setIsTrafficMessage(true);
@@ -128,9 +128,9 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
     }
 
     // make packet
-    if (typeid(*msg) == typeid(MosaikSchedulerMessage)) {
+    if (typeid(*msg) == typeid(CosimaSchedulerMessage)) {
         // is "normal" message
-        MosaikSchedulerMessage *msgCasted = dynamic_cast<MosaikSchedulerMessage *>(msg);
+        CosimaSchedulerMessage *msgCasted = dynamic_cast<CosimaSchedulerMessage *>(msg);
         auto content = msgCasted->getContent();
 
         // get content from message
@@ -149,23 +149,23 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double mosaikSimTime) {
             return false;
         }
         scheduler->log(nameStr + ": send message " + msgId + " to " + receiverName + " with port " + std::to_string(receiverPort) + " at time "
-                + std::to_string(mosaikSimTime));
+                + std::to_string(couplingSimTime));
         std::string contentStr = content;
         // scheduler->log("content is: " + contentStr);
 
         // make packet
         auto packet = new inet::Packet();
-        const auto &payload = inet::makeShared<MosaikApplicationChunk>();
+        const auto &payload = inet::makeShared<CosimaApplicationChunk>();
         payload->setContent(content);
         payload->setReceiver(receiverName);
         payload->setSender(senderName);
         payload->setChunkLength(inet::B(msgSize));
-        payload->setCreationTime(mosaikSimTime);
+        payload->setCreationTimeOmnetpp(couplingSimTime);
         payload->setMsgId(msgId);
-        payload->setCreationTimeMosaik(creation_time);
+        payload->setCreationTimeCoupling(creation_time);
         payload->setIsTrafficMessage(false);
         packet->insertAtBack(payload);
-        packet->setTimestamp(mosaikSimTime);
+        packet->setTimestamp(couplingSimTime);
 
         auto clientId = getModuleIdByName(receiverName);
         setPacketForModuleId(clientId, packet);
@@ -283,13 +283,13 @@ void AgentAppTcp::handleTimer(cMessage *msg) {
 }
 
 void AgentAppTcp::sendTransmissionErrorNotification(const char *receiverName, const char *msgId, bool timeout=false) {
-    MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+    CosimaSchedulerMessage *notification_message = new CosimaSchedulerMessage();
     notification_message->setTransmission_error(true);
     notification_message->setSender(this->getParentModule()->getName());
     notification_message->setReceiver(receiverName);
     notification_message->setTimeout(timeout);
     notification_message->setMsgId(msgId);
-    scheduler->sendToMosaik(notification_message);
+    scheduler->sendToCoupledSimulation(notification_message);
 }
 
 void AgentAppTcp::connectTimeout(const char *receiverName, const char *msgId, int receiverPort) {
@@ -297,7 +297,7 @@ void AgentAppTcp::connectTimeout(const char *receiverName, const char *msgId, in
         scheduler->log(nameStr + " received connect timeout for " + receiverName + " with message ID " + msgId, "debug");
 
         // case 1: called connect because received connect timeout and AgentApp is still waiting for connect
-        // -> send transmission error to mosaik and don't wait any longer
+        // -> send transmission error to coupled simulation and don't wait any longer
         scheduler->log(nameStr + ": received connect timeout information for " + receiverName + " at time " + simTime().str(), "debug");
         sendTransmissionErrorNotification(receiverName, msgId, true);
         waitingForPortsToConnectTo.erase(receiverPort);
@@ -420,7 +420,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
         inet::Packet *recvPacket = dynamic_cast<inet::Packet *>(copy);
         if (recvPacket != nullptr) {
             auto replyContent = "";
-            MosaikSchedulerMessage *answer = new MosaikSchedulerMessage();
+            CosimaSchedulerMessage *answer = new CosimaSchedulerMessage();
             answer->setTransmission_error(false);
 
             inet::b offset = inet::b(0);  // start from the beginning
@@ -436,7 +436,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                 if (chunk->getClassName() == std::string("inet::SliceChunk")) {
                     auto newPacket = recvPacket->peekData<inet::SliceChunk>(inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
                     auto encapsulatedChunk = newPacket->getChunk();
-                    if (encapsulatedChunk->getClassName() != std::string("MosaikApplicationChunk")) {
+                    if (encapsulatedChunk->getClassName() != std::string("CosimaApplicationChunk")) {
                         if (encapsulatedChunk->getClassName() == std::string("inet::SequenceChunk")) {
                             inet::SequenceChunk *encapsulatedSequenceChunk = dynamic_cast<inet::SequenceChunk *>(encapsulatedChunk.get());
                             auto queue = encapsulatedSequenceChunk->getChunks();
@@ -446,7 +446,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                                 if (itemget->getClassName() == std::string("inet::SliceChunk")) {
                                     const inet::SliceChunk *encapsulatedSliceChunk = dynamic_cast<const inet::SliceChunk *>(itemget);
                                     auto appChunkInSliceChunk = encapsulatedSliceChunk->getChunk();
-                                    auto appChunk = appChunkInSliceChunk->peek<MosaikApplicationChunk>(inet::b(0), appChunkInSliceChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                                    auto appChunk = appChunkInSliceChunk->peek<CosimaApplicationChunk>(inet::b(0), appChunkInSliceChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
                                     if (appChunk->isTrafficMessage()) {
                                         scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                                         return;
@@ -459,13 +459,13 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                                         answer->setReceiver(appChunk->getReceiver());
                                         answer->setFalsified(appChunk->isFalsified());
                                         simtime_t delay =
-                                                simTime() - appChunk->getCreationTime();
+                                                simTime() - appChunk->getCreationTimeOmnetpp();
                                         auto delay_i = 0U;
                                         delay_i = ceil(delay.dbl()*1000);
                                         answer->setDelay(delay_i);
                                         answer->setSender(appChunk->getSender());
                                         answer->setMsgId(appChunk->getMsgId());
-                                        answer->setCreationTime(appChunk->getCreationTimeMosaik());
+                                        answer->setCreationTime(appChunk->getCreationTimeCoupling());
                                         foundApplicationChunk = true;
                                         receivedMsgIds.push_back(appChunk->getMsgId());
                                         sendReply(answer);
@@ -474,7 +474,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                             }
                         }
                     } else {
-                        auto appChunk = encapsulatedChunk->peek<MosaikApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                        auto appChunk = encapsulatedChunk->peek<CosimaApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
                         if (appChunk->isTrafficMessage()) {
                             scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                             return;
@@ -487,33 +487,33 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                             answer->setContent(appChunk->getContent());
                             answer->setReceiver(appChunk->getReceiver());
                             simtime_t delay =
-                                    simTime() - appChunk->getCreationTime();
+                                    simTime() - appChunk->getCreationTimeOmnetpp();
                             auto delay_i = 0U;
                             delay_i = ceil(delay.dbl()*1000);
                             answer->setDelay(delay_i);
                             answer->setSender(appChunk->getSender());
                             answer->setMsgId(appChunk->getMsgId());
-                            answer->setCreationTime(appChunk->getCreationTimeMosaik());
+                            answer->setCreationTime(appChunk->getCreationTimeCoupling());
                             foundApplicationChunk = true;
                             receivedMsgIds.push_back(appChunk->getMsgId());
                             sendReply(answer);
                         }
                     }
-                } else if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
-                    auto mosaikApplicationChunk = recvPacket->peekAt<MosaikApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
-                    if (mosaikApplicationChunk->isTrafficMessage()) {
+                } else if (chunk->getClassName() == std::string("CosimaApplicationChunk")) {
+                    auto cosimaApplicationChunk = recvPacket->peekAt<CosimaApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                    if (cosimaApplicationChunk->isTrafficMessage()) {
                         scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                         return;
                     } else {
-                        replyContent = mosaikApplicationChunk->getContent();
-                        simtime_t delay = simTime() - mosaikApplicationChunk->getCreationTime();
+                        replyContent = cosimaApplicationChunk->getContent();
+                        simtime_t delay = simTime() - cosimaApplicationChunk->getCreationTimeOmnetpp();
                         auto delay_i = 0U;
                         delay_i = ceil(delay.dbl()*1000);
-                        replyReceiver = mosaikApplicationChunk->getReceiver();
-                        auto replySender = mosaikApplicationChunk->getSender();
-                        auto msgId = mosaikApplicationChunk->getMsgId();
-                        auto creationTime = mosaikApplicationChunk->getCreationTimeMosaik();
-                        answer->setFalsified(mosaikApplicationChunk->isFalsified());
+                        replyReceiver = cosimaApplicationChunk->getReceiver();
+                        auto replySender = cosimaApplicationChunk->getSender();
+                        auto msgId = cosimaApplicationChunk->getMsgId();
+                        auto creationTime = cosimaApplicationChunk->getCreationTimeCoupling();
+                        answer->setFalsified(cosimaApplicationChunk->isFalsified());
                         answer->setContent(replyContent);
                         answer->setReceiver(replyReceiver);
                         answer->setDelay(delay_i);
@@ -528,7 +528,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                 } else {
                     offset += chunk->getChunkLength();
                     if (offset >= recvPacket->getTotalLength()) {
-                        scheduler->log("Couldn't find MosaikApplicationChunk in packet: " + recvPacket->str(), "warning");
+                        scheduler->log("Couldn't find CosimaApplicationChunk in packet: " + recvPacket->str(), "warning");
                         break;
                     }
                     answer->setDelay(delay_d);
@@ -573,8 +573,8 @@ void AgentAppTcp::sendData(const char *receiverName, const char *messageId) {
 }
 
 
-void AgentAppTcp::sendReply(MosaikSchedulerMessage *reply) {
-    scheduler->sendToMosaik(reply);
+void AgentAppTcp::sendReply(CosimaSchedulerMessage *reply) {
+    scheduler->sendToCoupledSimulation(reply);
 }
 
 void AgentAppTcp::socketClosed(inet::TcpSocket *socket) {

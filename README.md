@@ -1,13 +1,25 @@
-# cosima: Integration of the (communication) simulator OMNeT++ into the co-simulation framework mosaik
+# cosima: Integration of the (communication) simulator OMNeT++ into agent communication
+In this project we integrated the communication simulator OMNeT++ into a separate simulation to model communication
+between software agents in multi-agent systems. 
+This enables the simulation of realistic communication technologies (such as 5G) and the analysis of dynamic 
+communication characteristics in Smart Grid scenarios.
+
+The project originates from the OFFIS e.V. Institute of Information Technology in Oldenburg and the University of Oldenburg. 
+For further information on cosima see [our website](https://cosima.offis.de/).
+
+Originally, cosima was developed for integration into mosaik.
 
 mosaik is a Smart Grid co-simulation framework developed by OFFIS e.V. in Oldenburg. For further information on mosaik
 see [mosaik](https://mosaik.offis.de). OMNeT++ is a simulation framework for (communication) network simulation. For
-further information on OMNeT++ see [OMNeT++](https://omnetpp.org/). In this project we integrated the communication
-simulator OMNeT++ into the co-simulation framework mosaik. This enables the simulation of realistic communication 
-technologies (such as 5G) and the analysis of dynamic communication characteristics in Smart Grid scenarios.  
+further information on OMNeT++ see [OMNeT++](https://omnetpp.org/).
 
-This README contains the basic instructions on how to [install](#installation) cosima and how to [run the simulation](#run-simulation).
-We recommend reading the detailled documentation on [readthedocs](https://cosima.readthedocs.io).
+In addition, cosima provides a direct coupling to the agent framework [mango](https://gitlab.com/mango-agents).
+This coupling can be used especially in scenarios in which the focus is on the high-performance simulation of agent 
+behaviour under the influence of the underlying communication infrastructure.
+
+This README contains the basic instructions on how to [install](#installation) cosima and 
+how to [run the simulation](#run-simulation).
+We recommend reading the detailed documentation on [ReadTheDocs](https://cosima.readthedocs.io).
 
 ## Installation
 

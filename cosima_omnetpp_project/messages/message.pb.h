@@ -1370,11 +1370,11 @@ class CosimaMsgGroup : public ::google::protobuf::Message /* @@protoc_insertion_
   const ::google::protobuf::RepeatedPtrField< ::AttackMessage >&
       attack_messages() const;
 
-  // int32 current_mosaik_step = 7;
-  void clear_current_mosaik_step();
-  static const int kCurrentMosaikStepFieldNumber = 7;
-  ::google::protobuf::int32 current_mosaik_step() const;
-  void set_current_mosaik_step(::google::protobuf::int32 value);
+  // int32 current_time_step = 7;
+  void clear_current_time_step();
+  static const int kCurrentTimeStepFieldNumber = 7;
+  ::google::protobuf::int32 current_time_step() const;
+  void set_current_time_step(::google::protobuf::int32 value);
 
   // int32 number_of_message_groups = 8;
   void clear_number_of_message_groups();
@@ -1398,7 +1398,7 @@ class CosimaMsgGroup : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::RepeatedPtrField< ::InfrastructureMessage > infrastructure_messages_;
   ::google::protobuf::RepeatedPtrField< ::TrafficMessage > traffic_messages_;
   ::google::protobuf::RepeatedPtrField< ::AttackMessage > attack_messages_;
-  ::google::protobuf::int32 current_mosaik_step_;
+  ::google::protobuf::int32 current_time_step_;
   ::google::protobuf::int32 number_of_message_groups_;
   ::google::protobuf::int32 number_of_messages_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -2778,18 +2778,18 @@ CosimaMsgGroup::attack_messages() const {
   return attack_messages_;
 }
 
-// int32 current_mosaik_step = 7;
-inline void CosimaMsgGroup::clear_current_mosaik_step() {
-  current_mosaik_step_ = 0;
+// int32 current_time_step = 7;
+inline void CosimaMsgGroup::clear_current_time_step() {
+  current_time_step_ = 0;
 }
-inline ::google::protobuf::int32 CosimaMsgGroup::current_mosaik_step() const {
-  // @@protoc_insertion_point(field_get:CosimaMsgGroup.current_mosaik_step)
-  return current_mosaik_step_;
+inline ::google::protobuf::int32 CosimaMsgGroup::current_time_step() const {
+  // @@protoc_insertion_point(field_get:CosimaMsgGroup.current_time_step)
+  return current_time_step_;
 }
-inline void CosimaMsgGroup::set_current_mosaik_step(::google::protobuf::int32 value) {
+inline void CosimaMsgGroup::set_current_time_step(::google::protobuf::int32 value) {
   
-  current_mosaik_step_ = value;
-  // @@protoc_insertion_point(field_set:CosimaMsgGroup.current_mosaik_step)
+  current_time_step_ = value;
+  // @@protoc_insertion_point(field_set:CosimaMsgGroup.current_time_step)
 }
 
 // int32 number_of_message_groups = 8;

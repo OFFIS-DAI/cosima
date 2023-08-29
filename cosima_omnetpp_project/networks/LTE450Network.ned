@@ -28,8 +28,8 @@ import lte.world.radio.LteChannelControl;
 import lte.epc.PgwStandardSimplified;
 import lte.common.LteNetworkConfigurator;
 
-import modules.MosaikScenarioManager;
-import modules.MosaikSchedulerModule;
+import modules.CosimaScenarioManager;
+import modules.CosimaSchedulerModule;
 
 
 
@@ -41,12 +41,12 @@ network LTE450Network
 
     types:
     submodules:
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
 
             @display("p=97.5,317.19998");
         }
 
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=19582.516,1151.9127");
         }
         channelControl: LteChannelControl {

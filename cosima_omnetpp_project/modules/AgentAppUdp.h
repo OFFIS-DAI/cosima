@@ -5,7 +5,7 @@
 
 #include <omnetpp.h>
 #include "inet/transportlayer/contract/udp/UdpSocket.h"
-#include "../modules/MosaikScheduler.h"
+#include "CosimaScheduler.h"
 using namespace inet;
 
 using namespace omnetpp;
@@ -24,10 +24,10 @@ public:
 
 protected:
 
-    MosaikScheduler *scheduler;
+    CosimaScheduler *scheduler;
     /**
      * Handles incoming messages.
-     * Messages can either be from scheduler (from mosaik) or
+     * Messages can either be from scheduler or
      * they can be received via the inet network.
      */
     void handleMessage(cMessage *msg) override;
@@ -41,7 +41,7 @@ protected:
      * Send a reply to the scheduler after sending a message
      * over the network.
      */
-    void sendReply(MosaikSchedulerMessage *reply);
+    void sendReply(CosimaSchedulerMessage *reply);
 
     /**
      * Initializes the app when called in the stage of application layer.

@@ -28,10 +28,11 @@ class SimpleRole(Role):
             self.reply_to_msg(receiver_id=meta['sender_id'], receiver_addr=meta['sender_addr'], last_content=content))
 
     async def reply_to_msg(self, receiver_id, receiver_addr, last_content):
-        log(f'ActiveAgent {self.context.aid} replies to message. ')
-        await self.context.send_acl_message(receiver_addr=receiver_addr, receiver_id=receiver_id,
+        log(f'Agent {self.context.aid} replies to message and sends reply to {receiver_addr}, {receiver_id}. ')
+        await self.context.send_acl_message(AlphabetMessage(content='Lets go through the alphabet!'),
+                                            receiver_addr=receiver_addr, receiver_id=receiver_id,
                                             acl_metadata={'sender_id': self.context.aid},
-                                            create_acl=True, content=self.get_next_content(last_content))
+                                            create_acl=True)
 
     def get_next_content(self, message):
         """

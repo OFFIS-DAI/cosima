@@ -23,7 +23,7 @@
 
 #include "inet/networklayer/ipv4/Ipv4.h"
 
-#include "../../MosaikScheduler.h"
+#include "../../CosimaScheduler.h"
 
 using namespace inet;
 
@@ -33,7 +33,7 @@ class AttackIpv4 : public Ipv4 {
 public:
     AttackIpv4() {
     }
-    MosaikScheduler *scheduler;
+    CosimaScheduler *scheduler;
 
     virtual void handleMessageWhenUp(cMessage *msg) override;
 

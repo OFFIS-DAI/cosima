@@ -1,6 +1,6 @@
 #include "AttackIpv4.h"
 #include "../../../messages/AttackEvent_m.h"
-#include "../../../messages/MosaikApplicationChunk_m.h"
+#include "../../../messages/CosimaApplicationChunk_m.h"
 
 
 Define_Module(AttackIpv4);
@@ -12,7 +12,7 @@ void AttackIpv4::initialize(int stage) {
 
         // get intern socket scheduler from simulation and cast to MosaikScheduler
         scheduler =
-                check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
+                check_and_cast<CosimaScheduler *>(getSimulation()->getScheduler());
 
         // register module at scheduler
         scheduler->setAttackNetworkLayer(this);
@@ -88,18 +88,18 @@ void AttackIpv4::handleMessageWhenUp(cMessage *msg) {
                         auto length = chunk->getChunkLength();
 
                         if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
-                            auto mosaikApplicationChunk = recvPacket->peekAt<MosaikApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION).get();
+                            auto cosimaApplicationChunk = recvPacket->peekAt<CosimaApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION).get();
                             scheduler->log("Falsification of the message. ", "info");
                             numFalsifictions = numFalsifictions + 1;
-                            const auto &payload = inet::makeShared<MosaikApplicationChunk>();
-                            payload->setContent(mosaikApplicationChunk->getContent());
-                            payload->setReceiver(mosaikApplicationChunk->getReceiver());
-                            payload->setSender(mosaikApplicationChunk->getSender());
-                            payload->setChunkLength(mosaikApplicationChunk->getChunkLength());
-                            payload->setCreationTime(mosaikApplicationChunk->getCreationTime());
-                            payload->setMsgId(mosaikApplicationChunk->getMsgId());
-                            payload->setCreationTimeMosaik(mosaikApplicationChunk->getCreationTimeMosaik());
-                            payload->setIsTrafficMessage(mosaikApplicationChunk->isTrafficMessage());
+                            const auto &payload = inet::makeShared<CosimaApplicationChunk>();
+                            payload->setContent(cosimaApplicationChunk->getContent());
+                            payload->setReceiver(cosimaApplicationChunk->getReceiver());
+                            payload->setSender(cosimaApplicationChunk->getSender());
+                            payload->setChunkLength(cosimaApplicationChunk->getChunkLength());
+                            payload->setCreationTimeOmnetpp(cosimaApplicationChunk->getCreationTimeOmnetpp());
+                            payload->setMsgId(cosimaApplicationChunk->getMsgId());
+                            payload->setCreationTimeCoupling(cosimaApplicationChunk->getCreationTimeCoupling());
+                            payload->setIsTrafficMessage(cosimaApplicationChunk->isTrafficMessage());
                             payload->setIsFalsified(true);
 
                             recvPacket->eraseAtBack(length);
@@ -126,9 +126,9 @@ void AttackIpv4::handleMessageWhenUp(cMessage *msg) {
         if (not attackSuccess) {
             Ipv4::handleMessageWhenUp(msg);
         } else {
-            auto notification_message = new MosaikSchedulerMessage();
+            auto notification_message = new CosimaSchedulerMessage();
             notification_message->setTransmission_error(true);
-            scheduler->sendToMosaik(notification_message);
+            scheduler->sendToCoupledSimulation(notification_message);
         }
     }
 

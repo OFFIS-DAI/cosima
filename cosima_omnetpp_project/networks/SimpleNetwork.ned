@@ -22,8 +22,8 @@ import inet.node.ethernet.EtherSwitch;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
 import inet.visualizer.integrated.IntegratedCanvasVisualizer;
-import modules.MosaikSchedulerModule;
-import modules.MosaikScenarioManager;
+import modules.CosimaSchedulerModule;
+import modules.CosimaScenarioManager;
 
 
 channel MyEth10M extends EtherLink
@@ -36,12 +36,12 @@ network SimpleNetwork
     @display("bgb=1332.5,1063.4");
     submodules:
 
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
 
             @display("p=97.5,317.19998");
         }
 
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=200,100");
         }
 
@@ -115,10 +115,10 @@ network DisconnectedClient2_SimpleNetwork
 {
     submodules:
 
-		scenarioManager: MosaikScenarioManager {
+		scenarioManager: CosimaScenarioManager {
             @display("p=216.6825,136.52249");
         }
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=200,100");
         }
 
@@ -182,11 +182,11 @@ network DisconnectedClient2_SimpleNetwork
 network DisconnectedClient1_SimpleNetwork
 {
     submodules:
-		scenarioManager: MosaikScenarioManager {
+		scenarioManager: CosimaScenarioManager {
             @display("p=216.6825,136.52249");
         }
         
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=200,100");
         }
 
@@ -250,11 +250,11 @@ network DisconnectedClient1_SimpleNetwork
 network SmallNetwork
 {
     submodules:
-        scenarioManager: MosaikScenarioManager {
+        scenarioManager: CosimaScenarioManager {
             @display("p=216.6825,136.52249");
         }
 
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=200,100");
         }
 

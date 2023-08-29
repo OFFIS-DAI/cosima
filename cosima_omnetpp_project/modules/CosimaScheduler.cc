@@ -1,10 +1,10 @@
 /*
- * MosaikScheduler.cc
+ * CosimaScheduler.cc
  *
  *  Created on: 11 Apr 2021
  *      Author: malin
  */
-#include "../modules/MosaikScheduler.h"
+#include "CosimaScheduler.h"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -24,18 +24,18 @@
 #include <arpa/inet.h>
 
 
-#include "../modules/MosaikScenarioManager.h"
-#include "../modules/MosaikSchedulerModule.h"
 #include "../messages/message.pb.h"
 
 #include "inet/common/packet/Packet.h"
 #include "inet/networklayer/ipv4/Ipv4Header_m.h"
-#include "../messages/MosaikApplicationChunk_m.h"
 #include "../messages/message.pb.h"
-#include "../messages/MosaikCtrlEvent_m.h"
 #include "../messages/AttackEvent_m.h"
 #include "../messages/ControlType_m.h"
 #include "../messages/AttackType_m.h"
+#include "../messages/CosimaApplicationChunk_m.h"
+#include "../messages/CosimaCtrlEvent_m.h"
+#include "CosimaScenarioManager.h"
+#include "CosimaSchedulerModule.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
 
 
@@ -45,7 +45,7 @@ using std::chrono::microseconds;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 
-Register_Class(MosaikScheduler);
+Register_Class(CosimaScheduler);
 
 using namespace omnetpp;
 
@@ -58,18 +58,18 @@ auto disconnectCounter = 0U;
 auto reconnectCounter = 0U;
 auto messageCounter = 0U;
 
-// mosaik parameter
+// parameter from coupled simulation
 auto stepSize = 1.0;
 auto until = 100.0;
-auto untilReached = false; // indicates whether simulation end is reached in mosaik
+auto untilReached = false; // indicates whether simulation end is reached in coupled simulation
 auto initialMessageReceived = false;
 
 auto receiveUntilLock = false;
 
 auto eventScheduled = false;
 
-auto currentMosaikStepInMessage = 0U;
-auto lastMosaikStepInMessage = 0U;
+auto currentStepInMessage = 0U;
+auto lastStepInMessage = 0U;
 
 std::string loggingLevel;
 
@@ -78,7 +78,7 @@ class Message {
      * This is a class, that may represent all used kinds of protocol buffer messages used in this project.
      * It is used for lists of messages that might be of any type.
      */
-    SynchronisationMessage syncMessage; // SynchronisationMessages are used for time synchronisation between mosaik and OMNeT++.
+    SynchronisationMessage syncMessage; // SynchronisationMessages are used for time synchronisation between coupled simulation and OMNeT++.
     InfoMessage infoMessage; // InfoMessages contain messages, that need to be simulated in the OMNeT++ network.
     InfrastructureMessage infrastructureMessage; // InfrastructureMessages are used for dynamic changes in the infrastructure of the OMNeT++ network.
 
@@ -140,7 +140,7 @@ public:
 
 std::list<Message> messages;
 
-int MosaikScheduler::getNumberOfSavedMessages() {
+int CosimaScheduler::getNumberOfSavedMessages() {
     int size = messages.size();
     return size;
 }
@@ -158,45 +158,45 @@ struct Receiver {
         SOCKET sock = accept(listenerSocket, (sockaddr *)&sinRemote,
                 (socklen_t *)&addrSize);
         if (sock == INVALID_SOCKET)
-            throw cRuntimeError("MosaikScheduler: accept() failed. Invalid Socket!");
-        EV << "MosaikScheduler: connected!\n" << endl;
+            throw cRuntimeError("CosimaScheduler: accept() failed. Invalid Socket!");
+        EV << "CosimaScheduler: connected!\n" << endl;
         int bytes = recv(sock, buf.data(), buf.size(), 0);
         return buf;
     }
 };
 
-MosaikScheduler::MosaikScheduler() : cScheduler() {
-    // variables for socket connection to mosaik
+CosimaScheduler::CosimaScheduler() : cScheduler() {
+    // variables for socket connection to coupled simulation
     listenerSocket = INVALID_SOCKET;
     numModules = 0;
 
-    // message for scheduling socket events from mosaik
+    // message for scheduling socket events from coupled simulation
     socketEvent = nullptr;
 
 
 }
 
-MosaikScheduler::~MosaikScheduler() = default;
+CosimaScheduler::~CosimaScheduler() = default;
 
-std::string MosaikScheduler::info() const {
-    return ("scheduler with socket option for mosaik integration");
+std::string CosimaScheduler::info() const {
+    return ("scheduler with socket option for integration of other simulation framework");
 }
 
-void MosaikScheduler::startRun() {
+void CosimaScheduler::startRun() {
     if (initsocketlibonce() != 0)
-        throw cRuntimeError("MosaikScheduler: Cannot initialize socket library");
+        throw cRuntimeError("CosimaScheduler: Cannot initialize socket library");
     setupListener();
 }
 
-void MosaikScheduler::setupListener() {
+void CosimaScheduler::setupListener() {
     listenerSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (listenerSocket == INVALID_SOCKET)
-        throw cRuntimeError("MosaikScheduler: cannot create socket. Socket is invalid");
+        throw cRuntimeError("CosimaScheduler: cannot create socket. Socket is invalid");
 
     int enable = 1;
     if (setsockopt(listenerSocket, SOL_SOCKET, SO_REUSEADDR,
             (const char *)&enable, sizeof(int)) < 0)
-        throw cRuntimeError("MosaikScheduler: cannot set socket option. Socket is invalid");
+        throw cRuntimeError("CosimaScheduler: cannot set socket option. Socket is invalid");
 
     sockaddr_in sinInterface;
     sinInterface.sin_family = AF_INET;
@@ -204,27 +204,27 @@ void MosaikScheduler::setupListener() {
     sinInterface.sin_port = htons(PORT);
     if (bind(listenerSocket, (sockaddr *)&sinInterface, sizeof(sockaddr_in)) ==
             SOCKET_ERROR)
-        throw cRuntimeError("MosaikScheduler: socket bind() failed. Please check if another instance of the simulation is already running.");
+        throw cRuntimeError("CosimaScheduler: socket bind() failed. Please check if another instance of the simulation is already running.");
 
     listen(listenerSocket, SOMAXCONN);
 
 
 }
 
-void MosaikScheduler::endRun() {
+void CosimaScheduler::endRun() {
     close(listenerSocket);
     endSimulation();
 }
 
-void MosaikScheduler::executionResumed() {
+void CosimaScheduler::executionResumed() {
     cScheduler::executionResumed();
 }
 
-void MosaikScheduler::printCurrentTime() {
+void CosimaScheduler::printCurrentTime() {
     std::cout << getCurrentTime() << " ";
 }
 
-std::string MosaikScheduler::getCurrentTime() {
+std::string CosimaScheduler::getCurrentTime() {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     int usec = curTime.tv_usec;
@@ -243,7 +243,7 @@ std::string MosaikScheduler::getCurrentTime() {
     return currentTime;
 }
 
-void MosaikScheduler::log(std::string info, std::string logLevel) {
+void CosimaScheduler::log(std::string info, std::string logLevel) {
     if(logLevel.compare("warning") == 0) {
         printCurrentTime();
         std::cout << FRED(" | WARNING | OMNeT++: ");
@@ -280,17 +280,17 @@ void MosaikScheduler::log(std::string info, std::string logLevel) {
 
 }
 
-void MosaikScheduler::log(std::string info) {
+void CosimaScheduler::log(std::string info) {
     log(info, "debug");
 }
 
-void MosaikScheduler::setInterfaceModule(cModule *mod, bool isMosaikSchedulerModule) {
+void CosimaScheduler::setInterfaceModule(cModule *mod, bool isCosimaSchedulerModule) {
     if (mod == nullptr) {
         throw cRuntimeError(
-                "MosaikScheduler: setInterfaceModule() not called with a module object");
+                "CosimaScheduler: setInterfaceModule() not called with a module object");
     }
     std::string module_name = std::string(mod->getName());
-    if (isMosaikSchedulerModule) {
+    if (isCosimaSchedulerModule) {
         schedulerModule = mod;
     } else {
         // possible to add several modules to array
@@ -298,26 +298,26 @@ void MosaikScheduler::setInterfaceModule(cModule *mod, bool isMosaikSchedulerMod
     }
 }
 
-std::list<omnetpp::cModule *> MosaikScheduler::getModuleList () {
+std::list<omnetpp::cModule *> CosimaScheduler::getModuleList () {
     return modules;
 }
 
-void MosaikScheduler::setScenarioManager(cModule *manager) {
-    log("MosaikScheduler: registered ScenarioManager.");
+void CosimaScheduler::setScenarioManager(cModule *manager) {
+    log("CosimaScheduler: registered ScenarioManager.");
     scenarioManager = manager;
 }
 
-void MosaikScheduler::setAttackNetworkLayer(omnetpp::cModule *networkLayerModule) {
+void CosimaScheduler::setAttackNetworkLayer(omnetpp::cModule *networkLayerModule) {
     attackModules.push_back(networkLayerModule);
 }
 
 
-void MosaikScheduler::addModule(cModule *mod) {
+void CosimaScheduler::addModule(cModule *mod) {
     modules.push_back(mod);
     numModules = numModules + 1;
 }
 
-int MosaikScheduler::getPortForModule(std::string module_name) {
+int CosimaScheduler::getPortForModule(std::string module_name) {
     if (module_name == "") {
         return -1;
     }
@@ -328,7 +328,7 @@ int MosaikScheduler::getPortForModule(std::string module_name) {
     return -1;
 }
 
-std::string MosaikScheduler::getModuleNameFromPort(int port) {
+std::string CosimaScheduler::getModuleNameFromPort(int port) {
     for (auto const& module : modules) {
         if(module->par("localPort").intValue() == port) {
             return module->getParentModule()->getName();
@@ -337,7 +337,7 @@ std::string MosaikScheduler::getModuleNameFromPort(int port) {
     return "";
 }
 
-cModule *MosaikScheduler::getReceiverModule(std::string module_name) {
+cModule *CosimaScheduler::getReceiverModule(std::string module_name) {
     // get corresponding module to server name
     cModule *matchingModule = nullptr;
     if (numModules == 0) {
@@ -352,7 +352,7 @@ cModule *MosaikScheduler::getReceiverModule(std::string module_name) {
     return (matchingModule);
 }
 
-cModule *MosaikScheduler::getAttackNetworkLayerModule(std::string module_name) {
+cModule *CosimaScheduler::getAttackNetworkLayerModule(std::string module_name) {
     // get corresponding module to server name
     cModule *matchingModule = nullptr;
     for (auto const& module : attackModules) {
@@ -367,7 +367,7 @@ cModule *MosaikScheduler::getAttackNetworkLayerModule(std::string module_name) {
     return (matchingModule);
 }
 
-int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
+int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
     if (data.size() == 0) {
         return 0;
     }
@@ -377,22 +377,22 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
 
     bool insertedEvent = false;
 
-    MosaikSchedulerModule *schedulerModuleObject = dynamic_cast<MosaikSchedulerModule *>(schedulerModule);
-    MosaikScenarioManager *scenarioManagerObject = dynamic_cast<MosaikScenarioManager *>(scenarioManager);
+    CosimaSchedulerModule *schedulerModuleObject = dynamic_cast<CosimaSchedulerModule *>(schedulerModule);
+    CosimaScenarioManager *scenarioManagerObject = dynamic_cast<CosimaScenarioManager *>(scenarioManager);
 
     auto disconnectMsgCounter = 0U;
-    MosaikCtrlEvent *disconnectEvent = new MosaikCtrlEvent();
+    CosimaCtrlEvent *disconnectEvent = new CosimaCtrlEvent();
     disconnectEvent->setModuleNamesArraySize(pmsg_group.infrastructure_messages().size());
     std::vector<std::string> disconnectModules;
     disconnectEvent->setCtrlType(Disconnect);
 
     auto connectMsgCounter = 0U;
-    MosaikCtrlEvent *reconnectEvent = new MosaikCtrlEvent();
+    CosimaCtrlEvent *reconnectEvent = new CosimaCtrlEvent();
     reconnectEvent->setModuleNamesArraySize(pmsg_group.infrastructure_messages().size());
     std::vector<std::string> reconnectModules;
     reconnectEvent->setCtrlType(Reconnect);
 
-    auto adjustedMosaikSimTime = 0.0;
+    auto adjustedCouplingSimTime = 0.0;
 
 
     // iterate over protobuf messages in message group
@@ -407,7 +407,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
         // schedule until event
         schedulerModuleObject->untilEvent->setArrival(schedulerModule->getId(), -1, until);
         getSimulation()->getFES()->insert(schedulerModuleObject->untilEvent);
-        log("MosaikScheduler: until event inserted for time " + std::to_string(until) + " at simtime " + simTime().str(), "info");
+        log("CosimaScheduler: until event inserted for time " + std::to_string(until) + " at simtime " + simTime().str(), "info");
 
         stepSize = initialMessage.step_size();
         auto loggingLevelMsg = initialMessage.logging_level();
@@ -439,8 +439,8 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
 
         // schedule message
         if (module) {
-            // create message with parameters from mosaik
-            MosaikSchedulerMessage *msg = new MosaikSchedulerMessage();
+            // create message with parameters from coupled simulation
+            CosimaSchedulerMessage *msg = new CosimaSchedulerMessage();
             msg->setSender(sender.c_str());
             msg->setReceiver(receiver.c_str());
             msg->setSize(size);
@@ -453,29 +453,29 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
             socketEvent = dynamic_cast<cMessage *>(pkt);
 
 
-            adjustedMosaikSimTime = (infoMessage.sim_time() * 1.0) / 1000;
+            adjustedCouplingSimTime = (infoMessage.sim_time() * 1.0) / 1000;
 
-            log("Mosaik Scheduler received message with sender: " + sender + " for simTime " + std::to_string(adjustedMosaikSimTime) + " and id " + msgId );
+            log("Cosima Scheduler received message with sender: " + sender + " for simTime " + std::to_string(adjustedCouplingSimTime) + " and id " + msgId );
 
             // schedule message as an event at the sender module
-            socketEvent->setArrival(module->getId(), -1, adjustedMosaikSimTime);
+            socketEvent->setArrival(module->getId(), -1, adjustedCouplingSimTime);
             getSimulation()->getFES()->insert(socketEvent);
             insertedEvent = true;
             eventScheduled = true;
-            log("MosaikScheduler: message with sender " + sender + " and id " + msgId + " inserted.");
+            log("CosimaScheduler: message with sender " + sender + " and id " + msgId + " inserted.");
             // schedule max advance event
             schedulerModuleObject->cancelMaxAdvanceEvent();
             schedulerModuleObject->maxAdvEvent->setCtrlType(ControlType::MaxAdvance);
             if (maxAdvance >= simTime().dbl()) {
                 schedulerModuleObject->maxAdvEvent->setArrival(schedulerModule->getId(), -1, maxAdvance);
                 getSimulation()->getFES()->insert(schedulerModuleObject->maxAdvEvent);
-                log("MosaikScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
+                log("CosimaScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
             } else {
                 log("max advance " + std::to_string(maxAdvance) + " at time " + simTime().str() + " not inserted");
             }
 
         } else {
-            throw cRuntimeError("MosaikScheduler: Can't find module in modules array. Please make sure, that the number of agents matchers the number of modules in the scenario.");
+            throw cRuntimeError("CosimaScheduler: Can't find module in modules array. Please make sure, that the number of agents matchers the number of modules in the scenario.");
         }
     }
 
@@ -484,7 +484,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
         SynchronisationMessage syncMessage = pmsg_group.synchronisation_messages().Get(i);
         if (syncMessage.msg_type() == SynchronisationMessage_MsgType_WAITING) {
             std::string msgId = syncMessage.msg_id();
-            log("MosaikScheduler: received waiting message with Id " + msgId);
+            log("CosimaScheduler: received waiting message with Id " + msgId);
             // Pretend to have an inserted event to not longer wait for messages
             auto waitingMsgTime = ((syncMessage.sim_time()) * 1.0) / 1000;
             auto maxAdvance = ((syncMessage.max_advance()) * 1.0) / 1000;
@@ -496,19 +496,19 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
             if (maxAdvance >= simTime().dbl()) {
                 schedulerModuleObject->maxAdvEvent->setArrival(schedulerModule->getId(), -1, maxAdvance);
                 getSimulation()->getFES()->insert(schedulerModuleObject->maxAdvEvent);
-                log("MosaikScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
+                log("CosimaScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
                 if(waitingMsgTime >= simTime().dbl() or untilReached) {
-                    log("MosaikScheduler: continue simulation.");
+                    log("CosimaScheduler: continue simulation.");
                     insertedEvent = true;
                     eventScheduled = true;
                 } else {
-                    log("MosaikScheduler: continue waiting at time " + simTime().str() );
-                    informMosaikAboutWaiting();
+                    log("CosimaScheduler: continue waiting at time " + simTime().str() );
+                    informCoupledSimulationAboutWaiting();
                 }
             } else {
                 log("max advance " + std::to_string(maxAdvance) + " at time " + simTime().str() + " not inserted");
-                log("MosaikScheduler: continue waiting at time " + simTime().str() );
-                informMosaikAboutWaiting();
+                log("CosimaScheduler: continue waiting at time " + simTime().str() );
+                informCoupledSimulationAboutWaiting();
             }
         }
 
@@ -517,17 +517,17 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
     // get infrastructure messages
     for(auto i=0; i < pmsg_group.infrastructure_messages().size(); i++) {
         InfrastructureMessage infrastructureMessage = pmsg_group.infrastructure_messages().Get(i);
-        adjustedMosaikSimTime = (infrastructureMessage.sim_time() * 1.0) / 1000;
+        adjustedCouplingSimTime = (infrastructureMessage.sim_time() * 1.0) / 1000;
         if (infrastructureMessage.change_module() != "") {
             if (infrastructureMessage.msg_type() == InfrastructureMessage_MsgType_DISCONNECT) {
                 auto msgId = infrastructureMessage.msg_id();
-                auto adjustedMosaikSimTime = (infrastructureMessage.sim_time() * 1.0) / 1000;
-                log("MosaikScheduler: disconnect event inserted for simtime " + std::to_string(adjustedMosaikSimTime) + " for " + infrastructureMessage.change_module() + ".");
+                auto adjustedCouplingSimTime = (infrastructureMessage.sim_time() * 1.0) / 1000;
+                log("CosimaScheduler: disconnect event inserted for simtime " + std::to_string(adjustedCouplingSimTime) + " for " + infrastructureMessage.change_module() + ".");
                 disconnectModules.push_back((infrastructureMessage.change_module()).c_str());
 
             } else if (infrastructureMessage.msg_type() == InfrastructureMessage_MsgType_RECONNECT) {
                 auto msgId = infrastructureMessage.msg_id();
-                log("MosaikScheduler: reconnect event inserted for simtime " + std::to_string(adjustedMosaikSimTime) + " for " + infrastructureMessage.change_module() + ".");
+                log("CosimaScheduler: reconnect event inserted for simtime " + std::to_string(adjustedCouplingSimTime) + " for " + infrastructureMessage.change_module() + ".");
                 reconnectModules.push_back((infrastructureMessage.change_module()).c_str());
             }
         } else {
@@ -539,7 +539,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
     // get traffic messages
     for(auto i=0; i < pmsg_group.traffic_messages().size(); i++) {
         TrafficMessage trafficMessage = pmsg_group.traffic_messages().Get(i);
-        MosaikCtrlEvent *trafficEvent = new MosaikCtrlEvent();
+        CosimaCtrlEvent *trafficEvent = new CosimaCtrlEvent();
         trafficEvent->setCtrlType(Traffic);
         trafficEvent->setSource(trafficMessage.source().c_str());
         trafficEvent->setDestination(trafficMessage.destination().c_str());
@@ -549,7 +549,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
         trafficEvent->setPacketLength(trafficMessage.packet_length());
         auto arrivalTime = (trafficMessage.start() * 1.0) / 1000;
         trafficEvent->setArrival(scenarioManagerObject->getId(), -1, arrivalTime);
-        log("MosaikScheduler: traffic event inserted for simtime " + std::to_string(arrivalTime) + " for " + trafficMessage.source() + " to " + trafficMessage.destination() + ".");
+        log("CosimaScheduler: traffic event inserted for simtime " + std::to_string(arrivalTime) + " for " + trafficMessage.source() + " to " + trafficMessage.destination() + ".");
         getSimulation()->getFES()->insert(trafficEvent);
     }
 
@@ -581,7 +581,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
             disconnectEvent->setModuleNames(counter, module.c_str());
             counter++;
         }
-        disconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedMosaikSimTime); //TODO: set to time in msg
+        disconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedCouplingSimTime); //TODO: set to time in msg
         getSimulation()->getFES()->insert(disconnectEvent);
         insertedEvent = true;
         eventScheduled = true;
@@ -598,7 +598,7 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
             reconnectEvent->setModuleNames(counter, module.c_str());
             counter++;
         }
-        reconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedMosaikSimTime); //TODO: set to time in msg
+        reconnectEvent->setArrival(scenarioManagerObject->getId(), -1, adjustedCouplingSimTime); //TODO: set to time in msg
         getSimulation()->getFES()->insert(reconnectEvent);
         insertedEvent = true;
         eventScheduled = true;
@@ -611,36 +611,36 @@ int MosaikScheduler::handleMsgFromMosaik(std::vector<char> data) {
     return (pmsg_group.number_of_message_groups());
 }
 
-void MosaikScheduler::informMosaikAboutWaiting() {
-    MosaikCtrlEvent *waitingEvent = new MosaikCtrlEvent();
+void CosimaScheduler::informCoupledSimulationAboutWaiting() {
+    CosimaCtrlEvent *waitingEvent = new CosimaCtrlEvent();
     waitingEvent->setCtrlType(ContinueWaiting);
-    sendToMosaik(waitingEvent);
+    sendToCoupledSimulation(waitingEvent);
 }
 
-void MosaikScheduler::receive() {
+void CosimaScheduler::receive() {
     while (true) {
         auto returnValue = std::async(std::launch::async, Receiver(), listenerSocket).get();
         if (strlen(returnValue.data()) != 0) {
-            int numberOfMsgGroups = handleMsgFromMosaik(returnValue);
+            int numberOfMsgGroups = handleMsgFromCoupledSimulation(returnValue);
             for (int i=0; i < numberOfMsgGroups-1; i++) {
                 auto returnValue = std::async(std::launch::async, Receiver(), listenerSocket).get();
-                handleMsgFromMosaik(returnValue);
+                handleMsgFromCoupledSimulation(returnValue);
             }
             return;
         }
     }
 }
 
-cEvent *MosaikScheduler::guessNextEvent() {
+cEvent *CosimaScheduler::guessNextEvent() {
     return (sim->getFES()->peekFirst());
 }
 
-cEvent *MosaikScheduler::takeNextEvent() {
+cEvent *CosimaScheduler::takeNextEvent() {
     // calculate target time
     cEvent *event = sim->getFES()->peekFirst();
     if (!event) {
         if (untilReached) {
-            log("MosaikScheduler: reached until time in mosaik." );
+            log("CosimaScheduler: reached until time in coupled simulation." );
             endSimulation();
         }
 
@@ -672,12 +672,12 @@ cEvent *MosaikScheduler::takeNextEvent() {
                                     if (getReceiverModule(sourceModule->getName()) == nullptr) {
                                         break;
                                     }
-                                    log("MosaikScheduler: There was an error. Send notification message to mosaik " );
-                                    MosaikSchedulerMessage *notification_message = new MosaikSchedulerMessage();
+                                    log("CosimaScheduler: There was an error. Send notification message to coupled simulation. " );
+                                    CosimaSchedulerMessage *notification_message = new CosimaSchedulerMessage();
                                     notification_message->setTransmission_error(true);
                                     notification_message->setConnection_change_successful(true);
                                     notification_message->setSender(sourceModule->getName());
-                                    sendToMosaik(notification_message);
+                                    sendToCoupledSimulation(notification_message);
                                 }
 
                             } else {
@@ -689,14 +689,14 @@ cEvent *MosaikScheduler::takeNextEvent() {
 
             };
         } catch (...) {
-            log("MosaikScheduler: couldn't find host");
+            log("CosimaScheduler: couldn't find host");
 
         }
 
         // use time of next event
         simtime_t eventSimtime = event->getArrivalTime();
         if(eventSimtime < lastEventTime) {
-            log("ATTENTION! MosaikScheduler: try to execute event for simtime " + eventSimtime.str() + ", but last event was at time " + lastEventTime.str() );
+            log("ATTENTION! CosimaScheduler: try to execute event for simtime " + eventSimtime.str() + ", but last event was at time " + lastEventTime.str() );
             throw cRuntimeError("Wrong simulation order. Please contact the Cosima Developer Team: https://cosima.offis.de/pages/contact");
         }
         lastEventTime = eventSimtime;
@@ -718,11 +718,11 @@ cEvent *MosaikScheduler::takeNextEvent() {
     return nullptr;
 }
 
-void MosaikScheduler::putBackEvent(cEvent *event) {
+void CosimaScheduler::putBackEvent(cEvent *event) {
     sim->getFES()->putBackFirst(event);
 }
 
-void MosaikScheduler::writeSimulationSnapshot() {
+void CosimaScheduler::writeSimulationSnapshot() {
     // write snapshot to file
     eventnumber_t eventNumber = getSimulation()->getEventNumber();
     std::ofstream snapshotFile;
@@ -733,19 +733,19 @@ void MosaikScheduler::writeSimulationSnapshot() {
 }
 
 
-void MosaikScheduler::endSimulation() {
+void CosimaScheduler::endSimulation() {
     writeSimulationSnapshot();
-    log("MosaikScheduler: end simulation" );
+    log("CosimaScheduler: end simulation" );
     getSimulation()->callFinish();
     getSimulation()->getActiveEnvir()->alert("End of simulation");
 
 }
 
-void MosaikScheduler::sendMsgGroupToMosaik(bool isWaitingMsg) {
+void CosimaScheduler::sendMsgGroupToCoupledSimulation(bool isWaitingMsg) {
     std::list<CosimaMsgGroup> msgGroups;
     CosimaMsgGroup msgGroup;
 
-    msgGroup.set_current_mosaik_step(currentMosaikStepInMessage);
+    msgGroup.set_current_time_step(currentStepInMessage);
 
     std::list<Message> newMessagesList;
     if(isWaitingMsg) {
@@ -753,7 +753,7 @@ void MosaikScheduler::sendMsgGroupToMosaik(bool isWaitingMsg) {
     } else {
         std::copy(messages.begin(), messages.end(), std::back_inserter(newMessagesList));
         messages.clear();
-        lastMosaikStepInMessage = currentMosaikStepInMessage;
+        lastStepInMessage = currentStepInMessage;
     }
 
     auto length = newMessagesList.size();
@@ -794,7 +794,7 @@ void MosaikScheduler::sendMsgGroupToMosaik(bool isWaitingMsg) {
             msgGroupCopy.CopyFrom(msgGroup);
             msgGroups.push_back(msgGroupCopy);
             msgGroup.Clear();
-            msgGroup.set_current_mosaik_step(currentMosaikStepInMessage);
+            msgGroup.set_current_time_step(currentStepInMessage);
         }
         msgGroup = message.addMessageToMsgGroup(msgGroup);
         msgGroup.set_number_of_messages(length);
@@ -818,7 +818,7 @@ void MosaikScheduler::sendMsgGroupToMosaik(bool isWaitingMsg) {
         int numOfBytes = strlen(msg.c_str());
 
         if ((numOfBytes) != MAX_BYTE_SIZE_PER_MSG) {
-            throw cRuntimeError("MosaikScheduler: number of bytes is not max byte size per msg");
+            throw cRuntimeError("CosimaScheduler: number of bytes is not max byte size per msg");
         }
 
         // send message over TCP socket
@@ -831,57 +831,57 @@ void MosaikScheduler::sendMsgGroupToMosaik(bool isWaitingMsg) {
     receive();
 }
 
-void MosaikScheduler::setUntilReached(bool untilReachedValue) {
+void CosimaScheduler::setUntilReached(bool untilReachedValue) {
     untilReached = untilReachedValue;
 }
 
-bool MosaikScheduler::getUntilReached() {
+bool CosimaScheduler::getUntilReached() {
     return untilReached;
 }
 
-void MosaikScheduler::setInitialMessageReceived(bool value) {
+void CosimaScheduler::setInitialMessageReceived(bool value) {
     initialMessageReceived = value;
 }
 
 
-void MosaikScheduler::sendToMosaik(cMessage *reply) {
+void CosimaScheduler::sendToCoupledSimulation(cMessage *reply) {
     if (reply == nullptr) {
-        throw cRuntimeError("MosaikScheduler: Message is nullptr");
+        throw cRuntimeError("CosimaScheduler: Message is nullptr");
     }
     // round up current simTime
     auto currentStep = 0U;
     currentStep = ceil(simTime().dbl()*1000);
     auto currentStep_d = (currentStep * 1.0) / 1000;
-    MosaikCtrlEvent *replyEvent;
+    CosimaCtrlEvent *replyEvent;
 
     auto scheduleMessage = true;
-    if (typeid(*reply) == typeid(MosaikCtrlEvent)) {
-        replyEvent = dynamic_cast<MosaikCtrlEvent *>(reply);
+    if (typeid(*reply) == typeid(CosimaCtrlEvent)) {
+        replyEvent = dynamic_cast<CosimaCtrlEvent *>(reply);
         if(replyEvent->getCtrlType() == ContinueWaiting) {
             scheduleMessage = false;
         }
     }
     if (scheduleMessage) {
-        if (currentStep == lastMosaikStepInMessage) {
+        if (currentStep == lastStepInMessage) {
             currentStep += 1;
             currentStep_d = (currentStep * 1.0) / 1000;
         }
-        if(currentMosaikStepInMessage == currentStep) {
-            log("MosaikScheduler: request to send message for the same step " + std::to_string(currentStep) + " back to mosaik." );
+        if(currentStepInMessage == currentStep) {
+            log("CosimaScheduler: request to send message for the same step " + std::to_string(currentStep) + " back to coupled simulation." );
         } else {
             // get scheduler module
-            MosaikSchedulerModule *schedulerModuleObject = dynamic_cast<MosaikSchedulerModule *>(schedulerModule);
-            MosaikCtrlEvent* endOfStepEvent = new MosaikCtrlEvent("send message to mosaik");
+            CosimaSchedulerModule *schedulerModuleObject = dynamic_cast<CosimaSchedulerModule *>(schedulerModule);
+            CosimaCtrlEvent* endOfStepEvent = new CosimaCtrlEvent("send message to coupled simulation");
             endOfStepEvent->setCtrlType(ControlType::EndOfStep);
             endOfStepEvent->setArrival(schedulerModule->getId(), -1, currentStep_d);
             getSimulation()->getFES()->insert(endOfStepEvent);
-            currentMosaikStepInMessage = currentStep;
-            log("MosaikScheduler: insert event 'send message to mosaik' for time " + std::to_string(currentStep_d) );
+            currentStepInMessage = currentStep;
+            log("CosimaScheduler: insert event 'send message to coupled simulation' for time " + std::to_string(currentStep_d) );
         }
     }
 
-    if (typeid(*reply) == typeid(MosaikSchedulerMessage)) {
-        MosaikSchedulerMessage *replyMsg = dynamic_cast<MosaikSchedulerMessage *>(reply);
+    if (typeid(*reply) == typeid(CosimaSchedulerMessage)) {
+        CosimaSchedulerMessage *replyMsg = dynamic_cast<CosimaSchedulerMessage *>(reply);
 
         // get message content
         auto sender = replyMsg->getSender();
@@ -911,9 +911,9 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             message.setMessage(syncMessage);
             messages.push_back(message);
 
-            logContent << "MosaikScheduler: send notification for transmission error for message with sender " << sender <<
+            logContent << "CosimaScheduler: send notification for transmission error for message with sender " << sender <<
                     " and receiver " << receiver << " and messageId " << replyMsg->getMsgId() << " as message " <<  mId <<
-                    " back to mosaik. ";
+                    " back to coupled simulation. ";
             log(logContent.str());
             logContent.str("");
         } else if (replyMsg->getDisconnected_event()) {
@@ -933,8 +933,8 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             message.setMessage(infrastructureMessage);
             messages.push_back(message);
 
-            logContent << "MosaikScheduler: send notification for disconnect for client " << sender <<
-                    " and id " << mId << " back to mosaik. ";
+            logContent << "CosimaScheduler: send notification for disconnect for client " << sender <<
+                    " and id " << mId << " back to coupled simulation. ";
             log(logContent.str());
             logContent.str("");
         } else if (replyMsg->getReconnected_event()) {
@@ -953,8 +953,8 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             message.setMessage(infrastructureMessage);
             messages.push_back(message);
 
-            logContent << "MosaikScheduler: send notification for reconnect for client " << sender <<
-                    " and id " << mId << " back to mosaik. ";
+            logContent << "CosimaScheduler: send notification for reconnect for client " << sender <<
+                    " and id " << mId << " back to coupled simulation. ";
             log(logContent.str());
             logContent.str("");
         }
@@ -973,11 +973,11 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             message.setMessage(infoMessage);
             messages.push_back(message);
 
-            logContent << "MosaikScheduler: send message with sender " << sender << " and current step " << currentStep << " back to mosaik.";
+            logContent << "CosimaScheduler: send message with sender " << sender << " and current step " << currentStep << " back to coupled simulation.";
             log(logContent.str());
         }
 
-    } else if (typeid(*reply) == typeid(MosaikCtrlEvent)) {
+    } else if (typeid(*reply) == typeid(CosimaCtrlEvent)) {
         if (replyEvent->getCtrlType() == ContinueWaiting) {
             SynchronisationMessage syncMessage;
 
@@ -988,8 +988,8 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             message.setMessage(syncMessage);
             messages.push_back(message);
 
-            log("MosaikScheduler: send message with waiting info back to mosaik");
-            sendMsgGroupToMosaik(false);
+            log("CosimaScheduler: send message with waiting info back to coupled simulation");
+            sendMsgGroupToCoupledSimulation(false);
 
         } else if (replyEvent->getCtrlType() == MaxAdvance) {
             SynchronisationMessage syncMessage;
@@ -1007,7 +1007,7 @@ void MosaikScheduler::sendToMosaik(cMessage *reply) {
             message.setMessage(syncMessage);
             messages.push_back(message);
 
-            log("MosaikScheduler: send message with max advance info back to mosaik with Message id " + mId );
+            log("CosimaScheduler: send message with max advance info back to coupled simulation with Message id " + mId );
 
         }
 

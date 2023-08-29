@@ -1,5 +1,5 @@
 /*
- * MosaikScenarioManager.h
+ * CosimaScenarioManager.h
  *
  *  Created on: Nov 23, 2021
  *      Author: malin
@@ -7,22 +7,22 @@
 #include <omnetpp.h>
 #include <omnetpp/platdep/sockets.h>
 
-#include "../modules/MosaikScheduler.h"
+#include "CosimaScheduler.h"
 #include "inet/common/lifecycle/LifecycleController.h"
 
 using namespace omnetpp;
 
-#ifndef MOSAIKSCENARIOMANAGER_H_
-#define MOSAIKSCENARIOMANAGER_H_
+#ifndef COSIMASCENARIOMANAGER_H_
+#define COSIMASCENARIOMANAGER_H_
 
-class MosaikScenarioManager: public omnetpp::cSimpleModule {
+class CosimaScenarioManager: public omnetpp::cSimpleModule {
 
 public:
-    MosaikScenarioManager() {}
-    ~MosaikScenarioManager();
+    CosimaScenarioManager() {}
+    ~CosimaScenarioManager();
 
 protected:
-    MosaikScheduler *scheduler;
+    CosimaScheduler *scheduler;
 
     struct networkModule {
       std::string moduleName;
@@ -41,11 +41,11 @@ protected:
 
     void handleTraffic(cModule *sourceModule, const char *source, const char *destination, int packet_length, int stop, int interval);
 
-    MosaikSchedulerMessage *disconnect(const char *moduleName);
-    MosaikSchedulerMessage *connect(const char *moduleName);
+    CosimaSchedulerMessage *disconnect(const char *moduleName);
+    CosimaSchedulerMessage *connect(const char *moduleName);
 
 };
 
 
 
-#endif /* MOSAIKSCENARIOMANAGER_H_ */
+#endif /* COSIMASCENARIOMANAGER_H_ */
