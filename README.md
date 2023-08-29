@@ -98,7 +98,7 @@ This means that the folder structure should look something like this:
 - **...**
 
 If (for whatever reason) the projects are located in other places, the paths should be adjusted accordingly. 
-Please adjust the `ned-path = ../simulte/src;.` in the [mosaik.ini file](cosima_omnetpp_project/mosaik.ini) and
+Please adjust the `ned-path = ../simulte/src;.` in the [cosima.ini file](cosima_omnetpp_project/cosima.ini) and
 your `INET_INSTALLATION_PATH` path in the [general_config](cosima_core/util/general_config.py).
 
 After your installation, open the OMNeT++ IDE via
@@ -252,7 +252,7 @@ Now all that is left, is to rebuild the project and then executing it. The Tests
 
 ## Run simulation
 There exist different ways to run a simulation. In the [scenario configuration file](scenario_config.py), it is possible to choose from 'ide', 'qtenv' and 'cmd' as start mode.
-* Ide: start the simulation in OMNeT++ by running [mosaik.ini](cosima_omnetpp_project/mosaik.ini) with your preferred network and 
+* Ide: start the simulation in OMNeT++ by running [cosima.ini](cosima_omnetpp_project/cosima.ini) with your preferred network and 
   start the co-simulation in mosaik by running the [scenario](cosima_core/scenarios/communication_scenario.py) 
 * Qtenv: start mosaik by running the [scenario](cosima_core/scenarios/communication_scenario.py). From within python, OMNeT++ will be started and a window will pop up in which
   the network can be chosen and the simulation can be started.
