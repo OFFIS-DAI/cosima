@@ -6,7 +6,7 @@ For information exchange in OMNeT++ .msg-files are used and also described below
 
 ## Protocol buffers 
 [Protocol buffers](https://developers.google.com/protocol-buffers/docs/overview) provide an easy way of serializing 
-data. Here, a [Proto file](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/messages/message.proto) is used in order to define the different Protocol buffers. \
+data. Here, a [Proto file](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/messages/message.proto) is used in order to define the different Protocol buffers. \
 A Protobuf message contains a `CosimaMsgGroup`, which is a list of individual message objects, in order to send multiple 
 messages at once / in one time step. 
 There are different types of protobuf messages with different values: 
@@ -52,22 +52,22 @@ information about the current time step in mosaik. \
 In OMNeT++ there are a number of defined messages or events, which are used for internal information exchange between modules and the scheduler in OMNeT++. 
 
 ### MosaikSchedulerMessage
-A [MosaikSchedulerMessage](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/MosaikSchedulerMessage.msg) is used for message exchange
-between the [MosaikScheduler](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h) and the modules of the network. \
+A [MosaikSchedulerMessage](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/messages/MosaikSchedulerMessage.msg) is used for message exchange
+between the [MosaikScheduler](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h) and the modules of the network. \
 If, for example, a message between client0 and client1 has to be sent, the MosaikScheduler sends a MosaikSchedulerMessage
 to client0 which then sends an inet packet to client1 over the modelled network. 
 
 ### MosaikApplicationChunk
-The [MosaikApplicationChunk](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/MosaikApplicationChunk.msg) is used as a payload in an 
+The [MosaikApplicationChunk](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/messages/MosaikApplicationChunk.msg) is used as a payload in an 
 inet packet which is sent between two modules over the network in OMNeT++. It contains message specific information such 
 as the content of the message, its sender and receiver and the message id. 
 
 ### MosaikCtrlEvent
-The [MosaikCtrlEvent](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/MosaikCtrlEvent.msg) is used for control tasks such as max 
+The [MosaikCtrlEvent](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/messages/MosaikCtrlEvent.msg) is used for control tasks such as max 
 advance or until events. A MosaikCtrlEvent contains an enum 
-[ControlType](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/ControlType.msg) what defines the type of control task. 
+[ControlType](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/messages/ControlType.msg) what defines the type of control task. 
 
 ### Timer 
-The [Timer message](.https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/messages/Timer.msg) is used in the implementation of the 
-[SocketAgentAppTcp](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.h) in order to handle the TCP connections in the 
+The [Timer message](.https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/messages/Timer.msg) is used in the implementation of the 
+[SocketAgentAppTcp](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.h) in order to handle the TCP connections in the 
 OMNeT++ network. 

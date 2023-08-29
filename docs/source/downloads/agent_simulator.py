@@ -4,7 +4,7 @@
 
 import mosaik_api
 
-from cosima_core.config import CONNECT_ATTR
+from cosima_core.util.general_config import CONNECT_ATTR
 from cosima_core.util.util_functions import log
 
 # The simulator meta data that we return in "init()":

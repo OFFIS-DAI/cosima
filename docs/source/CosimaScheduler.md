@@ -8,7 +8,7 @@ sends messages from/ to the CommunicationSimulator (see [CommunicationSimulator]
 ## Using the CosimaScheduler
 If the CosimaScheduler is used as the event scheduler during the simulation, its method ``startRun()`` is called in the
 beginning of the simulation in OMNeT++. By that, the listener TCP socket is initialized in order to wait for incoming 
-connections from the OmnetppConnection (see [OmnetppConnection](../../cosima_core/simulators/omnetpp_connection.py)) on mosaik side.
+connections from the OmnetppConnection (see [OmnetppConnection](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/simulators/omnetpp_connection.py)) on mosaik side.
 
 ## Operating Principle
 As soon as the connection to mosaik is established, messages between OMNeT++ and mosaik can be sent and received. 
@@ -28,12 +28,12 @@ that means that the coupled simulation (mosaik or mango) is waiting for messages
 simulated and the simulation is being continued. \
 If the CosimaScheduler receives a message from the ICT-Controller the infrastructure of the simulation network has 
 to be changed. These infrastructure changes (e.g., disconnect and reconnect of router, switches clients) are then 
-conducted by the [CosimaScenarioManager](../../cosima_omnetpp_project/modules/CosimaScenarioManager.h). \
+conducted by the [CosimaScenarioManager](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/CosimaScenarioManager.h). \
 Until and maxAdvance information (for further details see [Synchronisation](Synchronization.md)) is handled by the 
-[CosimaSchedulerModule](../../cosima_omnetpp_project/modules/CosimaSchedulerModule.h) (for further details see below). 
+[CosimaSchedulerModule](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/CosimaSchedulerModule.h) (for further details see below). 
 
 ## The CosimaSchedulerModule
-The [CosimaSchedulerModule](../../cosima_omnetpp_project/modules/CosimaSchedulerModule.h) is a cModule that works as a helper module for the CosimaScheduler, because a cModule is needed in OMNeT++ for event scheduling.
+The [CosimaSchedulerModule](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/CosimaSchedulerModule.h) is a cModule that works as a helper module for the CosimaScheduler, because a cModule is needed in OMNeT++ for event scheduling.
 Whenever the CosimaScheduler receives information about maxAdvance or until values from mosaik, that information is 
 transferred into events at the given time. These events are then scheduled for the CosimaSchedulerModule. 
 

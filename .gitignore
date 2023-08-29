@@ -30,3 +30,5 @@ mosaik_omnetpp_files/src/results/**
 /tests/.pytest_cache
 /tests/integration_tests/.pytest_cache
 /tests/unit_tests/simulators/.pytest_cache
+/tests/integration_tests/snapshot.txt
+/scenario_config.py

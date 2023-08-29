@@ -342,7 +342,7 @@ Click on the Source Tab in the bottom left corner, to get into the Source Mode a
 
     package networks;
 
-    import modules.MosaikSchedulerModule;
+    import modules.CosimaSchedulerModule;
     import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 
     network TutorialNetwork
@@ -350,7 +350,7 @@ Click on the Source Tab in the bottom left corner, to get into the Source Mode a
         @display("bgb=500,500");
 
         submodules:
-            schedulerModule: MosaikSchedulerModule {
+            schedulerModule: CosimaSchedulerModule {
                 @display("p=60,40");
             }
             configurator: Ipv4NetworkConfigurator {
@@ -358,8 +358,8 @@ Click on the Source Tab in the bottom left corner, to get into the Source Mode a
             }
     }
 
-This creates a simple Environment, that has all the components, to set up our Mosaik connection in the Network.
-The MosaikSchedulerModule is mandatory, to schedule the events, specifically the max advance events, that ensures the synchronisation between the Frameworks.
+This creates a simple Environment, that has all the components, to set up our mosaik connection in the network.
+The CosimaSchedulerModule is mandatory, to schedule the events, specifically the max advance events, that ensures the synchronisation between the Frameworks.
 The ipv4NetworkConfigurator is used, to assign ipv4 addresses and manage the routing process of the network.
 Now we have to add our clients and connect them. Enhance the code, so that it looks like this.
 
@@ -368,7 +368,7 @@ Now we have to add our clients and connect them. Enhance the code, so that it lo
 
     package networks;
 
-    import modules.MosaikSchedulerModule;
+    import modules.CosimaSchedulerModule;
     import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
     import inet.node.inet.StandardHost;
     import inet.node.ethernet.Eth10M;
@@ -378,7 +378,7 @@ Now we have to add our clients and connect them. Enhance the code, so that it lo
         @display("bgb=500,500");
 
         submodules:
-            schedulerModule: MosaikSchedulerModule {
+            schedulerModule: CosimaSchedulerModule {
                 @display("p=60,40");
             }
             configurator: Ipv4NetworkConfigurator {
@@ -403,9 +403,9 @@ They are connected by a 10MB/Sec Ethernet connection. If you change into Design 
 
 **Configuration of the .ini file**
 
-To use our new network, we have to include it in the mosaik.ini file, that is located outermost layer of our project structure.
-You can either add a new configuration to the mosaik.ini file or make your own.
-To start the simulation environment, the mosaik.ini has to contain the following content.
+To use our new network, we have to include it in the cosima.ini file, that is located outermost layer of our project structure.
+You can either add a new configuration to the cosima.ini file or make your own.
+To start the simulation environment, the cosima.ini has to contain the following content.
 
 .. code-block:: ini
     :linenos:
@@ -413,7 +413,7 @@ To start the simulation environment, the mosaik.ini has to contain the following
     [General]
     network = networks.TutorialNetwork
 
-    scheduler-class = "MosaikScheduler"
+    scheduler-class = "CosimaScheduler"
 
     *.*.ipv4.arp.typename = "GlobalArp"
     *.*.ipv4.routingTable.netmaskRoutes = ""
@@ -425,13 +425,13 @@ To start the simulation environment, the mosaik.ini has to contain the following
     *.client1.app[0].localPort = 8000
 
 The Code first ensures, that we are using the network we previously created.
-By setting the scheduler-class, we register our MosaikScheduler.
+By setting the scheduler-class, we register our CosimaScheduler.
 Additionally, we set up some basic parameters for the clients, so they can communicate.
 
 Before we can run our simulation, we have to ensure that the variable START_MODE in the sample_scenario.py is set to “ide”, so we can run the OMNeT++ Simulation separately.
 Now we can finally test our simulation, by doing the following steps:
 
-    1. Run the mosaik.ini in OMNeT++ by pressing the Run Button in the Editor
+    1. Run the cosima.ini in OMNeT++ by pressing the Run Button in the Editor
     2. Run sample_Scenario.py until the output of the first step is shown the console
     3. Press the run Button in the newly opened simulation runtime GUI of OMNeT++
 
@@ -440,7 +440,7 @@ You now should see that the clients are starting to send messages to each other 
 .. image:: images/network2.png
     :alt: The two clients sending messages
 
-Download Files: :download:`TutorialNetwork.ned <downloads/TutorialNetwork.ned>` :download:`Mosaik.ini <downloads/Mosaik.ini>`
+Download Files: :download:`TutorialNetwork.ned <downloads/TutorialNetwork.ned>` :download:`cosima.ini <downloads/cosima.ini>`
 
 Enhancing the Simulation wih a Statistic-Tracker
 ------------------------------------------------

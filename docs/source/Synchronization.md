@@ -43,7 +43,7 @@ has already progressed further, there would be a synchronization error.
 
 ### Max Advance Events
 Whenever a message is sent from the mosaik-side to the OMNeT++ 
-(from [CommunicationSimulator](CommunicationSimulator.md) to [MosaikScheduler](MosaikScheduler.md)), the max advance value 
+(from [CommunicationSimulator](CommunicationSimulator.md) to [MosaikScheduler](CosimaScheduler.md)), the max advance value 
 the CommunicationSimulator receives from mosaik in this step is also
 sent to OMNeT++. Within OMNeT++, this value is taken and inserted as an event for the 
 given max advance time. Whenever the time of such max advance event is reached, OMNeT++ pauses

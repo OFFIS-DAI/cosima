@@ -1,8 +1,8 @@
 # Overview
 
-To get started with cosima, we have included an examplary (yet already quite complicated) scenario ([communication scenario](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/communication_scenario.py)). 
+To get started with cosima, we have included an examplary (yet already quite complicated) scenario ([communication scenario](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/communication_scenario.py)). 
 This can be used to reconstruct the coupling between OMNeT++ and mosaik. 
-The communication scenario can be configured by the [scenario configuration file](https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py).
+The communication scenario can be configured by the [scenario configuration file](https://github.com/OFFIS-cosima/cosima/blob/master/scenario_config.py).
 The general idea and the configuration of scenarios are described in the following sections. \
 However, there are detailled descriptions available for the general scenario configuration and synchronisation in [Scenarios](Scenarios.md), 
 [Synchronization](Synchronization.md) and [MessageTypes](MessageTypes.md). \
@@ -13,14 +13,14 @@ The components of OMNeT++ are described in  [Networks](Networks.md), [MosaikSche
 ## General Simulation Architecture
 cosima consists of a mosaik and an OMNeT++ side.
 On the mosaik side, agent simulators,
-a [communication simulator](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/communication_simulator.py) and a
-[collector](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/collector.py) are implemented. In OMNeT++ you find
-the [MosaikScheduler](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h) which is responsible for message exchange with mosaik via
-TCP socket. The [AgentApp](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppUdp.cc) and
-[AgentAppTcp](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.cc) represent the implementation of the application layer
+a [communication simulator](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/simulators/communication_simulator.py) and a
+[collector](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/simulators/collector.py) are implemented. In OMNeT++ you find
+the [MosaikScheduler](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h) which is responsible for message exchange with mosaik via
+TCP socket. The [AgentApp](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/AgentAppUdp.cc) and
+[AgentAppTcp](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/AgentAppTcp.cc) represent the implementation of the application layer
 (and transport layer) of the end devices, which represent the agents from mosaik on the OMNeT++ side. Example networks
 can also be found in the project folder. The executable file in OMNeT++
-is [mosaik.ini](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/mosaik.ini). 
+is [mosaik.ini](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/mosaik.ini). 
 The integration is shown schematically in: ![image](./images/architecture.png)
 When an agent in mosaik sends a message to another agent, it does so through the agent simulator entities. Thus,
 client0 sends a message to client1 at time t1. However, this message is first received in the same step in
@@ -34,7 +34,7 @@ thus to mosaik. In mosaik the message is given to client1 after the determined e
 
 
 ## Configure a Scenario
-In the following, the simulations are described (see also [Scenarios](Scenarios.md) ), which can be performed by adapting the aforementioned [scenario configuration file](https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py).
+In the following, the simulations are described (see also [Scenarios](Scenarios.md) ), which can be performed by adapting the aforementioned [scenario configuration file](https://github.com/OFFIS-cosima/cosima/blob/master/scenario_config.py).
 From the given networks it is possible to simulate the scenario with more than 2 agents (limited by the amount of clients in the selected OMNeT++ Network). If a correspondingly larger network 
 is modeled, larger agent numbers are also possible.  
 Furthermore, it is possible to simulate non-parallel and parallel message
@@ -66,23 +66,23 @@ Before starting a simulation, choose simulation parameters:
 
 
 ## Run simulation
-There exist different ways to run a simulation. In the [scenario configuration file](https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py), it is possible to choose from 'ide', 'qtenv' and 'cmd' as start mode.
-* Ide: start the simulation in OMNeT++ by running [mosaik.ini](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/mosaik.ini) with your preferred network and 
-  start the co-simulation in mosaik by running the [scenario](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/communication_scenario.py) 
-* Qtenv: start mosaik by running the [scenario](https://gitlab.com/mosaik/examples/cosima/-/blob/master/osima_core/communication_scenario.py). From within python, OMNeT++ will be started and a window will pop up in which
+There exist different ways to run a simulation. In the [scenario configuration file](https://github.com/OFFIS-cosima/cosima/blob/master/scenario_config.py), it is possible to choose from 'ide', 'qtenv' and 'cmd' as start mode.
+* Ide: start the simulation in OMNeT++ by running [mosaik.ini](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/mosaik.ini) with your preferred network and 
+  start the co-simulation in mosaik by running the [scenario](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/communication_scenario.py) 
+* Qtenv: start mosaik by running the [scenario](https://github.com/OFFIS-cosima/cosima/blob/master/osima_core/communication_scenario.py). From within python, OMNeT++ will be started and a window will pop up in which
   the network can be chosen and the simulation can be started.
-* Cmd: start mosaik by running the [scenario](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/communication_scenario.py). OMNeT++ will be started automatically as a console application. 
+* Cmd: start mosaik by running the [scenario](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/communication_scenario.py). OMNeT++ will be started automatically as a console application. 
 **(note: This only works properly if the project is compiled with clang)**
 
 Simulation results
 * The exchanged messages are stored in folder results with timestamp of the simulation start as name of the csv-file.
 
 ## Modelling a new network in OMNeT++
-All of the provided [networks](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/networks) contain an instance of the 
-*[MosaikSchedulerModule](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikSchedulerModule.h)*. 
+All of the provided [networks](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/networks) contain an instance of the 
+*[MosaikSchedulerModule](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/MosaikSchedulerModule.h)*. 
 When modeling an additional network, this module must also be inserted into the network to enable the 
-*[MosaikScheduler](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h)* to operate. \
-In addition, an instance of the *[MosaikScenarioManager](https://gitlab.com/mosaik/examples/cosima/-/blob/master/osima_omnetpp_project/modules/MosaikScenarioManager.h)* 
+*[MosaikScheduler](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/modules/MosaikScheduler.h)* to operate. \
+In addition, an instance of the *[MosaikScenarioManager](https://github.com/OFFIS-cosima/cosima/blob/master/osima_omnetpp_project/modules/MosaikScenarioManager.h)* 
 should be inserted into the network if changes on the infrastructure (for example disconnecting or reconnecting clients) 
 should be possible at simulation time. \
 The network description file (.ned file) of a network in OMNeT++ should contain the following: 
