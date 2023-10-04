@@ -1,6 +1,6 @@
 package networks;
 
-import modules.MosaikSchedulerModule;
+import modules.CosimaSchedulerModule;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.inet.StandardHost;
 import inet.node.ethernet.Eth10M;
@@ -10,7 +10,7 @@ network TutorialNetwork
     @display("bgb=500,500");
 
     submodules:
-        schedulerModule: MosaikSchedulerModule {
+        schedulerModule: CosimaSchedulerModule {
             @display("p=60,40");
         }
         configurator: Ipv4NetworkConfigurator {

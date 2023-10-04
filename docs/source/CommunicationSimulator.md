@@ -1,5 +1,5 @@
 # CommunicationSimulator
-To understand the role of the [CommunicationSimulator](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/communication_simulator.py), the meaning of the max advance
+To understand the role of the [CommunicationSimulator](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/simulators/communication_simulator.py), the meaning of the max advance
 value and the concept of the synchronization between OMNeT++ and mosaik is
 useful. Explanations of these can be found in ([Synchronization](Synchronization.md)).
 
@@ -9,7 +9,7 @@ The CommunicationSimulator is the interface to OMNeT++ for simulators from pytho
 therefore the connection between mosaik and OMNeT++. It takes messages from
 mosaik simulators, sends them to OMNeT++ and receives messages from OMNeT++
 which it then forwards to the corresponding mosaik simulators.
-The CommunicationSimulator saves an instance of the class ([OmnetppConnection](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/simulators/omnetpp_connection.py)),
+The CommunicationSimulator saves an instance of the class ([OmnetppConnection](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/simulators/omnetpp_connection.py)),
 which opens up TCP-Connection to OMNeT++ and is used to send and receive messages to and from OMNeT++.
 This instance keeps an active connection to OMNeT++ and waits for messages independently of the step logic of mosaik.
 This way, messages that arrive while the CommunicationSimulator is not in its step function (so while another simulator is in step function) will still be considered.

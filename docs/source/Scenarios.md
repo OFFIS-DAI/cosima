@@ -1,7 +1,7 @@
 # Scenarios 
 It is possible to simulate different scenarios. In the 
 following, the parameters to configure these scenarios are
-described. The parameters are set in the [scenario configuration file](https://gitlab.com/mosaik/examples/cosima/-/blob/master/scenario_config.py).
+described. The parameters are set in the [scenario configuration file](https://github.com/OFFIS-cosima/cosima/blob/master/scenario_config.py).
 
 ## General Conditions
 For the general conditions of the scenarios, it is possible to adapt the
@@ -61,15 +61,15 @@ To create own scenarios, it is necessary to define the communication connections
 which should be represented in OMNeT++.
 To define the connections which should be considered in the simulation in OMNeT++, the implemented models or
 simulators need to be connected to the [CommunicationSimulator](CommunicationSimulator.md). The attribute for the connection via 
-mosaik can be set in the [general configuration file](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/util/general_config.py): *CONNECT_ATTR*. To create the entities
-which should be represented as hosts, the method *'get_host_names'* in [util functions](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/util/util_functions.py)
+mosaik can be set in the [general configuration file](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/util/general_config.py): *CONNECT_ATTR*. To create the entities
+which should be represented as hosts, the method *'get_host_names'* in [util functions](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/util/util_functions.py)
 can be used. This method creates the corresponding names in OMNeT++ for the given number of hosts.
 For each host in OMNeT++, one CommunicationModel is created, which represents this instance. It is necessary
 that these models know the name of the OMNeT++ host.
 When the CommunicationSimulator is created, a mapping between the hosts and the connect attributes from
 mosaik is necessary (a dictionary like: *['host0': 'connect_attr_for_host0', ..]*) to create the CommunicationModels. An example 
-to create this can be found in the [communication_scenario](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/scenarios/communication_scenario.py), where the *'client_attribute_mapping'* is created.
+to create this can be found in the [communication_scenario](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/scenarios/communication_scenario.py), where the *'client_attribute_mapping'* is created.
 Depending on the scenario, it could be necessary to create a separate attribute for each host, since each model 
 (or simulator) that is connected to the CommunicationSim via the attribute receives all messages sent via this attribute. 
 In order to send messages only to one certain host, the name of the host could be included in the attribute 
-(this has been implemented in the same way in the [communication_scenario](https://gitlab.com/mosaik/examples/cosima/-/blob/master/cosima_core/scenarios/communication_scenario.py)).
+(this has been implemented in the same way in the [communication_scenario](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/scenarios/communication_scenario.py)).

@@ -3,7 +3,7 @@
 To use the project, an installation of mosaik (at least version 3.0), OMNeT++ and protobuf are required.
 
 If you use Ubuntu: 
-You can use the [Installation Shell Script](install-requirements.sh) via
+You can use the [Installation Shell Script](https://github.com/OFFIS-cosima/cosima/blob/master/install-requirements.sh) via
 ```bash
 chmod +x install-requirements.sh
 sudo ./install-requirements.sh
@@ -107,15 +107,15 @@ Install the protobuf compiler version 3.6.1 (on Ubuntu) via
 sudo apt-get install libprotobuf-dev protobuf-compiler 
 ```
 
-The used [protobuf message](cosima_core/messages/message.proto) is already compiled. If you want to compile the .proto file or another one
+The used [protobuf message](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/messages/message.proto) is already compiled. If you want to compile the .proto file or another one
 use
 
 ```bash
 protoc cosima_core/messages/message.proto --cpp_out=. --python_out=.
 ```
 
-The output are the classes [message_pb2.py](cosima_core/messages/message_pb2.py) for python and message.pb.cc and message.pb.h for C++. Put
-the C++ files in the [OMNeT++ folder](cosima_omnetpp_project).
+The output are the classes [message_pb2.py](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_core/messages/message_pb2.py) for python and message.pb.cc and message.pb.h for C++. Put
+the C++ files in the [OMNeT++ folder](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project).
 
 Now the generated files can be used in python via
 
@@ -139,7 +139,7 @@ add "-lprotobuf".
 To set up testing in python follow these steps:
 
 * in PyCharm under Settings -> Python Integrated Tools -> Testing set the Default Test Runner to PyTest
-* tests can be found in the [test folder](../../tests). The structure of the test folder should correspond to the structure of
+* tests can be found in the [test folder](https://github.com/OFFIS-cosima/cosima/blob/master/tests). The structure of the test folder should correspond to the structure of
   the project
 * test files start with "test_"
 * to run a test execute either a single file or the folder
@@ -178,7 +178,7 @@ Executing the tests is possible by doing the following steps...
 
 1. Including the tests folder
 To perform Tests for the cosima project first you have to include them in the OMNeT++ Framework. 
-To do so, right-click on the folder [tests](../../cosima_omnetpp_project/tests) and then go to Resource Configuration -> Exclude from Build. 
+To do so, right-click on the folder [tests](https://github.com/OFFIS-cosima/cosima/blob/master/cosima_omnetpp_project/tests) and then go to Resource Configuration -> Exclude from Build. 
 In the newly opened window you now can uncheck the boxes for the configuration, that you want to perform the tests on. 
 By default, both the configuration for the debug and release mode should be checked.
 
