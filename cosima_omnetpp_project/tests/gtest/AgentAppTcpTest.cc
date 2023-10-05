@@ -7,8 +7,8 @@
 
 #include "main_test.h"
 #include "../../modules/AgentAppTcp.h"
-#include "../../modules/MosaikSchedulerModule.h"
-#include "../../messages/MosaikApplicationChunk_m.h"
+#include "../../modules/CosimaSchedulerModule.h"
+#include "../../messages/CosimaApplicationChunk_m.h"
 
 class AgentAppTcpMock : public AgentAppTcp {
 public:
@@ -17,8 +17,8 @@ public:
         this->addGate("socketOut", cGate::OUTPUT, 0);;
     }
 
-    bool handleSocketEvent(cMessage *msg, double mosaikSimTime) {
-        return AgentAppTcp::handleSocketEvent(msg, mosaikSimTime);
+    bool handleSocketEvent(cMessage *msg, double couplingSimTime) {
+        return AgentAppTcp::handleSocketEvent(msg, couplingSimTime);
     }
 
     Timer *getTimerForModuleId(int clientId) {
@@ -41,11 +41,11 @@ public:
         return AgentAppTcp::handleTimer(msg);
     }
 
-    void sendReply(MosaikSchedulerMessage *reply) {
+    void sendReply(CosimaSchedulerMessage *reply) {
         return AgentAppTcp::sendReply(reply);
     }
 
-    void setScheduler(MosaikSchedulerMock *mock) {
+    void setScheduler(CosimaSchedulerMock *mock) {
         scheduler = mock;
     }
 
@@ -53,12 +53,12 @@ public:
 
 class AgentAppTcpTest : public BaseOppTest {
 public:
-    MosaikScheduler *scheduler;
+    CosimaScheduler *scheduler;
     AgentAppTcp *app;
     AgentAppTcpMock appMock;
 
     AgentAppTcpTest() {
-        scheduler = check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
+        scheduler = check_and_cast<CosimaScheduler *>(getSimulation()->getScheduler());
         app = new AgentAppTcp();
     }
 
@@ -67,9 +67,9 @@ public:
     }
 
 
-    MosaikSchedulerMessage *createMosaikSchedulerMessage() {
-        // create MosaikSchedulerMessage
-        MosaikSchedulerMessage *msg = new MosaikSchedulerMessage();
+    CosimaSchedulerMessage *createCosimaSchedulerMessage() {
+        // create CosimaSchedulerMessage
+        CosimaSchedulerMessage *msg = new CosimaSchedulerMessage();
         msg->setContent("content");
         msg->setSender("sender");
         msg->setReceiver("");
@@ -78,22 +78,22 @@ public:
         return msg;
     }
 
-    MosaikSchedulerMessage *createMosaikSchedulerMessageWithMissingInformation() {
-        // create MosaikSchedulerMessage
-        MosaikSchedulerMessage *msg = new MosaikSchedulerMessage();
+    CosimaSchedulerMessage *createCosimaSchedulerMessageWithMissingInformation() {
+        // create CosimaSchedulerMessage
+        CosimaSchedulerMessage *msg = new CosimaSchedulerMessage();
         return msg;
     }
 
-    inet::Packet *createPacketWithMosaikApplicationChunk() {
+    inet::Packet *createPacketWithCosimaApplicationChunk() {
         inet::Packet *packet = new inet::Packet();
-        const auto &payload = inet::makeShared<MosaikApplicationChunk>();
+        const auto &payload = inet::makeShared<CosimaApplicationChunk>();
         payload->setContent("content");
         payload->setReceiver("receiver");
         payload->setSender("sender");
         payload->setChunkLength(inet::B(128));
-        payload->setCreationTime(0);
+        payload->setCreationTimeOmnetpp(0);
         payload->setMsgId("message1");
-        payload->setCreationTimeMosaik(0);
+        payload->setCreationTimeCoupling(0);
         packet->insertAtBack(payload);
         packet->setTimestamp(0);
         return packet;
@@ -124,8 +124,8 @@ TEST_F(AgentAppTcpTest, TestHandleSocketEventWithWrongMsgType) {
  * asserted result: method should return false, because messages can't be scheduled in the past.
  */
 TEST_F(AgentAppTcpTest, TestHandleSocketEventWithWrongSimTime) {
-    // create MosaikSchedulerMessage
-    MosaikSchedulerMessage *msg = createMosaikSchedulerMessage();
+    // create CosimaSchedulerMessage
+    CosimaSchedulerMessage *msg = createCosimaSchedulerMessage();
 
     // execute method
     bool check = appMock.handleSocketEvent(msg, -1);
@@ -140,8 +140,8 @@ TEST_F(AgentAppTcpTest, TestHandleSocketEventWithWrongSimTime) {
  * asserted result: method should return false, because information can't be extracted.
  */
 TEST_F(AgentAppTcpTest, TestHandleSocketEventWithMissingInformationInMessage) {
-    // create MosaikSchedulerMessage
-    MosaikSchedulerMessage *msg = createMosaikSchedulerMessageWithMissingInformation();
+    // create CosimaSchedulerMessage
+    CosimaSchedulerMessage *msg = createCosimaSchedulerMessageWithMissingInformation();
 
     // execute method
     bool check = appMock.handleSocketEvent(msg, -1);
@@ -180,7 +180,7 @@ TEST_F(AgentAppTcpTest, TestGetTimerForModuleId) {
 TEST_F(AgentAppTcpTest, TestSetAndGetPacketForClient) {
     // prepare packet
     int clientId = 0;
-    inet::Packet *packet = createPacketWithMosaikApplicationChunk();
+    inet::Packet *packet = createPacketWithCosimaApplicationChunk();
 
     // set packet for module
     appMock.setPacketForModuleId(clientId, packet);
@@ -190,7 +190,7 @@ TEST_F(AgentAppTcpTest, TestSetAndGetPacketForClient) {
 
     // prepare packet for client with id 1
     int otherClientId = 1;
-    inet::Packet *otherPacket = createPacketWithMosaikApplicationChunk();
+    inet::Packet *otherPacket = createPacketWithCosimaApplicationChunk();
 
     // set packet for module
     appMock.setPacketForModuleId(otherClientId, otherPacket);
@@ -249,18 +249,18 @@ TEST_F(AgentAppTcpTest, TestHandleTimerWithInvalidTimers) {
 
 /**
  * Test method sendReply().
- * Method is called with MosaikSchedulerMessage.
- * asserted result: method sendToMosaik() should be called in scheduler.
+ * Method is called with CosimaSchedulerMessage.
+ * asserted result: method sendToCoupledSimulation() should be called in scheduler.
  */
 TEST_F(AgentAppTcpTest, TestSendReply) {
     // create mock object
-    MosaikSchedulerMock schedulerMock;
+    CosimaSchedulerMock schedulerMock;
     appMock.setScheduler(&schedulerMock);
 
-    MosaikSchedulerMessage *msg = new MosaikSchedulerMessage();
+    CosimaSchedulerMessage *msg = new CosimaSchedulerMessage();
 
-    // method sendToMosaik() should be called in scheduler
-    EXPECT_CALL(schedulerMock, sendToMosaik(msg)).Times(1);
+    // method sendMsgGroupToCoupledSimulation() should be called in scheduler
+    EXPECT_CALL(schedulerMock, sendToCoupledSimulation(msg)).Times(1);
 
     // call method
     appMock.sendReply(msg);

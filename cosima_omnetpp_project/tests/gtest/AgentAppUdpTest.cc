@@ -7,16 +7,16 @@
 
 #include "main_test.h"
 #include "../../modules/AgentAppUdp.h"
-#include "../../modules/MosaikSchedulerModule.h"
-#include "../../messages/MosaikApplicationChunk_m.h"
+#include "../../modules/CosimaSchedulerModule.h"
+#include "../../messages/CosimaApplicationChunk_m.h"
 
 class AgentAppUdpMock : public AgentAppUdp {
 public:
-    // MosaikSchedulerMock scheduler;
+    // CosimaSchedulerMock scheduler;
     AgentAppUdpMock() {
     }
 
-    void sendReply(MosaikSchedulerMessage *reply) {
+    void sendReply(CosimaSchedulerMessage *reply) {
         return;
     }
 
@@ -34,19 +34,19 @@ public:
 
     int numInitStages() const override { return (inet::NUM_INIT_STAGES); }
 
-    void setScheduler(MosaikSchedulerMock *mock) {
+    void setScheduler(CosimaSchedulerMock *mock) {
         scheduler = mock;
     }
 };
 
 class AgentAppUdpTest : public BaseOppTest {
 public:
-    MosaikScheduler *scheduler;
+    CosimaScheduler *scheduler;
     AgentAppUdp *app;
     AgentAppUdpMock appMock;
 
     AgentAppUdpTest() {
-        scheduler = check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
+        scheduler = check_and_cast<CosimaScheduler *>(getSimulation()->getScheduler());
         app = new AgentAppUdp();
     }
 
@@ -54,9 +54,9 @@ public:
         delete app;
     }
 
-    MosaikSchedulerMessage *createMosaikSchedulerMessage() {
-        // create MosaikSchedulerMessage
-        MosaikSchedulerMessage *msg = new MosaikSchedulerMessage();
+    CosimaSchedulerMessage *createCosimaSchedulerMessage() {
+        // create CosimaSchedulerMessage
+        CosimaSchedulerMessage *msg = new CosimaSchedulerMessage();
         msg->setContent("content");
         msg->setSender("sender");
         msg->setReceiver("");
@@ -65,16 +65,16 @@ public:
         return msg;
     }
 
-    inet::Packet *createPacketWithMosaikApplicationChunk() {
+    inet::Packet *createPacketWithCosimaApplicationChunk() {
         inet::Packet *packet = new inet::Packet();
-        const auto &payload = inet::makeShared<MosaikApplicationChunk>();
+        const auto &payload = inet::makeShared<CosimaApplicationChunk>();
         payload->setContent("content");
         payload->setReceiver("receiver");
         payload->setSender("sender");
         payload->setChunkLength(inet::B(128));
-        payload->setCreationTime(0);
+        payload->setCreationTimeOmnetpp(0);
         payload->setMsgId("message1");
-        payload->setCreationTimeMosaik(0);
+        payload->setCreationTimeCoupling(0);
         packet->insertAtBack(payload);
         packet->setTimestamp(0);
         return packet;
@@ -84,45 +84,45 @@ public:
 /**
  * Test method handleSocketEvent().
  * Method is called with message object
- * asserted result: method calls sendToMosaik from scheduler
+ * asserted result: method calls sendToCoupledSimulation from scheduler
  */
 TEST_F(AgentAppUdpTest, TestHandleSocketEvent) {
-    // create MosaikSchedulerMessage
-    MosaikSchedulerMessage *msg = createMosaikSchedulerMessage();
+    // create CosimaSchedulerMessage
+    CosimaSchedulerMessage *msg = createCosimaSchedulerMessage();
 
-    MosaikSchedulerMock schedulerMock;
+    CosimaSchedulerMock schedulerMock;
     appMock.setScheduler(&schedulerMock);
 
     // In this case, OMNeT tries to send the message. Since there is no connection, there is an error which is catched
     // within the function already. Then, a notification is sent to the scheduler.
-    EXPECT_CALL(schedulerMock, sendToMosaik(testing::_)).Times(1);
+    EXPECT_CALL(schedulerMock, sendToCoupledSimulation(testing::_)).Times(1);
     appMock.handleSocketEvent(msg);
 }
 
 TEST_F(AgentAppUdpTest, TestHandleSocketEventIrrelevantMsgType) {
-    // create other message than MosaikSchedulerMessage
-    inet::Packet *packet = createPacketWithMosaikApplicationChunk();
+    // create other message than CosimaSchedulerMessage
+    inet::Packet *packet = createPacketWithCosimaApplicationChunk();
 
-    MosaikSchedulerMock schedulerMock;
+    CosimaSchedulerMock schedulerMock;
     appMock.setScheduler(&schedulerMock);
 
-    // In this case, the message object is no MosaikSchedulerMessage and is therefore directly deleted.
+    // In this case, the message object is no CosimaSchedulerMessage and is therefore directly deleted.
     // No message is sent to the scheduler.
-    EXPECT_CALL(schedulerMock, sendToMosaik(testing::_)).Times(0);
+    EXPECT_CALL(schedulerMock, sendToCoupledSimulation(testing::_)).Times(0);
 
     appMock.handleSocketEvent(packet);
 }
 
 TEST_F(AgentAppUdpTest, TestHandleMessage) {
-    // create MosaikSchedulerMessage
-    MosaikSchedulerMessage *msg = createMosaikSchedulerMessage();
+    // create CosimaSchedulerMessage
+    CosimaSchedulerMessage *msg = createCosimaSchedulerMessage();
 
-    MosaikSchedulerMock schedulerMock;
+    CosimaSchedulerMock schedulerMock;
     appMock.setScheduler(&schedulerMock);
 
     // since the message has never been sent, the gate can not be checked
     // therefore, a runtime error is thrown
-    EXPECT_CALL(schedulerMock, sendToMosaik(testing::_)).Times(0);
+    EXPECT_CALL(schedulerMock, sendToCoupledSimulation(testing::_)).Times(0);
     try {
         appMock.handleMessage(msg);
     }

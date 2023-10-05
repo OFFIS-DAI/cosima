@@ -6,19 +6,19 @@
  */
 
 #include "main_test.h"
-#include "../../modules/MosaikScenarioManager.h"
-#include "../../messages/MosaikCtrlEvent_m.h"
+#include "../../modules/CosimaScenarioManager.h"
+#include "../../messages/CosimaCtrlEvent_m.h"
 
 
-class MosaikScenarioManagerMock : public MosaikScenarioManager {
+class CosimaScenarioManagerMock : public CosimaScenarioManager {
 public:
-    MosaikSchedulerMock schedulerMock;
+    CosimaSchedulerMock schedulerMock;
 
-    MOCK_METHOD(MosaikSchedulerMessage*, connect, (const char *));
-    MOCK_METHOD(MosaikSchedulerMessage*, disconnect, (const char *));
+    MOCK_METHOD(CosimaSchedulerMessage*, connect, (const char *));
+    MOCK_METHOD(CosimaSchedulerMessage*, disconnect, (const char *));
 
     void handleMessage(cMessage *msg) {
-        MosaikScenarioManager::handleMessage(msg);
+        CosimaScenarioManager::handleMessage(msg);
     }
 
     void setMockObjectAsScheduler() {
@@ -26,12 +26,12 @@ public:
     }
 };
 
-class MosaikScenarioManagerTest : public BaseOppTest {
+class CosimaScenarioManagerTest : public BaseOppTest {
 public:
-    MosaikScenarioManagerMock scenarioManagerMock;
+    CosimaScenarioManagerMock scenarioManagerMock;
 
-    MosaikCtrlEvent *createEventOfType(int type) {
-        MosaikCtrlEvent *event = new MosaikCtrlEvent();
+    CosimaCtrlEvent *createEventOfType(int type) {
+        CosimaCtrlEvent *event = new CosimaCtrlEvent();
         event->setCtrlType(type);
         return event;
     }
@@ -46,7 +46,7 @@ public:
  *
  * Possible error cases for methods connect() and disconnect() are also tested that way.
  */
-TEST_F(MosaikScenarioManagerTest, TestHandleMessage) {
+TEST_F(CosimaScenarioManagerTest, TestHandleMessage) {
     // call handleMessage() with nullptr
     // we assert a cRuntimeError
     try {
@@ -58,7 +58,7 @@ TEST_F(MosaikScenarioManagerTest, TestHandleMessage) {
     }
 
     // call handleMessage() with correct message type and ctrl type disconnect, should not thrown an exception
-    MosaikCtrlEvent *disconnectEvent = createEventOfType(3);
+    CosimaCtrlEvent *disconnectEvent = createEventOfType(3);
     disconnectEvent->setModuleNamesArraySize(1);
     disconnectEvent->setModuleNames(0, "client");
     try {
@@ -70,8 +70,8 @@ TEST_F(MosaikScenarioManagerTest, TestHandleMessage) {
     }
 
     // call handleMessage() with correct message type and ctrl type connect, should not thrown an exception
-    EXPECT_CALL(scenarioManagerMock.schedulerMock, sendToMosaik).WillOnce(testing::Return());
-    MosaikCtrlEvent *connectEvent = createEventOfType(4);
+    EXPECT_CALL(scenarioManagerMock.schedulerMock, sendToCoupledSimulation).WillOnce(testing::Return());
+    CosimaCtrlEvent *connectEvent = createEventOfType(4);
     connectEvent->setModuleNamesArraySize(1);
     connectEvent->setModuleNames(0, "client");
     try {

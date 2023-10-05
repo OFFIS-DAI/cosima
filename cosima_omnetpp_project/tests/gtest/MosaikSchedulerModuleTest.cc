@@ -1,18 +1,18 @@
 /*
- * MosaikSchedulerModuleTest.cc
+ * CosimaSchedulerModuleTest.cc
  *
  *  Created on: Feb 20, 2022
  *      Author: malin
  */
 #include "main_test.h"
-#include "../../modules/MosaikSchedulerModule.h"
+#include "../../modules/CosimaSchedulerModule.h"
 
-class MosaikSchedulerModuleMock : public MosaikSchedulerModule {
+class CosimaSchedulerModuleMock : public CosimaSchedulerModule {
 public:
-    MosaikSchedulerMock schedulerMock;
+    CosimaSchedulerMock schedulerMock;
 
     void handleMessage(cMessage *msg) {
-        MosaikSchedulerModule::handleMessage(msg);
+        CosimaSchedulerModule::handleMessage(msg);
     }
     void setMockObjectAsScheduler() {
         scheduler = &schedulerMock;
@@ -22,25 +22,25 @@ public:
     }
 };
 
-class MosaikSchedulerModuleTest : public BaseOppTest {
+class CosimaSchedulerModuleTest : public BaseOppTest {
 public:
-    MosaikSchedulerModule *schedulerModule;
+    CosimaSchedulerModule *schedulerModule;
 
-    MosaikSchedulerModuleTest() {
-        schedulerModule = new MosaikSchedulerModule();
+    CosimaSchedulerModuleTest() {
+        schedulerModule = new CosimaSchedulerModule();
     }
 
-    ~MosaikSchedulerModuleTest() {
+    ~CosimaSchedulerModuleTest() {
         delete schedulerModule;
     }
 };
 
 
 /*
- * Test constructor of MosaikSchedulerModule.
+ * Test constructor of CosimaSchedulerModule.
  * Asserted result: max advance event and until event should be initialized.
  */
-TEST_F(MosaikSchedulerModuleTest, TestConstructor) {
+TEST_F(CosimaSchedulerModuleTest, TestConstructor) {
     ASSERT_NE(schedulerModule->maxAdvEvent, nullptr);
     ASSERT_NE(schedulerModule->untilEvent, nullptr);
 }
@@ -48,34 +48,34 @@ TEST_F(MosaikSchedulerModuleTest, TestConstructor) {
 /**
  * Test method handleMsg() with different types of messages.
  */
-TEST_F(MosaikSchedulerModuleTest, TestHandleMessage) {
-    MosaikSchedulerModuleMock schedulerModuleMock;
+TEST_F(CosimaSchedulerModuleTest, TestHandleMessage) {
+    CosimaSchedulerModuleMock schedulerModuleMock;
     schedulerModuleMock.setMockObjectAsScheduler();
 
-    // calling method with unknown message type -> sendToMosaik() should not be called in scheduler
-    EXPECT_CALL(schedulerModuleMock.schedulerMock, sendToMosaik).Times(0);
+    // calling method with unknown message type -> sendToCoupledSimulation() should not be called in scheduler
+    EXPECT_CALL(schedulerModuleMock.schedulerMock, sendToCoupledSimulation).Times(0);
     schedulerModuleMock.handleMessage(new cMessage());
 
-    // calling method with MosaikCtrlEvent (type 0: max advance event)
-    // -> sendToMosaik() should not be called in scheduler
-    EXPECT_CALL(schedulerModuleMock.schedulerMock, sendToMosaik).WillOnce(testing::Return());
-    MosaikCtrlEvent *maxAdvEvent = new MosaikCtrlEvent();
+    // calling method with CosimaCtrlEvent (type 0: max advance event)
+    // -> sendToCoupledSimulation() should not be called in scheduler
+    EXPECT_CALL(schedulerModuleMock.schedulerMock, sendToCoupledSimulation).WillOnce(testing::Return());
+    CosimaCtrlEvent *maxAdvEvent = new CosimaCtrlEvent();
     maxAdvEvent->setCtrlType(0);
     schedulerModuleMock.handleMessage(maxAdvEvent);
     delete maxAdvEvent;
 
-    // calling method with MosaikCtrlEvent (type 2: until event)
+    // calling method with CosimaCtrlEvent (type 2: until event)
     // -> until reached should be set in scheduler
-    MosaikCtrlEvent *untilEvent = new MosaikCtrlEvent();
+    CosimaCtrlEvent *untilEvent = new CosimaCtrlEvent();
     untilEvent->setCtrlType(2);
     schedulerModuleMock.handleMessage(untilEvent);
     ASSERT_EQ(schedulerModuleMock.getUntilReachedValueFromSchedulerMock(), true);
     delete untilEvent;
 
-    // calling method with MosaikCtrlEvent (type 1: end of step event)
-    // -> method sendMsgGroupToMosaik() should be called in scheduler
-    EXPECT_CALL(schedulerModuleMock.schedulerMock, sendMsgGroupToMosaik).WillOnce(testing::Return());
-    MosaikCtrlEvent *stepEndEvent = new MosaikCtrlEvent();
+    // calling method with CosimaCtrlEvent (type 1: end of step event)
+    // -> method sendMsgGroupToCosima() should be called in scheduler
+    EXPECT_CALL(schedulerModuleMock.schedulerMock, sendMsgGroupToCoupledSimulation).WillOnce(testing::Return());
+    CosimaCtrlEvent *stepEndEvent = new CosimaCtrlEvent();
     stepEndEvent->setCtrlType(1);
     schedulerModuleMock.handleMessage(stepEndEvent);
 }
