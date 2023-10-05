@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
   cSimulation *sim = new cSimulation("simulation", env);
   cSimulation::setActiveSimulation(sim);
 
-  MosaikScheduler *scheduler = new MosaikScheduler();
+  CosimaScheduler *scheduler = new CosimaScheduler();
   sim->setScheduler(scheduler);
   cEventHeap *fes = new cEventHeap();
   sim->setFES(fes);

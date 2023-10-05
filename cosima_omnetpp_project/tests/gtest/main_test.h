@@ -17,29 +17,29 @@
 #include "inet/common/packet/Packet.h"
 #include "inet/common/Units.h"
 #include "inet/applications/base/ApplicationPacket_m.h"
-#include "../../modules/MosaikScheduler.h"
+#include "../../modules/CosimaScheduler.h"
 
 
 using namespace inet;
 using namespace omnetpp;
 
-class MosaikSchedulerMock : public MosaikScheduler {
+class CosimaSchedulerMock : public CosimaScheduler {
 public:
 
-    MosaikSchedulerMock():
-        MosaikScheduler() {
+    CosimaSchedulerMock():
+        CosimaScheduler() {
         numModules = 0;
         sim = new cSimulation("simulation", new cNullEnvir(0, nullptr, nullptr));
     }
 
     MOCK_METHOD(cModule *, getReceiverModule, (std::string module_name));
-    MOCK_METHOD(void, sendToMosaik, (cMessage*));
-    MOCK_METHOD(void, sendMsgGroupToMosaik, (bool isWaitingMsg));
+    MOCK_METHOD(void, sendToCoupledSimulation, (cMessage*));
+    MOCK_METHOD(void, sendMsgGroupToCoupledSimulation, (bool isWaitingMsg));
     MOCK_METHOD(int, receiveUntil, (int64_t targetTime));
     MOCK_METHOD(void, endSimulation, ());
 
     int getPortForModule (std::string module_name) {
-        return MosaikScheduler::getPortForModule(module_name);
+        return CosimaScheduler::getPortForModule(module_name);
     }
 
     void deleteRegisteredModules() {
@@ -48,17 +48,17 @@ public:
     }
 
     cEvent *takeNextEvent() {
-        return MosaikScheduler::takeNextEvent();
+        return CosimaScheduler::takeNextEvent();
     }
 
     auto getUntilReached() {
         auto untilReached = false;
-        untilReached = MosaikScheduler::getUntilReached();
+        untilReached = CosimaScheduler::getUntilReached();
         return untilReached;
     }
 
     void setInitialMessageReceived() {
-        MosaikScheduler::setInitialMessageReceived(true);
+        CosimaScheduler::setInitialMessageReceived(true);
     }
 };
 

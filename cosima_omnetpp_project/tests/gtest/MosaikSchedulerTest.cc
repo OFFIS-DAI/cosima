@@ -1,5 +1,5 @@
 /*
- * MosaikSchedulerTest.cc
+ * CosimaSchedulerTest.cc
  *
  *  Created on: Feb 6, 2022
  *      Author: malin
@@ -7,15 +7,15 @@
 
 #include "main_test.h"
 #include "../../modules/AgentAppTcp.h"
-#include "../../modules/MosaikSchedulerModule.h"
-#include "../../modules/MosaikScenarioManager.h"
+#include "../../modules/CosimaSchedulerModule.h"
+#include "../../modules/CosimaScenarioManager.h"
 
-class MosaikSchedulerTest : public BaseOppTest {
+class CosimaSchedulerTest : public BaseOppTest {
 public:
-    MosaikScheduler *scheduler;
+    CosimaScheduler *scheduler;
 
-    MosaikSchedulerTest() {
-        scheduler = check_and_cast<MosaikScheduler *>(getSimulation()->getScheduler());
+    CosimaSchedulerTest() {
+        scheduler = check_and_cast<CosimaScheduler *>(getSimulation()->getScheduler());
     }
 
     /**
@@ -28,18 +28,18 @@ public:
     }
 
     /**
-     * Creates MosaikSchedulerModule object.
+     * Creates CosimaSchedulerModule object.
      */
-    MosaikSchedulerModule *createMosaikSchedulerModule() {
-        MosaikSchedulerModule *schedulerModule = new MosaikSchedulerModule();
+    CosimaSchedulerModule *createCosimaSchedulerModule() {
+        CosimaSchedulerModule *schedulerModule = new CosimaSchedulerModule();
         return schedulerModule;
     }
 
     /**
-     * Creates MosaikSchedulerMessage with delay info.
+     * Creates CosimaSchedulerMessage with delay info.
      */
-    MosaikSchedulerMessage *createValidMosaikSchedulerMessageWithDelayInfo() {
-        MosaikSchedulerMessage *message = new MosaikSchedulerMessage();
+    CosimaSchedulerMessage *createValidCosimaSchedulerMessageWithDelayInfo() {
+        CosimaSchedulerMessage *message = new CosimaSchedulerMessage();
         message->setSender("sender");
         message->setReceiver("receiver");
         message->setMsgId("id");
@@ -50,10 +50,10 @@ public:
     }
 
     /**
-     * Creates MosaikCtrlEvent.
+     * Creates CosimaCtrlEvent.
      */
-    MosaikCtrlEvent *createValidMosaikCtrlEvent() {
-        return new MosaikCtrlEvent();
+    CosimaCtrlEvent *createValidCosimaCtrlEvent() {
+        return new CosimaCtrlEvent();
     }
 
 };
@@ -63,7 +63,7 @@ public:
  * AgentAppTcp registers at scheduler.
  * asserted result: scheduler adds application to internal list.
  */
-TEST_F(MosaikSchedulerTest, AddModuleToList) {
+TEST_F(CosimaSchedulerTest, AddModuleToList) {
     AgentAppTcp *app = createAgentApp();
     scheduler->setInterfaceModule(app, false);
     cModule *module = scheduler->getModuleList().front();
@@ -85,8 +85,8 @@ TEST_F(MosaikSchedulerTest, AddModuleToList) {
  * SchedulerModule registers at scheduler.
  * asserted result: scheduler saves schedulerModule.
  */
-TEST_F(MosaikSchedulerTest, AddMosaikSchedulerModuleToList) {
-    MosaikSchedulerModule *schedulerModule = createMosaikSchedulerModule();
+TEST_F(CosimaSchedulerTest, AddCosimaSchedulerModuleToList) {
+    CosimaSchedulerModule *schedulerModule = createCosimaSchedulerModule();
     scheduler->setInterfaceModule(schedulerModule, true);
     cModule *module = scheduler->getModuleList().front();
 
@@ -108,7 +108,7 @@ TEST_F(MosaikSchedulerTest, AddMosaikSchedulerModuleToList) {
  * Method is called with null-pointer.
  * asserted result: error is thrown.
  */
-TEST_F(MosaikSchedulerTest, TryCallingSetInterfaceModuleWithNullptr) {
+TEST_F(CosimaSchedulerTest, TryCallingSetInterfaceModuleWithNullptr) {
     // we assert a cRuntimeError
     try {
         scheduler->setInterfaceModule(nullptr, false);
@@ -130,13 +130,13 @@ TEST_F(MosaikSchedulerTest, TryCallingSetInterfaceModuleWithNullptr) {
 }
 
 /**
- * Test method sendToMosaik().
+ * Test method sendToCoupledSimulation().
  * Method is called with null-pointer.
  * asserted result: error is thrown.
  */
-TEST_F(MosaikSchedulerTest, TestSendToMosaikWithNullptr) {
+TEST_F(CosimaSchedulerTest, TestSendToCoupledSimulationWithNullptr) {
     try {
-        scheduler->sendToMosaik(nullptr);
+        scheduler->sendToCoupledSimulation(nullptr);
         // test fails, if we reach this point
         FAIL();
     }
@@ -146,13 +146,13 @@ TEST_F(MosaikSchedulerTest, TestSendToMosaikWithNullptr) {
 }
 
 /**
- * Test method sendToMosaik().
+ * Test method sendToCoupledSimulation().
  * Method is called with delay reply from AgentAppUdp.
- * asserted result: current pmsg group for mosaik contains one element.
+ * asserted result: current pmsg group contains one element.
  */
-TEST_F(MosaikSchedulerTest, TestSendToMosaikWithDelayMsg) {
-    MosaikSchedulerMessage *delayMsg = createValidMosaikSchedulerMessageWithDelayInfo();
-    scheduler->sendToMosaik(delayMsg);
+TEST_F(CosimaSchedulerTest, TestSendToCoupledSimulationWithDelayMsg) {
+    CosimaSchedulerMessage *delayMsg = createValidCosimaSchedulerMessageWithDelayInfo();
+    scheduler->sendToCoupledSimulation(delayMsg);
     ASSERT_EQ(scheduler->getNumberOfSavedMessages(), 1);
     delete delayMsg;
 }
@@ -163,8 +163,8 @@ TEST_F(MosaikSchedulerTest, TestSendToMosaikWithDelayMsg) {
  * Method is called with invalid parameters.
  * asserted result: method should return -1.
  */
-TEST_F(MosaikSchedulerTest, TestGetPortForModule) {
-    MosaikSchedulerMock schedulerMock;
+TEST_F(CosimaSchedulerTest, TestGetPortForModule) {
+    CosimaSchedulerMock schedulerMock;
     // test with invalid module name
     ASSERT_EQ(schedulerMock.getPortForModule(""), -1);
 
@@ -174,17 +174,17 @@ TEST_F(MosaikSchedulerTest, TestGetPortForModule) {
 }
 
 /**
- * Test method handleMsgFromMosaik().
+ * Test method handleMsgFromCoupledSimulation().
  * Method is called without any received data.
  * asserted result: method should return false.
  */
-TEST_F(MosaikSchedulerTest, TestHandleMsgFromMosaik) {
-    MosaikSchedulerModule *schedulerModule = new MosaikSchedulerModule();
-    scheduler->setScenarioManager(new MosaikScenarioManager());
+TEST_F(CosimaSchedulerTest, TestHandleMsgFromCoupledSimulation) {
+    CosimaSchedulerModule *schedulerModule = new CosimaSchedulerModule();
+    scheduler->setScenarioManager(new CosimaScenarioManager());
     scheduler->setInterfaceModule(schedulerModule, true);
     // no messages received, method should return false
     std::vector<char> data;
-    ASSERT_EQ(scheduler->handleMsgFromMosaik(data), false);
+    ASSERT_EQ(scheduler->handleMsgFromCoupledSimulation(data), false);
     delete(schedulerModule);
 }
 
@@ -193,8 +193,8 @@ TEST_F(MosaikSchedulerTest, TestHandleMsgFromMosaik) {
  * Method is called with no event in FES first, then with message in FES.
  * asserted result: method should return nullptr first, then message object.
  */
-TEST_F(MosaikSchedulerTest, TestTakeNextEvent) {
-    MosaikSchedulerMock schedulerMock;
+TEST_F(CosimaSchedulerTest, TestTakeNextEvent) {
+    CosimaSchedulerMock schedulerMock;
     // no event in FES
     ASSERT_EQ(nullptr, schedulerMock.takeNextEvent());
 
