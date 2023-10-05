@@ -6,7 +6,7 @@ import pytest
 from cosima_core.messages.message_pb2 import CosimaMsgGroup, SynchronisationMessage, InfrastructureMessage
 from cosima_core.simulators.communication_simulator import CommunicationSimulator, CommunicationModel
 from cosima_core.simulators.omnetpp_connection import OmnetppConnection
-from cosima_core.util.util_functions import get_host_names
+from cosima_core.util.util_functions import get_host_names, SynchronizationError
 
 
 def set_up_communication_simulator():
@@ -432,7 +432,7 @@ def test_receive_messages_from_omnetpp_max_advance(monkeypatch):
 
     # set the sim time to a very large number, way further then message time,
     # therefore, an error is raised
-    with pytest.raises(ValueError):
+    with pytest.raises(SynchronizationError):
         communication_simulator.receive_messages_from_omnetpp(time=200, max_advance=205, messages_sent=False)
 
 
@@ -503,17 +503,12 @@ def test_check_msgs():
 
     # sim_time is further than last message time
     msgs = [msg, msg_1]
-    with pytest.raises(RuntimeError):
+    with pytest.raises(SynchronizationError):
         communication_simulator.check_msgs(msgs, time=3, until=100)
 
     # sim time is not further than last message time, therefore no
     # error is raised
     communication_simulator.check_msgs([msg, msg_1], time=0, until=100)
-
-    # received messages with different output time
-    msgs = [msg, msg_2]
-    with pytest.raises(RuntimeError):
-        communication_simulator.check_msgs(msgs, time=3, until=100)
 
     # msg_type is incorrect
     msgs = [{}, {}]

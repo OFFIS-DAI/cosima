@@ -180,8 +180,8 @@ class SynchronizationError(Exception):
         self.omnet_time = omnet_time
         self.mosaik_time = mosaik_time
         self.mes = mes
-        message = mes + "Simulation time in OMNeT++ and coupled simulation are out of sync! OMNeT++ time: " + \
-                  omnet_time + ", coupled simulation time: " + mosaik_time + \
+        message = str(mes) + "Simulation time in OMNeT++ and coupled simulation are out of sync! OMNeT++ time: " + \
+                  str(omnet_time) + ", coupled simulation time: " + str(mosaik_time) + \
                   "Please contact the cosima Developer Team: https://cosima.offis.de/pages/contact"
         self.message = message
         super().__init__(self.message)
