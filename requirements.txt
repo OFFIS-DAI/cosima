@@ -14,4 +14,4 @@ setuptools==65.6.3
 simpy==3.0.13
 termcolor==2.1.1
 mango-agents==1.0.0
-mango-library==1.0.0
+mango-library==1.1.0
