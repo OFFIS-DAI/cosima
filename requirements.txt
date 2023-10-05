@@ -6,7 +6,7 @@ mosaik_api==3.0.3
 mosaik-householdsim==2.1.0
 numpy==1.24.0
 pandas==1.5.2
-protobuf==3.20.3
+protobuf==3.13.0
 psutil==5.9.4
 pytest==7.2.0
 pytest_check==1.3.0
