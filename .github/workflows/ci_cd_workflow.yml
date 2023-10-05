@@ -1,0 +1,66 @@
+name: CI/CD Workflow
+
+on:
+  pull_request:
+    types: [ opened, reopened ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Build inet
+        run:
+          |-
+            if [ ! -d inet4/ ]; then
+              echo "Download and build inet $DOWNLOAD_AND_BUILD_INET"
+              wget https://github.com/inet-framework/inet/releases/download/v4.2.2/inet-4.2.2-src.tgz
+              tar -xzf inet-4.2.2-src.tgz
+              rm inet-4.2.2-src.tgz
+              dir
+              cd inet4
+              make makefiles
+              make -j$(grep -c proc /proc/cpuinfo)
+              make MODE=release -j$(grep -c proc /proc/cpuinfo)
+              cd ..
+              dir
+            fi
+
+            |-
+            if [ ! -d simulte/ ]; then
+              echo "Download and build SimuLTE"
+              wget https://github.com/inet-framework/simulte/releases/download/v1.2.0/simulte-1.2.0-src.tgz
+              tar -xzf simulte-1.2.0-src.tgz
+              rm simulte-1.2.0-src.tgz
+              dir
+              cd simulte
+              make makefiles
+              make -j$(grep -c proc /proc/cpuinfo)
+              make MODE=release -j$(grep -c proc /proc/cpuinfo)
+              cd ..
+              dir
+            fi
+
+
+
+      - name: Run Python tests
+        run: |
+          pytest  # Replace with your Python testing command
+
+      - name: Run C++ tests
+        run: |
+          ./build/test  # Replace with your C++ testing command
+
+# Add deployment steps here if needed
