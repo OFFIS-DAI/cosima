@@ -10,7 +10,7 @@ from cosima_core.util.general_config import PORT
 from cosima_core.util.util_functions import stop_omnet
 
 
-async def main():
+async def run_scenario():
     codec = JSON()
     codec.add_serializer(*AlphabetMessage.__serializer__())
 
@@ -39,5 +39,9 @@ async def main():
     stop_omnet(mango_communication_network.omnet_process)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+def main():
+    asyncio.run(run_scenario())
+
+
+if __name__ == '__main__':
+    main()
