@@ -129,3 +129,7 @@ async def wait_for_solution_confirmed(aggregation_role):
 
 def main():
     asyncio.run(run_scenario())
+
+
+if __name__ == '__main__':
+    main()

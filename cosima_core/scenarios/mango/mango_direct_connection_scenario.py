@@ -41,3 +41,7 @@ async def run_scenario():
 
 def main():
     asyncio.run(run_scenario())
+
+
+if __name__ == '__main__':
+    main()
