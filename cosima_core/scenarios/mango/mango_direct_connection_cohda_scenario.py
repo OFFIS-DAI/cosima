@@ -31,7 +31,7 @@ from cosima_core.util.util_functions import stop_omnet
 NUM_AGENTS = 41
 
 
-async def main():
+async def run_scenario():
     start = time.time()
     # create containers
     codec = mango.messages.codecs.JSON()
@@ -126,5 +126,6 @@ async def wait_for_solution_confirmed(aggregation_role):
     while len(aggregation_role._confirmed_cohda_solutions) == 0:
         await asyncio.sleep(0.05)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+
+def main():
+    asyncio.run(run_scenario())
