@@ -86,6 +86,7 @@ class ICTController(mosaik_api.Simulator):
                     'sim_time': event['start'],
                     'source': event['source'],
                     'destination': event['destination'],
+                    'start': event['start'],
                     'stop': event['stop'],
                     'interval': event['interval'],
                     'packet_length': event['packet_length']
