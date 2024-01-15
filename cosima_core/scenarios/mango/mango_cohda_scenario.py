@@ -24,7 +24,7 @@ for serializer in cohda_serializers:
 # [3200, 3200, 3200, 3200, 4000], same weight
 # Target 20 agents DayAhead:
 # [4000, 4000, 4000, 4000, 4000], same weight
-target = ([20000, 20000, 20000, 20000], [1, 1, 1, 1])
+target = ([3200 * NUMBER_OF_AGENTS/20 for _ in range(4)], [1, 1, 1, 1])
 
 
 def main():
