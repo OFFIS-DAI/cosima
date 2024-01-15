@@ -69,7 +69,7 @@ class ContainerSimulator(mosaik_api.Simulator):
 
     async def create_container_and_agent(self, codec):
         # container for agent
-        self._container = await create_container(addr=self._sid, connection_type='mosaik', codec=codec)
+        self._container = await create_container(addr=self._sid, connection_type='external_connection', codec=codec)
         agent_id = self._client_agent_mapping[self._sid]
 
         self._agent = RoleAgent(self._container, suggested_aid=agent_id)
