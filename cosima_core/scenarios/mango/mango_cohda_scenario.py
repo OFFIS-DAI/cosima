@@ -14,7 +14,7 @@ from mango_library.negotiation.termination import NegotiationTerminationDetector
 import cosima_core.util.general_config as cfg
 from cosima_core.util.scenario_setup_util import ScenarioHelper
 from cosima_core.util.util_functions import get_host_names
-from scenario_config import NUMBER_OF_AGENTS
+from scenario_config import NUMBER_OF_AGENTS, TRAFFIC_CONFIGURATION, USE_COMMUNICATION_SIMULATION
 
 codec = JSON()
 for serializer in cohda_serializers:
@@ -33,6 +33,8 @@ def main():
         'ContainerSim': {
             'python': 'cosima_core.simulators.mango_example.container_sim:ContainerSimulator',
         },
+        'ICTController': {
+            'python': 'cosima_core.simulators.ict_controller_simulator:ICTController'},
     }
 
     scenario_helper = ScenarioHelper()
@@ -42,6 +44,14 @@ def main():
     # adapt maximal byte size per msg group, since message get bigger if more agents are involved
     # TODO: change for other number of agents
     cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 30000
+
+    use_ict_simulator = (len(TRAFFIC_CONFIGURATION) > 0 and USE_COMMUNICATION_SIMULATION)
+
+    if use_ict_simulator:
+        ict_controller = world.start('ICTController',
+                                     infrastructure_changes=[],
+                                     traffic_configuration=TRAFFIC_CONFIGURATION).ICT()
+
 
     filenames = listdir(cfg.CHP_DATA)
     all_schedule_names = [filename for filename in filenames if filename.startswith("CHP")]
@@ -108,8 +118,16 @@ def main():
         world.connect(agent_models[name], communication_simulator, f'message', weak=True)
         world.connect(communication_simulator, agent_models[name], client_attribute_mapping[name])
 
+    if use_ict_simulator:
+        # connect ict controller with communication_simulator
+        world.connect(ict_controller, communication_simulator, f'ict_message', weak=True)
+        world.connect(communication_simulator, ict_controller, f'ctrl_message')
+
     # set initial event
     world.set_initial_event(agent_models['client0'].sid, time=0)
+
+    if use_ict_simulator:
+        world.set_initial_event(ict_controller.sid)
 
     scenario_helper.run_simulation()
     scenario_helper.shutdown_simulation()

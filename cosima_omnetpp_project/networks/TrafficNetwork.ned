@@ -466,6 +466,26 @@ network TrafficNetwork
         client99: StandardHost {
             @display("p=2156.663,2784.9082");
         }
+        traffic_device_5: StandardHost {
+            @display("p=3436.5957,1561.2365");
+
+        }
+        traffic_device_6: StandardHost {
+            @display("p=3525.6753,1186.1647");
+
+        }
+        traffic_device_7: StandardHost {
+            @display("p=3891.37,1064.2664");
+
+        }
+        traffic_device_8: StandardHost {
+            @display("p=4411.782,1026.7592");
+
+        }
+        traffic_device_9: StandardHost {
+            @display("p=3858.5515,2611.4375");
+
+        }
     connections:
         switch0.ethg++ <--> Eth100M <--> client2.ethg++;
         switch0.ethg++ <--> Eth100M <--> router0.ethg++;
@@ -607,4 +627,9 @@ network TrafficNetwork
         router22.ethg++ <--> Eth100M <--> client75.ethg++;
         router23.ethg++ <--> Eth100M <--> client99.ethg++;
         router23.ethg++ <--> Eth100M <--> client98.ethg++;
+        traffic_device_9.ethg++ <--> Eth100M <--> router19.ethg++;
+        traffic_device_5.ethg++ <--> Eth100M <--> router5.ethg++;
+        traffic_device_7.ethg++ <--> Eth100M <--> router8.ethg++;
+        traffic_device_8.ethg++ <--> Eth100M <--> router7.ethg++;
+        traffic_device_6.ethg++ <--> Eth100M <--> router5.ethg++;
 }
