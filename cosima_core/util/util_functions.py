@@ -115,7 +115,13 @@ def create_protobuf_messages(messages, current_step):
     for index, (message_dict, message_type) in enumerate(messages):
         msg_ids.append(message_dict['msg_id'])
         # fill protobuf message group msg_group
-        msg_group = make_protobuf_message_for_type(msg_group, message_type, message_dict)
+        try:
+            msg_group = make_protobuf_message_for_type(msg_group, message_type, message_dict)
+        except Exception as e:
+            print(e)
+            print(msg_group)
+            print(message_dict)
+            print(message_type)
         byte_size = msg_group.ByteSize()
         # if size of msg_group exceeds max -> make new msg group, add protobuf message to new message group
         # if size of msg_group is within boundaries -> keep msg_group, add current to list

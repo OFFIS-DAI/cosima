@@ -3,7 +3,6 @@ import math
 from copy import deepcopy
 
 import mosaik_api
-
 from mango import create_container
 from mango.agent.role import RoleAgent
 
