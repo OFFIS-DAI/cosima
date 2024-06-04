@@ -14,8 +14,8 @@ async def run_scenario():
     codec = JSON()
     codec.add_serializer(*AlphabetMessage.__serializer__())
 
-    active_container = await create_container(addr='client0', codec=codec, connection_type='mosaik')
-    reply_container = await create_container(addr='client1', codec=codec, connection_type='mosaik')
+    active_container = await create_container(addr='client0', codec=codec, connection_type='external_connection')
+    reply_container = await create_container(addr='client1', codec=codec, connection_type='external_connection')
 
     active_agent = RoleAgent(active_container, suggested_aid='activeAgent')
     reply_agent = RoleAgent(reply_container, suggested_aid='replyAgent')
