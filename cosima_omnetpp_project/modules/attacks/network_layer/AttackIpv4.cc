@@ -88,7 +88,7 @@ void AttackIpv4::handleMessageWhenUp(cMessage *msg) {
                         auto length = chunk->getChunkLength();
 
                         if (chunk->getClassName() == std::string("MosaikApplicationChunk")) {
-                            auto cosimaApplicationChunk = recvPacket->peekAt<CosimaApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION).get();
+                            auto cosimaApplicationChunk = recvPacket->peekAt<CosimaApplicationChunk>(offset, length).get();
                             scheduler->log("Falsification of the message. ", "info");
                             numFalsifictions = numFalsifictions + 1;
                             const auto &payload = inet::makeShared<CosimaApplicationChunk>();

@@ -561,6 +561,7 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         trafficEvent->setPacketLength(trafficMessage.packet_length());
         auto arrivalTime = (trafficMessage.start() * 1.0) / 1000;
         trafficEvent->setArrival(scenarioManagerObject->getId(), -1, arrivalTime);
+        std::cout << "traffic event inserted for " << arrivalTime << endl;
         log("CosimaScheduler: traffic event inserted for simtime " + std::to_string(arrivalTime) + " for " + trafficMessage.source() + " to " + trafficMessage.destination() + ".");
         getSimulation()->getFES()->insert(trafficEvent);
         insertedEvent = true;
@@ -622,6 +623,8 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         delete reconnectEvent;
     }
 
+    std::cout << "return " << pmsg_group.number_of_message_groups() << endl;
+
     return (pmsg_group.number_of_message_groups());
 }
 
@@ -663,7 +666,6 @@ cEvent *CosimaScheduler::takeNextEvent() {
             // type 3 means: destination unreachable
             // code 0 means: destination network unreachable
             if (strcmp(event->getName(),"ICMP-error-#1-type3-code0") == 0) {
-                log("error msg received");
                 if (event->isMessage()) {
                     omnetpp::cMessage *msg = dynamic_cast<omnetpp::cMessage *>(event);
                     if (typeid(*msg) == typeid(inet::Packet)) {

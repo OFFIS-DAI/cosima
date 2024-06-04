@@ -434,7 +434,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                 auto length = chunk->getChunkLength();
 
                 if (chunk->getClassName() == std::string("inet::SliceChunk")) {
-                    auto newPacket = recvPacket->peekData<inet::SliceChunk>(inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                    auto newPacket = recvPacket->peekData<inet::SliceChunk>();
                     auto encapsulatedChunk = newPacket->getChunk();
                     if (encapsulatedChunk->getClassName() != std::string("CosimaApplicationChunk")) {
                         if (encapsulatedChunk->getClassName() == std::string("inet::SequenceChunk")) {
@@ -446,7 +446,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                                 if (itemget->getClassName() == std::string("inet::SliceChunk")) {
                                     const inet::SliceChunk *encapsulatedSliceChunk = dynamic_cast<const inet::SliceChunk *>(itemget);
                                     auto appChunkInSliceChunk = encapsulatedSliceChunk->getChunk();
-                                    auto appChunk = appChunkInSliceChunk->peek<CosimaApplicationChunk>(inet::b(0), appChunkInSliceChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                                    auto appChunk = appChunkInSliceChunk->peek<CosimaApplicationChunk>(inet::b(0), appChunkInSliceChunk->getChunkLength());
                                     if (appChunk->isTrafficMessage()) {
                                         scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                                         return;
@@ -474,7 +474,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                             }
                         }
                     } else {
-                        auto appChunk = encapsulatedChunk->peek<CosimaApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength(), inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                        auto appChunk = encapsulatedChunk->peek<CosimaApplicationChunk>(inet::b(0), encapsulatedChunk->getChunkLength());
                         if (appChunk->isTrafficMessage()) {
                             scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                             return;
@@ -500,7 +500,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                         }
                     }
                 } else if (chunk->getClassName() == std::string("CosimaApplicationChunk")) {
-                    auto cosimaApplicationChunk = recvPacket->peekAt<CosimaApplicationChunk>(offset, length, inet::Chunk::PeekFlag::PF_ALLOW_SERIALIZATION);
+                    auto cosimaApplicationChunk = recvPacket->peekAt<CosimaApplicationChunk>(offset, length);
                     if (cosimaApplicationChunk->isTrafficMessage()) {
                         scheduler->log(nameStr + " received traffic message at time "+ simTime().str(), "info");
                         return;

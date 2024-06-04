@@ -19,11 +19,10 @@ import inet.common.scenario.ScenarioManager;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.ethernet.Eth10M;
 import inet.node.ethernet.Eth10M;
-import inet.node.ethernet.EtherLink;
-import inet.node.ethernet.EtherSwitch;
+import inet.node.ethernet.EthernetSwitch;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
-import inet.visualizer.integrated.IntegratedCanvasVisualizer;
+import inet.visualizer.canvas.integrated.IntegratedCanvasVisualizer;
 import modules.CosimaSchedulerModule;
 import modules.CosimaScenarioManager;
 
@@ -164,64 +163,64 @@ network DERNetwork
             @display("p=1256.3776,697.0869;is=l");
         }
 
-        switch0: EtherSwitch {
+        switch0: EthernetSwitch {
             @display("p=1871.7528,1316.3579;is=l");
         }
-        switch1: EtherSwitch {
+        switch1: EthernetSwitch {
             @display("p=450.8075,757.3566;is=l");
         }
-        switch2: EtherSwitch {
+        switch2: EthernetSwitch {
             @display("p=1256.3776,1775.1399;is=l");
         }
-        switch3: EtherSwitch {
+        switch3: EthernetSwitch {
             @display("p=2098.9597,454.41397;is=l");
         }
-        switch4: EtherSwitch {
+        switch4: EthernetSwitch {
             @display("p=1420.9453,270.4845;is=l");
         }
-        switch5: EtherSwitch {
+        switch5: EthernetSwitch {
             @display("p=2868.1572,1502.665;is=l");
         }
-        switch6: EtherSwitch {
+        switch6: EthernetSwitch {
             @display("p=3444.9062,1313.1172;is=l");
         }
-        switch7: EtherSwitch {
+        switch7: EthernetSwitch {
             @display("p=492.57483,1234.5547;is=l");
         }
-        switch8: EtherSwitch {
+        switch8: EthernetSwitch {
             @display("p=2935.6584,703.2597;is=l");
         }
-        switch9: EtherSwitch {
+        switch9: EthernetSwitch {
             @display("p=710.47266,757.3566;is=l");
         }
-        switch10: EtherSwitch {
+        switch10: EthernetSwitch {
             @display("p=2311.741,548.18195;is=l");
         }
-        switch11: EtherSwitch {
+        switch11: EthernetSwitch {
             @display("p=2935.6584,364.25247;is=l");
         }
-        switch12: EtherSwitch {
+        switch12: EthernetSwitch {
             @display("p=2986.149,937.6796;is=l");
         }
-        switch13: EtherSwitch {
+        switch13: EthernetSwitch {
             @display("p=2562.6362,1502.665;is=l");
         }
-        switch14: EtherSwitch {
+        switch14: EthernetSwitch {
             @display("p=2142.2373,1507.5002;is=l");
         }
-        switch15: EtherSwitch {
+        switch15: EthernetSwitch {
             @display("p=1759.9525,310.15555;is=l");
         }
-        switch16: EtherSwitch {
+        switch16: EthernetSwitch {
             @display("p=908.82794,454.41397;is=l");
         }
-        switch17: EtherSwitch {
+        switch17: EthernetSwitch {
             @display("p=198.3553,937.6796;is=l");
         }
-        switch18: EtherSwitch {
+        switch18: EthernetSwitch {
             @display("p=648.45294,1604.921;is=l");
         }
-        switch19: EtherSwitch {
+        switch19: EthernetSwitch {
             @display("p=1831.8795,2269.5852;is=l");
         }
 
@@ -241,16 +240,16 @@ network DERNetwork
         router5: Router {
             @display("p=3578.9614,2082.5315;is=l");
         }
-        switch20: EtherSwitch {
+        switch20: EthernetSwitch {
             @display("p=3965.5393,1190.9088;is=l");
         }
-        switch21: EtherSwitch {
+        switch21: EthernetSwitch {
             @display("p=4451.879,1845.5969;is=l");
         }
-        switch22: EtherSwitch {
+        switch22: EthernetSwitch {
             @display("p=3671.8647,2447.91;is=l");
         }
-        switch23: EtherSwitch {
+        switch23: EthernetSwitch {
             @display("p=2868.1572,2132.4126;is=l");
         }
         client20: StandardHost {
@@ -265,16 +264,16 @@ network DERNetwork
         client23: StandardHost {
             @display("p=2562.6362,2269.5854;i=abstract/pv;is=n");
         }
-        switch24: EtherSwitch {
+        switch24: EthernetSwitch {
             @display("p=2982.8835,2374.9587;is=l");
         }
-        switch25: EtherSwitch {
+        switch25: EthernetSwitch {
             @display("p=3299.0044,2407.3816;is=l");
         }
-        switch26: EtherSwitch {
+        switch26: EthernetSwitch {
             @display("p=4450.0083,2229.057;is=l");
         }
-        switch27: EtherSwitch {
+        switch27: EthernetSwitch {
             @display("p=4108.9473,1502.665;is=l");
         }
         client24: StandardHost {
@@ -304,27 +303,27 @@ network DERNetwork
         router11: Router {
             @display("p=1134.7926,3428.6948;is=l");
         }
-        switch28: EtherSwitch {
+        switch28: EthernetSwitch {
             @display("p=1669.7664,2682.974;is=l");
         }
 
 
-        switch29: EtherSwitch {
+        switch29: EthernetSwitch {
             @display("p=1758.9286,3420.589;is=l");
         }
 
 
-        switch30: EtherSwitch {
+        switch30: EthernetSwitch {
             @display("p=1531.9701,3688.076;is=l");
         }
 
 
-        switch31: EtherSwitch {
+        switch31: EthernetSwitch {
             @display("p=632.24164,3833.978;is=l");
         }
 
 
-        switch32: EtherSwitch {
+        switch32: EthernetSwitch {
             @display("p=494.44537,2593.8118;is=l");
         }
 
@@ -344,7 +343,7 @@ network DERNetwork
         client32: StandardHost {
             @display("p=186.43022,2723.5022;i=abstract/pv;is=n");
         }
-        switch33: EtherSwitch {
+        switch33: EthernetSwitch {
             @display("p=494.44537,3380.0608;is=l");
         }
 
@@ -352,7 +351,7 @@ network DERNetwork
         client33: StandardHost {
             @display("p=194.53587,3461.1174;i=abstract/pv;is=n");
         }
-        switch34: EtherSwitch {
+        switch34: EthernetSwitch {
             @display("p=1321.2229,4012.3025;is=l");
         }
 
@@ -393,28 +392,28 @@ network DERNetwork
         router26: Router {
             @display("p=4450.0083,3380.0608;is=l");
         }
-        switch35: EtherSwitch {
+        switch35: EthernetSwitch {
             @display("p=3598.9138,3169.3137;is=l");
         }
-        switch36: EtherSwitch {
+        switch36: EthernetSwitch {
             @display("p=5260.574,3039.623;is=l");
         }
-        switch37: EtherSwitch {
+        switch37: EthernetSwitch {
             @display("p=4960.665,3688.076;is=l");
         }
-        switch38: EtherSwitch {
+        switch38: EthernetSwitch {
             @display("p=3761.027,3607.0195;is=l");
         }
-        switch39: EtherSwitch {
+        switch39: EthernetSwitch {
             @display("p=4231.1553,3566.4912;is=l");
         }
-        switch40: EtherSwitch {
+        switch40: EthernetSwitch {
             @display("p=4636.4385,3947.4573;is=l");
         }
-        switch41: EtherSwitch {
+        switch41: EthernetSwitch {
             @display("p=5382.159,3509.7515;is=l");
         }
-        switch42: EtherSwitch {
+        switch42: EthernetSwitch {
             @display("p=5009.299,2682.974;is=l");
         }
         client41: StandardHost {
@@ -435,19 +434,19 @@ network DERNetwork
         router36: Router {
             @display("p=5868.499,1888.6191;is=l");
         }
-        switch43: EtherSwitch {
+        switch43: EthernetSwitch {
             @display("p=5260.574,932.15106;is=l");
         }
-        switch44: EtherSwitch {
+        switch44: EthernetSwitch {
             @display("p=5787.4424,932.15106;is=l");
         }
-        switch45: EtherSwitch {
+        switch45: EthernetSwitch {
             @display("p=5998.1895,2374.9587;is=l");
         }
-        switch46: EtherSwitch {
+        switch46: EthernetSwitch {
             @display("p=6241.3594,1078.053;is=l");
         }
-        switch47: EtherSwitch {
+        switch47: EthernetSwitch {
             @display("p=4798.552,1159.1096;is=l");
         }
         client43: StandardHost {
@@ -465,17 +464,14 @@ network DERNetwork
         client47: StandardHost {
             @display("p=6241.3594,2780.242;i=abstract/pv;is=n");
         }
-        switch48: EtherSwitch {
+        switch48: EthernetSwitch {
             @display("p=6322.416,2075.0493;is=l");
         }
-        switch49: EtherSwitch {
+        switch49: EthernetSwitch {
             @display("p=6322.416,1702.189;is=l");
         }
         client48: StandardHost {
             @display("p=6646.6426,2447.91;i=abstract/pv;is=n");
-        }
-        client49: StandardHost {
-            @display("p=6768.2275,1604.921;i=abstract/pv;is=n");
         }
     connections:
 
@@ -617,7 +613,6 @@ network DERNetwork
         switch44.ethg++ <--> Eth10M <--> client45.ethg++;
         switch46.ethg++ <--> Eth10M <--> client46.ethg++;
         router36.ethg++ <--> Eth10M <--> switch49.ethg++;
-        switch49.ethg++ <--> Eth10M <--> client49.ethg++;
         router36.ethg++ <--> Eth10M <--> switch48.ethg++;
         switch48.ethg++ <--> Eth10M <--> client48.ethg++;
         switch45.ethg++ <--> Eth10M <--> client47.ethg++;
