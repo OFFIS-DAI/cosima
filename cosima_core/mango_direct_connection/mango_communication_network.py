@@ -1,7 +1,7 @@
 import asyncio
 import math
 
-from mango.container.mosaik import MosaikContainer
+from mango.container.external_coupling import ExternalSchedulingContainer
 from typing import Dict
 
 import scenario_config
@@ -43,7 +43,7 @@ class MangoCommunicationNetwork:
            _number_of_messages_received (int): Count of received messages.
        """
 
-    def __init__(self, client_container_mapping: Dict[str, MosaikContainer], port: int):
+    def __init__(self, client_container_mapping: Dict[str, ExternalSchedulingContainer], port: int):
         """
             Initialize the MangoCommunicationNetwork instance.
 
@@ -63,7 +63,7 @@ class MangoCommunicationNetwork:
         self._msg_counter = 0
         self._waiting_msgs_counter = 0
         self.omnetpp_connection = OmnetppConnection(observer_port=port)
-        self.omnet_process = start_omnet('cmd', 'StarTopologyNetwork')
+        self.omnet_process = start_omnet('cmd', 'SimpleNetworkTCP')
         check_omnet_connection(port)
         self.omnetpp_connection.start_connection()
         self._sent_msgs_ids = list()
