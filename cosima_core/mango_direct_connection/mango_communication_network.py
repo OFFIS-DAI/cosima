@@ -155,9 +155,12 @@ class MangoCommunicationNetwork:
                                                for message in received_messages
                                                if type(message) == InfoMessage
                                                and message.receiver == container_name]
-            output = await container.step(simulation_time=self._current_time / MANGO_CONVERSION_FACTOR,
-                                          incoming_messages=received_messages_for_container)
-            self.process_mango_outputs(container_name, output)
+            try:
+                output = await container.step(simulation_time=self._current_time / MANGO_CONVERSION_FACTOR,
+                                              incoming_messages=received_messages_for_container)
+                self.process_mango_outputs(container_name, output)
+            except RuntimeError:
+                pass
         self._next_activities = [n_a for n_a in self._next_activities if n_a > self._current_time]
 
     def process_mango_outputs(self, container_name, output):

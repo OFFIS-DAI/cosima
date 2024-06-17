@@ -38,7 +38,7 @@ def start_omnet(start_mode, network):
 def stop_omnet(omnet_process):
     log("stop omnet process")
     if omnet_process:
-        # omnet_process.kill()
+        omnet_process.kill()
         os.killpg(os.getpgid(omnet_process.pid), signal.SIGTERM)
 
 
