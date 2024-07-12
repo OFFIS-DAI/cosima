@@ -1,9 +1,9 @@
-import ast
+import asyncio
 import asyncio
 import math
+from typing import Dict
 
 from mango.container.mosaik import MosaikContainer
-from typing import Dict
 
 import scenario_config
 from cosima_core.messages.message_pb2 import InfoMessage, InitialMessage, SynchronisationMessage
@@ -13,7 +13,7 @@ from cosima_core.util.util_functions import create_protobuf_messages, check_omne
     get_dict_from_protobuf_message
 
 UNTIL = 1000000000
-logging_level = 'info'
+logging_level = 'debug'
 
 
 class MangoCommunicationNetwork:

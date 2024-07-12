@@ -5,7 +5,7 @@ USE_COMMUNICATION_SIMULATION = True
 
 # can be 'warnings' (only warnings), 'info' (only important information), 'debug' (all information)
 LOGGING_LEVEL = 'debug'
-LOG_TO_FILE = True
+LOG_TO_FILE = False
 
 # end of simulation (in milliseconds)
 SIMULATION_END = 1000000
@@ -13,7 +13,7 @@ SIMULATION_END = 1000000
 # number of agents (depends on chosen network in OMNeT++)
 NUMBER_OF_AGENTS = 21
 
-WRITE_RESULTS = True
+WRITE_RESULTS = False
 
 # Track CPU and RAM during simulation run
 TRACK_PERFORMANCE = False
