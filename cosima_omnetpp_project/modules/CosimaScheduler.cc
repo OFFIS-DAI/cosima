@@ -417,6 +417,18 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         log("Setting logging level to: " + loggingLevelStr, "info");
         MAX_BYTE_SIZE_PER_MSG = initialMessage.max_byte_size_per_msg_group();
         log("Setting max byte size per message to " + std::to_string(MAX_BYTE_SIZE_PER_MSG));
+
+        // schedule max advance event
+        auto maxAdvance = (initialMessage.max_advance() * 1.0)/1000;
+        schedulerModuleObject->cancelMaxAdvanceEvent();
+        schedulerModuleObject->maxAdvEvent->setCtrlType(ControlType::MaxAdvance);
+        if (maxAdvance >= simTime().dbl()) {
+            schedulerModuleObject->maxAdvEvent->setArrival(schedulerModule->getId(), -1, maxAdvance);
+            getSimulation()->getFES()->insert(schedulerModuleObject->maxAdvEvent);
+            log("CosimaScheduler: max advanced event inserted for time " + std::to_string(maxAdvance) + " at simtime " + simTime().str());
+        } else {
+            log("max advance " + std::to_string(maxAdvance) + " at time " + simTime().str() + " not inserted");
+        }
     }
 
     // get info messages
@@ -552,6 +564,8 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         trafficEvent->setArrival(scenarioManagerObject->getId(), -1, arrivalTime);
         log("CosimaScheduler: traffic event inserted for simtime " + std::to_string(arrivalTime) + " for " + trafficMessage.source() + " to " + trafficMessage.destination() + ".");
         getSimulation()->getFES()->insert(trafficEvent);
+        insertedEvent = true;
+        eventScheduled = true;
     }
 
     for(auto i=0; i < pmsg_group.attack_messages().size(); i++) {

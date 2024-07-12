@@ -1,4 +1,3 @@
-import time
 from copy import deepcopy
 from os import listdir
 import pandas as pd
@@ -15,7 +14,7 @@ from mango_library.negotiation.termination import NegotiationTerminationDetector
 import cosima_core.util.general_config as cfg
 from cosima_core.util.scenario_setup_util import ScenarioHelper
 from cosima_core.util.util_functions import get_host_names
-from scenario_config import NUMBER_OF_AGENTS
+from scenario_config import NUMBER_OF_AGENTS, TRAFFIC_CONFIGURATION, USE_COMMUNICATION_SIMULATION
 
 codec = JSON()
 for serializer in cohda_serializers:
@@ -25,17 +24,7 @@ for serializer in cohda_serializers:
 # [3200, 3200, 3200, 3200, 4000], same weight
 # Target 20 agents DayAhead:
 # [4000, 4000, 4000, 4000, 4000], same weight
-target = ([110, 110, 110, 110, 110], [1, 1, 1, 1, 1, ],)
-
-s_array = [
-    [
-        [1, 1, 1, 1, 1],
-        [4, 3, 3, 3, 3],
-        [6, 6, 6, 6, 6],
-        [9, 8, 8, 8, 8],
-        [11, 11, 11, 11, 11],
-    ]
-]
+target = ([3200 * NUMBER_OF_AGENTS/20 for _ in range(4)], [1, 1, 1, 1])
 
 
 def main():
@@ -44,9 +33,9 @@ def main():
         'ContainerSim': {
             'python': 'cosima_core.simulators.mango_example.container_sim:ContainerSimulator',
         },
+        'ICTController': {
+            'python': 'cosima_core.simulators.ict_controller_simulator:ICTController'},
     }
-
-    start = time.time()
 
     scenario_helper = ScenarioHelper()
     world, communication_simulator, client_attribute_mapping, sim_config = \
@@ -54,7 +43,15 @@ def main():
 
     # adapt maximal byte size per msg group, since message get bigger if more agents are involved
     # TODO: change for other number of agents
-    cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 10000
+    cfg.MAX_BYTE_SIZE_PER_MSG_GROUP = 30000
+
+    use_ict_simulator = (len(TRAFFIC_CONFIGURATION) > 0 and USE_COMMUNICATION_SIMULATION)
+
+    if use_ict_simulator:
+        ict_controller = world.start('ICTController',
+                                     infrastructure_changes=[],
+                                     traffic_configuration=TRAFFIC_CONFIGURATION).ICT()
+
 
     filenames = listdir(cfg.CHP_DATA)
     all_schedule_names = [filename for filename in filenames if filename.startswith("CHP")]
@@ -104,7 +101,8 @@ def main():
             # is normal participant
             cohda_roles.append(NegotiationTerminationParticipantRole())
 
-            cohda_roles.append(COHDANegotiationRole(lambda: s_array[0], lambda s: True))
+            cohda_roles.append(COHDANegotiationRole(schedules_provider=schedule_provider(idx),
+                                                    local_acceptable_func=lambda s: True))
             cohda_roles.append(CoalitionParticipantRole())
 
         agent_models[current_container_name] = \
@@ -120,13 +118,19 @@ def main():
         world.connect(agent_models[name], communication_simulator, f'message', weak=True)
         world.connect(communication_simulator, agent_models[name], client_attribute_mapping[name])
 
+    if use_ict_simulator:
+        # connect ict controller with communication_simulator
+        world.connect(ict_controller, communication_simulator, f'ict_message', weak=True)
+        world.connect(communication_simulator, ict_controller, f'ctrl_message')
+
     # set initial event
     world.set_initial_event(agent_models['client0'].sid, time=0)
 
+    if use_ict_simulator:
+        world.set_initial_event(ict_controller.sid)
+
     scenario_helper.run_simulation()
     scenario_helper.shutdown_simulation()
-
-    print('time: ', time.time() - start)
 
 
 if __name__ == '__main__':
