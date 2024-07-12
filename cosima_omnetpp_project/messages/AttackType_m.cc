@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from messages/TimerType.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from messages/AttackType.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <memory>
 #include <type_traits>
-#include "TimerType_m.h"
+#include "AttackType_m.h"
 
 namespace omnetpp {
 
@@ -150,7 +150,7 @@ void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)
 
 }  // namespace omnetpp
 
-Register_Enum(TimerType, (TimerType::NoType, TimerType::Connect, TimerType::Send, TimerType::Close, TimerType::Renew, TimerType::ConnectTimeout));
+Register_Enum(AttackType, (AttackType::PacketDrop, AttackType::PacketFalsification, AttackType::PacketDelay));
 
 namespace omnetpp {
 

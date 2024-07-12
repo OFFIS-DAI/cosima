@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from messages/Timer.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from messages/AttackEvent.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <memory>
 #include <type_traits>
-#include "Timer_m.h"
+#include "AttackEvent_m.h"
 
 namespace omnetpp {
 
@@ -150,22 +150,22 @@ void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)
 
 }  // namespace omnetpp
 
-Register_Class(Timer)
+Register_Class(AttackEvent)
 
-Timer::Timer(const char *name, short kind) : ::omnetpp::cPacket(name, kind)
+AttackEvent::AttackEvent(const char *name, short kind) : ::omnetpp::cPacket(name, kind)
 {
 }
 
-Timer::Timer(const Timer& other) : ::omnetpp::cPacket(other)
+AttackEvent::AttackEvent(const AttackEvent& other) : ::omnetpp::cPacket(other)
 {
     copy(other);
 }
 
-Timer::~Timer()
+AttackEvent::~AttackEvent()
 {
 }
 
-Timer& Timer::operator=(const Timer& other)
+AttackEvent& AttackEvent::operator=(const AttackEvent& other)
 {
     if (this == &other) return *this;
     ::omnetpp::cPacket::operator=(other);
@@ -173,85 +173,99 @@ Timer& Timer::operator=(const Timer& other)
     return *this;
 }
 
-void Timer::copy(const Timer& other)
+void AttackEvent::copy(const AttackEvent& other)
 {
-    this->timerType = other.timerType;
-    this->receiverPort = other.receiverPort;
-    this->receiverName = other.receiverName;
-    this->messageId = other.messageId;
+    this->attackType = other.attackType;
+    this->attacked_module = other.attacked_module;
+    this->start = other.start;
+    this->stop = other.stop;
+    this->probability = other.probability;
 }
 
-void Timer::parsimPack(omnetpp::cCommBuffer *b) const
+void AttackEvent::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cPacket::parsimPack(b);
-    doParsimPacking(b,this->timerType);
-    doParsimPacking(b,this->receiverPort);
-    doParsimPacking(b,this->receiverName);
-    doParsimPacking(b,this->messageId);
+    doParsimPacking(b,this->attackType);
+    doParsimPacking(b,this->attacked_module);
+    doParsimPacking(b,this->start);
+    doParsimPacking(b,this->stop);
+    doParsimPacking(b,this->probability);
 }
 
-void Timer::parsimUnpack(omnetpp::cCommBuffer *b)
+void AttackEvent::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cPacket::parsimUnpack(b);
-    doParsimUnpacking(b,this->timerType);
-    doParsimUnpacking(b,this->receiverPort);
-    doParsimUnpacking(b,this->receiverName);
-    doParsimUnpacking(b,this->messageId);
+    doParsimUnpacking(b,this->attackType);
+    doParsimUnpacking(b,this->attacked_module);
+    doParsimUnpacking(b,this->start);
+    doParsimUnpacking(b,this->stop);
+    doParsimUnpacking(b,this->probability);
 }
 
-int Timer::getTimerType() const
+int AttackEvent::getAttackType() const
 {
-    return this->timerType;
+    return this->attackType;
 }
 
-void Timer::setTimerType(int timerType)
+void AttackEvent::setAttackType(int attackType)
 {
-    this->timerType = timerType;
+    this->attackType = attackType;
 }
 
-int Timer::getReceiverPort() const
+const char * AttackEvent::getAttacked_module() const
 {
-    return this->receiverPort;
+    return this->attacked_module.c_str();
 }
 
-void Timer::setReceiverPort(int receiverPort)
+void AttackEvent::setAttacked_module(const char * attacked_module)
 {
-    this->receiverPort = receiverPort;
+    this->attacked_module = attacked_module;
 }
 
-const char * Timer::getReceiverName() const
+int AttackEvent::getStart() const
 {
-    return this->receiverName.c_str();
+    return this->start;
 }
 
-void Timer::setReceiverName(const char * receiverName)
+void AttackEvent::setStart(int start)
 {
-    this->receiverName = receiverName;
+    this->start = start;
 }
 
-const char * Timer::getMessageId() const
+int AttackEvent::getStop() const
 {
-    return this->messageId.c_str();
+    return this->stop;
 }
 
-void Timer::setMessageId(const char * messageId)
+void AttackEvent::setStop(int stop)
 {
-    this->messageId = messageId;
+    this->stop = stop;
 }
 
-class TimerDescriptor : public omnetpp::cClassDescriptor
+double AttackEvent::getProbability() const
+{
+    return this->probability;
+}
+
+void AttackEvent::setProbability(double probability)
+{
+    this->probability = probability;
+}
+
+class AttackEventDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertyNames;
     enum FieldConstants {
-        FIELD_timerType,
-        FIELD_receiverPort,
-        FIELD_receiverName,
-        FIELD_messageId,
+        FIELD_attackType,
+        FIELD_attacked_module,
+        FIELD_start,
+        FIELD_stop,
+        FIELD_probability,
     };
   public:
-    TimerDescriptor();
-    virtual ~TimerDescriptor();
+    AttackEventDescriptor();
+    virtual ~AttackEventDescriptor();
 
     virtual bool doesSupport(omnetpp::cObject *obj) const override;
     virtual const char **getPropertyNames() const override;
@@ -277,24 +291,24 @@ class TimerDescriptor : public omnetpp::cClassDescriptor
     virtual void setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const override;
 };
 
-Register_ClassDescriptor(TimerDescriptor)
+Register_ClassDescriptor(AttackEventDescriptor)
 
-TimerDescriptor::TimerDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(Timer)), "omnetpp::cPacket")
+AttackEventDescriptor::AttackEventDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(AttackEvent)), "omnetpp::cPacket")
 {
     propertyNames = nullptr;
 }
 
-TimerDescriptor::~TimerDescriptor()
+AttackEventDescriptor::~AttackEventDescriptor()
 {
     delete[] propertyNames;
 }
 
-bool TimerDescriptor::doesSupport(omnetpp::cObject *obj) const
+bool AttackEventDescriptor::doesSupport(omnetpp::cObject *obj) const
 {
-    return dynamic_cast<Timer *>(obj)!=nullptr;
+    return dynamic_cast<AttackEvent *>(obj)!=nullptr;
 }
 
-const char **TimerDescriptor::getPropertyNames() const
+const char **AttackEventDescriptor::getPropertyNames() const
 {
     if (!propertyNames) {
         static const char *names[] = {  nullptr };
@@ -305,19 +319,19 @@ const char **TimerDescriptor::getPropertyNames() const
     return propertyNames;
 }
 
-const char *TimerDescriptor::getProperty(const char *propertyName) const
+const char *AttackEventDescriptor::getProperty(const char *propertyName) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     return base ? base->getProperty(propertyName) : nullptr;
 }
 
-int TimerDescriptor::getFieldCount() const
+int AttackEventDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 4+base->getFieldCount() : 4;
+    return base ? 5+base->getFieldCount() : 5;
 }
 
-unsigned int TimerDescriptor::getFieldTypeFlags(int field) const
+unsigned int AttackEventDescriptor::getFieldTypeFlags(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -326,15 +340,16 @@ unsigned int TimerDescriptor::getFieldTypeFlags(int field) const
         field -= base->getFieldCount();
     }
     static unsigned int fieldTypeFlags[] = {
-        FD_ISEDITABLE,    // FIELD_timerType
-        FD_ISEDITABLE,    // FIELD_receiverPort
-        FD_ISEDITABLE,    // FIELD_receiverName
-        FD_ISEDITABLE,    // FIELD_messageId
+        FD_ISEDITABLE,    // FIELD_attackType
+        FD_ISEDITABLE,    // FIELD_attacked_module
+        FD_ISEDITABLE,    // FIELD_start
+        FD_ISEDITABLE,    // FIELD_stop
+        FD_ISEDITABLE,    // FIELD_probability
     };
-    return (field >= 0 && field < 4) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 5) ? fieldTypeFlags[field] : 0;
 }
 
-const char *TimerDescriptor::getFieldName(int field) const
+const char *AttackEventDescriptor::getFieldName(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -343,26 +358,28 @@ const char *TimerDescriptor::getFieldName(int field) const
         field -= base->getFieldCount();
     }
     static const char *fieldNames[] = {
-        "timerType",
-        "receiverPort",
-        "receiverName",
-        "messageId",
+        "attackType",
+        "attacked_module",
+        "start",
+        "stop",
+        "probability",
     };
-    return (field >= 0 && field < 4) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 5) ? fieldNames[field] : nullptr;
 }
 
-int TimerDescriptor::findField(const char *fieldName) const
+int AttackEventDescriptor::findField(const char *fieldName) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     int baseIndex = base ? base->getFieldCount() : 0;
-    if (strcmp(fieldName, "timerType") == 0) return baseIndex + 0;
-    if (strcmp(fieldName, "receiverPort") == 0) return baseIndex + 1;
-    if (strcmp(fieldName, "receiverName") == 0) return baseIndex + 2;
-    if (strcmp(fieldName, "messageId") == 0) return baseIndex + 3;
+    if (strcmp(fieldName, "attackType") == 0) return baseIndex + 0;
+    if (strcmp(fieldName, "attacked_module") == 0) return baseIndex + 1;
+    if (strcmp(fieldName, "start") == 0) return baseIndex + 2;
+    if (strcmp(fieldName, "stop") == 0) return baseIndex + 3;
+    if (strcmp(fieldName, "probability") == 0) return baseIndex + 4;
     return base ? base->findField(fieldName) : -1;
 }
 
-const char *TimerDescriptor::getFieldTypeString(int field) const
+const char *AttackEventDescriptor::getFieldTypeString(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -371,15 +388,16 @@ const char *TimerDescriptor::getFieldTypeString(int field) const
         field -= base->getFieldCount();
     }
     static const char *fieldTypeStrings[] = {
-        "int",    // FIELD_timerType
-        "int",    // FIELD_receiverPort
-        "string",    // FIELD_receiverName
-        "string",    // FIELD_messageId
+        "int",    // FIELD_attackType
+        "string",    // FIELD_attacked_module
+        "int",    // FIELD_start
+        "int",    // FIELD_stop
+        "double",    // FIELD_probability
     };
-    return (field >= 0 && field < 4) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 5) ? fieldTypeStrings[field] : nullptr;
 }
 
-const char **TimerDescriptor::getFieldPropertyNames(int field) const
+const char **AttackEventDescriptor::getFieldPropertyNames(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -388,7 +406,7 @@ const char **TimerDescriptor::getFieldPropertyNames(int field) const
         field -= base->getFieldCount();
     }
     switch (field) {
-        case FIELD_timerType: {
+        case FIELD_attackType: {
             static const char *names[] = { "enum", "enum",  nullptr };
             return names;
         }
@@ -396,7 +414,7 @@ const char **TimerDescriptor::getFieldPropertyNames(int field) const
     }
 }
 
-const char *TimerDescriptor::getFieldProperty(int field, const char *propertyName) const
+const char *AttackEventDescriptor::getFieldProperty(int field, const char *propertyName) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -405,15 +423,15 @@ const char *TimerDescriptor::getFieldProperty(int field, const char *propertyNam
         field -= base->getFieldCount();
     }
     switch (field) {
-        case FIELD_timerType:
-            if (!strcmp(propertyName, "enum")) return "TimerType";
-            if (!strcmp(propertyName, "enum")) return "TimerType";
+        case FIELD_attackType:
+            if (!strcmp(propertyName, "enum")) return "AttackType";
+            if (!strcmp(propertyName, "enum")) return "AttackType";
             return nullptr;
         default: return nullptr;
     }
 }
 
-int TimerDescriptor::getFieldArraySize(omnetpp::any_ptr object, int field) const
+int AttackEventDescriptor::getFieldArraySize(omnetpp::any_ptr object, int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -421,13 +439,13 @@ int TimerDescriptor::getFieldArraySize(omnetpp::any_ptr object, int field) const
             return base->getFieldArraySize(object, field);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-void TimerDescriptor::setFieldArraySize(omnetpp::any_ptr object, int field, int size) const
+void AttackEventDescriptor::setFieldArraySize(omnetpp::any_ptr object, int field, int size) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -437,13 +455,13 @@ void TimerDescriptor::setFieldArraySize(omnetpp::any_ptr object, int field, int 
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
-        default: throw omnetpp::cRuntimeError("Cannot set array size of field %d of class 'Timer'", field);
+        default: throw omnetpp::cRuntimeError("Cannot set array size of field %d of class 'AttackEvent'", field);
     }
 }
 
-const char *TimerDescriptor::getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const
+const char *AttackEventDescriptor::getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -451,13 +469,13 @@ const char *TimerDescriptor::getFieldDynamicTypeString(omnetpp::any_ptr object, 
             return base->getFieldDynamicTypeString(object,field,i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
         default: return nullptr;
     }
 }
 
-std::string TimerDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const
+std::string AttackEventDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -465,17 +483,18 @@ std::string TimerDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int 
             return base->getFieldValueAsString(object,field,i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: return enum2string(pp->getTimerType(), "TimerType");
-        case FIELD_receiverPort: return long2string(pp->getReceiverPort());
-        case FIELD_receiverName: return oppstring2string(pp->getReceiverName());
-        case FIELD_messageId: return oppstring2string(pp->getMessageId());
+        case FIELD_attackType: return enum2string(pp->getAttackType(), "AttackType");
+        case FIELD_attacked_module: return oppstring2string(pp->getAttacked_module());
+        case FIELD_start: return long2string(pp->getStart());
+        case FIELD_stop: return long2string(pp->getStop());
+        case FIELD_probability: return double2string(pp->getProbability());
         default: return "";
     }
 }
 
-void TimerDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const
+void AttackEventDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -485,17 +504,18 @@ void TimerDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, 
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: pp->setTimerType((TimerType)string2enum(value, "TimerType")); break;
-        case FIELD_receiverPort: pp->setReceiverPort(string2long(value)); break;
-        case FIELD_receiverName: pp->setReceiverName((value)); break;
-        case FIELD_messageId: pp->setMessageId((value)); break;
-        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Timer'", field);
+        case FIELD_attackType: pp->setAttackType((AttackType)string2enum(value, "AttackType")); break;
+        case FIELD_attacked_module: pp->setAttacked_module((value)); break;
+        case FIELD_start: pp->setStart(string2long(value)); break;
+        case FIELD_stop: pp->setStop(string2long(value)); break;
+        case FIELD_probability: pp->setProbability(string2double(value)); break;
+        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'AttackEvent'", field);
     }
 }
 
-omnetpp::cValue TimerDescriptor::getFieldValue(omnetpp::any_ptr object, int field, int i) const
+omnetpp::cValue AttackEventDescriptor::getFieldValue(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -503,17 +523,18 @@ omnetpp::cValue TimerDescriptor::getFieldValue(omnetpp::any_ptr object, int fiel
             return base->getFieldValue(object,field,i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: return pp->getTimerType();
-        case FIELD_receiverPort: return pp->getReceiverPort();
-        case FIELD_receiverName: return pp->getReceiverName();
-        case FIELD_messageId: return pp->getMessageId();
-        default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'Timer' as cValue -- field index out of range?", field);
+        case FIELD_attackType: return pp->getAttackType();
+        case FIELD_attacked_module: return pp->getAttacked_module();
+        case FIELD_start: return pp->getStart();
+        case FIELD_stop: return pp->getStop();
+        case FIELD_probability: return pp->getProbability();
+        default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'AttackEvent' as cValue -- field index out of range?", field);
     }
 }
 
-void TimerDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, const omnetpp::cValue& value) const
+void AttackEventDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, const omnetpp::cValue& value) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -523,17 +544,18 @@ void TimerDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, c
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: pp->setTimerType((TimerType)value.intValue()); break;
-        case FIELD_receiverPort: pp->setReceiverPort(omnetpp::checked_int_cast<int>(value.intValue())); break;
-        case FIELD_receiverName: pp->setReceiverName(value.stringValue()); break;
-        case FIELD_messageId: pp->setMessageId(value.stringValue()); break;
-        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Timer'", field);
+        case FIELD_attackType: pp->setAttackType((AttackType)value.intValue()); break;
+        case FIELD_attacked_module: pp->setAttacked_module(value.stringValue()); break;
+        case FIELD_start: pp->setStart(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_stop: pp->setStop(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_probability: pp->setProbability(value.doubleValue()); break;
+        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'AttackEvent'", field);
     }
 }
 
-const char *TimerDescriptor::getFieldStructName(int field) const
+const char *AttackEventDescriptor::getFieldStructName(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -546,7 +568,7 @@ const char *TimerDescriptor::getFieldStructName(int field) const
     };
 }
 
-omnetpp::any_ptr TimerDescriptor::getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const
+omnetpp::any_ptr AttackEventDescriptor::getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -554,13 +576,13 @@ omnetpp::any_ptr TimerDescriptor::getFieldStructValuePointer(omnetpp::any_ptr ob
             return base->getFieldStructValuePointer(object, field, i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
         default: return omnetpp::any_ptr(nullptr);
     }
 }
 
-void TimerDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const
+void AttackEventDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -570,9 +592,9 @@ void TimerDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, int fi
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    AttackEvent *pp = omnetpp::fromAnyPtr<AttackEvent>(object); (void)pp;
     switch (field) {
-        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Timer'", field);
+        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'AttackEvent'", field);
     }
 }
 

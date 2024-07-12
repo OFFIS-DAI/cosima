@@ -1,3 +1,4 @@
+import ast
 import asyncio
 import math
 
@@ -63,7 +64,7 @@ class MangoCommunicationNetwork:
         self._msg_counter = 0
         self._waiting_msgs_counter = 0
         self.omnetpp_connection = OmnetppConnection(observer_port=port)
-        self.omnet_process = start_omnet('cmd', 'StarTopologyNetwork')
+        self.omnet_process = start_omnet('cmd', 'SimbenchNetwork')
         check_omnet_connection(port)
         self.omnetpp_connection.start_connection()
         self._sent_msgs_ids = list()
@@ -90,7 +91,9 @@ class MangoCommunicationNetwork:
         for container_name, container in self._client_container_mapping.items():
             output = await container.step(simulation_time=self._current_time, incoming_messages=[])
             self.process_mango_outputs(container_name, output)
+        print('send initial msg')
         await self.send_messages_to_omnetpp()
+
         await self.run_scenario()
 
     async def run_scenario(self):

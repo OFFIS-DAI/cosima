@@ -20,7 +20,7 @@ GRID_NAME = "large grid"
 
 CHP_DATA = str(ROOT_PATH.parent / 'data')
 
-INET_INSTALLATION_PATH = '/home/emilief/PycharmProjects/mosaik-integration/inet/src'
+INET_INSTALLATION_PATH = '/home/emilief/PycharmProjects/cosima/inet4.5/src'
 
 # path to store results to
 RESULTS_FILENAME = str(ROOT_PATH.parent / 'cosima_core' / 'results' / 'result_')

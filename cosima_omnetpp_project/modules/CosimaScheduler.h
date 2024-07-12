@@ -80,7 +80,7 @@ public:
     /**
      * Return a description for the GUI.
      */
-    virtual std::string info() const override;
+    virtual std::string info() const;
 
     /**
      * Called at the beginning of a simulation run.

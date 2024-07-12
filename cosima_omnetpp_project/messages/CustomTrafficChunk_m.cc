@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from messages/Timer.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from messages/CustomTrafficChunk.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <memory>
 #include <type_traits>
-#include "Timer_m.h"
+#include "CustomTrafficChunk_m.h"
 
 namespace omnetpp {
 
@@ -150,108 +150,187 @@ void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)
 
 }  // namespace omnetpp
 
-Register_Class(Timer)
+Register_Class(CustomTrafficChunk)
 
-Timer::Timer(const char *name, short kind) : ::omnetpp::cPacket(name, kind)
+CustomTrafficChunk::CustomTrafficChunk() : ::inet::FieldsChunk()
 {
 }
 
-Timer::Timer(const Timer& other) : ::omnetpp::cPacket(other)
+CustomTrafficChunk::CustomTrafficChunk(const CustomTrafficChunk& other) : ::inet::FieldsChunk(other)
 {
     copy(other);
 }
 
-Timer::~Timer()
+CustomTrafficChunk::~CustomTrafficChunk()
 {
 }
 
-Timer& Timer::operator=(const Timer& other)
+CustomTrafficChunk& CustomTrafficChunk::operator=(const CustomTrafficChunk& other)
 {
     if (this == &other) return *this;
-    ::omnetpp::cPacket::operator=(other);
+    ::inet::FieldsChunk::operator=(other);
     copy(other);
     return *this;
 }
 
-void Timer::copy(const Timer& other)
+void CustomTrafficChunk::copy(const CustomTrafficChunk& other)
 {
-    this->timerType = other.timerType;
+    this->msgId = other.msgId;
+    this->sender = other.sender;
+    this->senderPort = other.senderPort;
+    this->receiver = other.receiver;
     this->receiverPort = other.receiverPort;
-    this->receiverName = other.receiverName;
-    this->messageId = other.messageId;
+    this->packetSize_B = other.packetSize_B;
+    this->timeSend_ms = other.timeSend_ms;
+    this->reply = other.reply;
+    this->replyAfter = other.replyAfter;
 }
 
-void Timer::parsimPack(omnetpp::cCommBuffer *b) const
+void CustomTrafficChunk::parsimPack(omnetpp::cCommBuffer *b) const
 {
-    ::omnetpp::cPacket::parsimPack(b);
-    doParsimPacking(b,this->timerType);
+    ::inet::FieldsChunk::parsimPack(b);
+    doParsimPacking(b,this->msgId);
+    doParsimPacking(b,this->sender);
+    doParsimPacking(b,this->senderPort);
+    doParsimPacking(b,this->receiver);
     doParsimPacking(b,this->receiverPort);
-    doParsimPacking(b,this->receiverName);
-    doParsimPacking(b,this->messageId);
+    doParsimPacking(b,this->packetSize_B);
+    doParsimPacking(b,this->timeSend_ms);
+    doParsimPacking(b,this->reply);
+    doParsimPacking(b,this->replyAfter);
 }
 
-void Timer::parsimUnpack(omnetpp::cCommBuffer *b)
+void CustomTrafficChunk::parsimUnpack(omnetpp::cCommBuffer *b)
 {
-    ::omnetpp::cPacket::parsimUnpack(b);
-    doParsimUnpacking(b,this->timerType);
+    ::inet::FieldsChunk::parsimUnpack(b);
+    doParsimUnpacking(b,this->msgId);
+    doParsimUnpacking(b,this->sender);
+    doParsimUnpacking(b,this->senderPort);
+    doParsimUnpacking(b,this->receiver);
     doParsimUnpacking(b,this->receiverPort);
-    doParsimUnpacking(b,this->receiverName);
-    doParsimUnpacking(b,this->messageId);
+    doParsimUnpacking(b,this->packetSize_B);
+    doParsimUnpacking(b,this->timeSend_ms);
+    doParsimUnpacking(b,this->reply);
+    doParsimUnpacking(b,this->replyAfter);
 }
 
-int Timer::getTimerType() const
+int CustomTrafficChunk::getMsgId() const
 {
-    return this->timerType;
+    return this->msgId;
 }
 
-void Timer::setTimerType(int timerType)
+void CustomTrafficChunk::setMsgId(int msgId)
 {
-    this->timerType = timerType;
+    handleChange();
+    this->msgId = msgId;
 }
 
-int Timer::getReceiverPort() const
+const char * CustomTrafficChunk::getSender() const
+{
+    return this->sender.c_str();
+}
+
+void CustomTrafficChunk::setSender(const char * sender)
+{
+    handleChange();
+    this->sender = sender;
+}
+
+int CustomTrafficChunk::getSenderPort() const
+{
+    return this->senderPort;
+}
+
+void CustomTrafficChunk::setSenderPort(int senderPort)
+{
+    handleChange();
+    this->senderPort = senderPort;
+}
+
+const char * CustomTrafficChunk::getReceiver() const
+{
+    return this->receiver.c_str();
+}
+
+void CustomTrafficChunk::setReceiver(const char * receiver)
+{
+    handleChange();
+    this->receiver = receiver;
+}
+
+int CustomTrafficChunk::getReceiverPort() const
 {
     return this->receiverPort;
 }
 
-void Timer::setReceiverPort(int receiverPort)
+void CustomTrafficChunk::setReceiverPort(int receiverPort)
 {
+    handleChange();
     this->receiverPort = receiverPort;
 }
 
-const char * Timer::getReceiverName() const
+int CustomTrafficChunk::getPacketSize_B() const
 {
-    return this->receiverName.c_str();
+    return this->packetSize_B;
 }
 
-void Timer::setReceiverName(const char * receiverName)
+void CustomTrafficChunk::setPacketSize_B(int packetSize_B)
 {
-    this->receiverName = receiverName;
+    handleChange();
+    this->packetSize_B = packetSize_B;
 }
 
-const char * Timer::getMessageId() const
+int CustomTrafficChunk::getTimeSend_ms() const
 {
-    return this->messageId.c_str();
+    return this->timeSend_ms;
 }
 
-void Timer::setMessageId(const char * messageId)
+void CustomTrafficChunk::setTimeSend_ms(int timeSend_ms)
 {
-    this->messageId = messageId;
+    handleChange();
+    this->timeSend_ms = timeSend_ms;
 }
 
-class TimerDescriptor : public omnetpp::cClassDescriptor
+bool CustomTrafficChunk::getReply() const
+{
+    return this->reply;
+}
+
+void CustomTrafficChunk::setReply(bool reply)
+{
+    handleChange();
+    this->reply = reply;
+}
+
+int CustomTrafficChunk::getReplyAfter() const
+{
+    return this->replyAfter;
+}
+
+void CustomTrafficChunk::setReplyAfter(int replyAfter)
+{
+    handleChange();
+    this->replyAfter = replyAfter;
+}
+
+class CustomTrafficChunkDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertyNames;
     enum FieldConstants {
-        FIELD_timerType,
+        FIELD_msgId,
+        FIELD_sender,
+        FIELD_senderPort,
+        FIELD_receiver,
         FIELD_receiverPort,
-        FIELD_receiverName,
-        FIELD_messageId,
+        FIELD_packetSize_B,
+        FIELD_timeSend_ms,
+        FIELD_reply,
+        FIELD_replyAfter,
     };
   public:
-    TimerDescriptor();
-    virtual ~TimerDescriptor();
+    CustomTrafficChunkDescriptor();
+    virtual ~CustomTrafficChunkDescriptor();
 
     virtual bool doesSupport(omnetpp::cObject *obj) const override;
     virtual const char **getPropertyNames() const override;
@@ -277,24 +356,24 @@ class TimerDescriptor : public omnetpp::cClassDescriptor
     virtual void setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const override;
 };
 
-Register_ClassDescriptor(TimerDescriptor)
+Register_ClassDescriptor(CustomTrafficChunkDescriptor)
 
-TimerDescriptor::TimerDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(Timer)), "omnetpp::cPacket")
+CustomTrafficChunkDescriptor::CustomTrafficChunkDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(CustomTrafficChunk)), "inet::FieldsChunk")
 {
     propertyNames = nullptr;
 }
 
-TimerDescriptor::~TimerDescriptor()
+CustomTrafficChunkDescriptor::~CustomTrafficChunkDescriptor()
 {
     delete[] propertyNames;
 }
 
-bool TimerDescriptor::doesSupport(omnetpp::cObject *obj) const
+bool CustomTrafficChunkDescriptor::doesSupport(omnetpp::cObject *obj) const
 {
-    return dynamic_cast<Timer *>(obj)!=nullptr;
+    return dynamic_cast<CustomTrafficChunk *>(obj)!=nullptr;
 }
 
-const char **TimerDescriptor::getPropertyNames() const
+const char **CustomTrafficChunkDescriptor::getPropertyNames() const
 {
     if (!propertyNames) {
         static const char *names[] = {  nullptr };
@@ -305,19 +384,19 @@ const char **TimerDescriptor::getPropertyNames() const
     return propertyNames;
 }
 
-const char *TimerDescriptor::getProperty(const char *propertyName) const
+const char *CustomTrafficChunkDescriptor::getProperty(const char *propertyName) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     return base ? base->getProperty(propertyName) : nullptr;
 }
 
-int TimerDescriptor::getFieldCount() const
+int CustomTrafficChunkDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 4+base->getFieldCount() : 4;
+    return base ? 9+base->getFieldCount() : 9;
 }
 
-unsigned int TimerDescriptor::getFieldTypeFlags(int field) const
+unsigned int CustomTrafficChunkDescriptor::getFieldTypeFlags(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -326,15 +405,20 @@ unsigned int TimerDescriptor::getFieldTypeFlags(int field) const
         field -= base->getFieldCount();
     }
     static unsigned int fieldTypeFlags[] = {
-        FD_ISEDITABLE,    // FIELD_timerType
+        FD_ISEDITABLE,    // FIELD_msgId
+        FD_ISEDITABLE,    // FIELD_sender
+        FD_ISEDITABLE,    // FIELD_senderPort
+        FD_ISEDITABLE,    // FIELD_receiver
         FD_ISEDITABLE,    // FIELD_receiverPort
-        FD_ISEDITABLE,    // FIELD_receiverName
-        FD_ISEDITABLE,    // FIELD_messageId
+        FD_ISEDITABLE,    // FIELD_packetSize_B
+        FD_ISEDITABLE,    // FIELD_timeSend_ms
+        FD_ISEDITABLE,    // FIELD_reply
+        FD_ISEDITABLE,    // FIELD_replyAfter
     };
-    return (field >= 0 && field < 4) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 9) ? fieldTypeFlags[field] : 0;
 }
 
-const char *TimerDescriptor::getFieldName(int field) const
+const char *CustomTrafficChunkDescriptor::getFieldName(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -343,26 +427,36 @@ const char *TimerDescriptor::getFieldName(int field) const
         field -= base->getFieldCount();
     }
     static const char *fieldNames[] = {
-        "timerType",
+        "msgId",
+        "sender",
+        "senderPort",
+        "receiver",
         "receiverPort",
-        "receiverName",
-        "messageId",
+        "packetSize_B",
+        "timeSend_ms",
+        "reply",
+        "replyAfter",
     };
-    return (field >= 0 && field < 4) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 9) ? fieldNames[field] : nullptr;
 }
 
-int TimerDescriptor::findField(const char *fieldName) const
+int CustomTrafficChunkDescriptor::findField(const char *fieldName) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     int baseIndex = base ? base->getFieldCount() : 0;
-    if (strcmp(fieldName, "timerType") == 0) return baseIndex + 0;
-    if (strcmp(fieldName, "receiverPort") == 0) return baseIndex + 1;
-    if (strcmp(fieldName, "receiverName") == 0) return baseIndex + 2;
-    if (strcmp(fieldName, "messageId") == 0) return baseIndex + 3;
+    if (strcmp(fieldName, "msgId") == 0) return baseIndex + 0;
+    if (strcmp(fieldName, "sender") == 0) return baseIndex + 1;
+    if (strcmp(fieldName, "senderPort") == 0) return baseIndex + 2;
+    if (strcmp(fieldName, "receiver") == 0) return baseIndex + 3;
+    if (strcmp(fieldName, "receiverPort") == 0) return baseIndex + 4;
+    if (strcmp(fieldName, "packetSize_B") == 0) return baseIndex + 5;
+    if (strcmp(fieldName, "timeSend_ms") == 0) return baseIndex + 6;
+    if (strcmp(fieldName, "reply") == 0) return baseIndex + 7;
+    if (strcmp(fieldName, "replyAfter") == 0) return baseIndex + 8;
     return base ? base->findField(fieldName) : -1;
 }
 
-const char *TimerDescriptor::getFieldTypeString(int field) const
+const char *CustomTrafficChunkDescriptor::getFieldTypeString(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -371,15 +465,20 @@ const char *TimerDescriptor::getFieldTypeString(int field) const
         field -= base->getFieldCount();
     }
     static const char *fieldTypeStrings[] = {
-        "int",    // FIELD_timerType
+        "int",    // FIELD_msgId
+        "string",    // FIELD_sender
+        "int",    // FIELD_senderPort
+        "string",    // FIELD_receiver
         "int",    // FIELD_receiverPort
-        "string",    // FIELD_receiverName
-        "string",    // FIELD_messageId
+        "int",    // FIELD_packetSize_B
+        "int",    // FIELD_timeSend_ms
+        "bool",    // FIELD_reply
+        "int",    // FIELD_replyAfter
     };
-    return (field >= 0 && field < 4) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 9) ? fieldTypeStrings[field] : nullptr;
 }
 
-const char **TimerDescriptor::getFieldPropertyNames(int field) const
+const char **CustomTrafficChunkDescriptor::getFieldPropertyNames(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -388,15 +487,11 @@ const char **TimerDescriptor::getFieldPropertyNames(int field) const
         field -= base->getFieldCount();
     }
     switch (field) {
-        case FIELD_timerType: {
-            static const char *names[] = { "enum", "enum",  nullptr };
-            return names;
-        }
         default: return nullptr;
     }
 }
 
-const char *TimerDescriptor::getFieldProperty(int field, const char *propertyName) const
+const char *CustomTrafficChunkDescriptor::getFieldProperty(int field, const char *propertyName) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -405,15 +500,11 @@ const char *TimerDescriptor::getFieldProperty(int field, const char *propertyNam
         field -= base->getFieldCount();
     }
     switch (field) {
-        case FIELD_timerType:
-            if (!strcmp(propertyName, "enum")) return "TimerType";
-            if (!strcmp(propertyName, "enum")) return "TimerType";
-            return nullptr;
         default: return nullptr;
     }
 }
 
-int TimerDescriptor::getFieldArraySize(omnetpp::any_ptr object, int field) const
+int CustomTrafficChunkDescriptor::getFieldArraySize(omnetpp::any_ptr object, int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -421,13 +512,13 @@ int TimerDescriptor::getFieldArraySize(omnetpp::any_ptr object, int field) const
             return base->getFieldArraySize(object, field);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-void TimerDescriptor::setFieldArraySize(omnetpp::any_ptr object, int field, int size) const
+void CustomTrafficChunkDescriptor::setFieldArraySize(omnetpp::any_ptr object, int field, int size) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -437,13 +528,13 @@ void TimerDescriptor::setFieldArraySize(omnetpp::any_ptr object, int field, int 
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
-        default: throw omnetpp::cRuntimeError("Cannot set array size of field %d of class 'Timer'", field);
+        default: throw omnetpp::cRuntimeError("Cannot set array size of field %d of class 'CustomTrafficChunk'", field);
     }
 }
 
-const char *TimerDescriptor::getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const
+const char *CustomTrafficChunkDescriptor::getFieldDynamicTypeString(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -451,13 +542,13 @@ const char *TimerDescriptor::getFieldDynamicTypeString(omnetpp::any_ptr object, 
             return base->getFieldDynamicTypeString(object,field,i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
         default: return nullptr;
     }
 }
 
-std::string TimerDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const
+std::string CustomTrafficChunkDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -465,17 +556,22 @@ std::string TimerDescriptor::getFieldValueAsString(omnetpp::any_ptr object, int 
             return base->getFieldValueAsString(object,field,i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: return enum2string(pp->getTimerType(), "TimerType");
+        case FIELD_msgId: return long2string(pp->getMsgId());
+        case FIELD_sender: return oppstring2string(pp->getSender());
+        case FIELD_senderPort: return long2string(pp->getSenderPort());
+        case FIELD_receiver: return oppstring2string(pp->getReceiver());
         case FIELD_receiverPort: return long2string(pp->getReceiverPort());
-        case FIELD_receiverName: return oppstring2string(pp->getReceiverName());
-        case FIELD_messageId: return oppstring2string(pp->getMessageId());
+        case FIELD_packetSize_B: return long2string(pp->getPacketSize_B());
+        case FIELD_timeSend_ms: return long2string(pp->getTimeSend_ms());
+        case FIELD_reply: return bool2string(pp->getReply());
+        case FIELD_replyAfter: return long2string(pp->getReplyAfter());
         default: return "";
     }
 }
 
-void TimerDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const
+void CustomTrafficChunkDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, int i, const char *value) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -485,17 +581,22 @@ void TimerDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int field, 
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: pp->setTimerType((TimerType)string2enum(value, "TimerType")); break;
+        case FIELD_msgId: pp->setMsgId(string2long(value)); break;
+        case FIELD_sender: pp->setSender((value)); break;
+        case FIELD_senderPort: pp->setSenderPort(string2long(value)); break;
+        case FIELD_receiver: pp->setReceiver((value)); break;
         case FIELD_receiverPort: pp->setReceiverPort(string2long(value)); break;
-        case FIELD_receiverName: pp->setReceiverName((value)); break;
-        case FIELD_messageId: pp->setMessageId((value)); break;
-        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Timer'", field);
+        case FIELD_packetSize_B: pp->setPacketSize_B(string2long(value)); break;
+        case FIELD_timeSend_ms: pp->setTimeSend_ms(string2long(value)); break;
+        case FIELD_reply: pp->setReply(string2bool(value)); break;
+        case FIELD_replyAfter: pp->setReplyAfter(string2long(value)); break;
+        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'CustomTrafficChunk'", field);
     }
 }
 
-omnetpp::cValue TimerDescriptor::getFieldValue(omnetpp::any_ptr object, int field, int i) const
+omnetpp::cValue CustomTrafficChunkDescriptor::getFieldValue(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -503,17 +604,22 @@ omnetpp::cValue TimerDescriptor::getFieldValue(omnetpp::any_ptr object, int fiel
             return base->getFieldValue(object,field,i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: return pp->getTimerType();
+        case FIELD_msgId: return pp->getMsgId();
+        case FIELD_sender: return pp->getSender();
+        case FIELD_senderPort: return pp->getSenderPort();
+        case FIELD_receiver: return pp->getReceiver();
         case FIELD_receiverPort: return pp->getReceiverPort();
-        case FIELD_receiverName: return pp->getReceiverName();
-        case FIELD_messageId: return pp->getMessageId();
-        default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'Timer' as cValue -- field index out of range?", field);
+        case FIELD_packetSize_B: return pp->getPacketSize_B();
+        case FIELD_timeSend_ms: return pp->getTimeSend_ms();
+        case FIELD_reply: return pp->getReply();
+        case FIELD_replyAfter: return pp->getReplyAfter();
+        default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'CustomTrafficChunk' as cValue -- field index out of range?", field);
     }
 }
 
-void TimerDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, const omnetpp::cValue& value) const
+void CustomTrafficChunkDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, const omnetpp::cValue& value) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -523,17 +629,22 @@ void TimerDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int i, c
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
-        case FIELD_timerType: pp->setTimerType((TimerType)value.intValue()); break;
+        case FIELD_msgId: pp->setMsgId(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_sender: pp->setSender(value.stringValue()); break;
+        case FIELD_senderPort: pp->setSenderPort(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_receiver: pp->setReceiver(value.stringValue()); break;
         case FIELD_receiverPort: pp->setReceiverPort(omnetpp::checked_int_cast<int>(value.intValue())); break;
-        case FIELD_receiverName: pp->setReceiverName(value.stringValue()); break;
-        case FIELD_messageId: pp->setMessageId(value.stringValue()); break;
-        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Timer'", field);
+        case FIELD_packetSize_B: pp->setPacketSize_B(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_timeSend_ms: pp->setTimeSend_ms(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_reply: pp->setReply(value.boolValue()); break;
+        case FIELD_replyAfter: pp->setReplyAfter(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'CustomTrafficChunk'", field);
     }
 }
 
-const char *TimerDescriptor::getFieldStructName(int field) const
+const char *CustomTrafficChunkDescriptor::getFieldStructName(int field) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -546,7 +657,7 @@ const char *TimerDescriptor::getFieldStructName(int field) const
     };
 }
 
-omnetpp::any_ptr TimerDescriptor::getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const
+omnetpp::any_ptr CustomTrafficChunkDescriptor::getFieldStructValuePointer(omnetpp::any_ptr object, int field, int i) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -554,13 +665,13 @@ omnetpp::any_ptr TimerDescriptor::getFieldStructValuePointer(omnetpp::any_ptr ob
             return base->getFieldStructValuePointer(object, field, i);
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
         default: return omnetpp::any_ptr(nullptr);
     }
 }
 
-void TimerDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const
+void CustomTrafficChunkDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, int field, int i, omnetpp::any_ptr ptr) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     if (base) {
@@ -570,9 +681,9 @@ void TimerDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, int fi
         }
         field -= base->getFieldCount();
     }
-    Timer *pp = omnetpp::fromAnyPtr<Timer>(object); (void)pp;
+    CustomTrafficChunk *pp = omnetpp::fromAnyPtr<CustomTrafficChunk>(object); (void)pp;
     switch (field) {
-        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'Timer'", field);
+        default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'CustomTrafficChunk'", field);
     }
 }
 
