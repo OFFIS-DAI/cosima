@@ -43,7 +43,8 @@ class MangoCommunicationNetwork:
            _number_of_messages_received (int): Count of received messages.
        """
 
-    def __init__(self, client_container_mapping: Dict[str, ExternalSchedulingContainer], port: int):
+    def __init__(self, client_container_mapping: Dict[str, ExternalSchedulingContainer], port: int,
+                 start_timestamp=0.0):
         """
             Initialize the MangoCommunicationNetwork instance.
 
@@ -54,6 +55,7 @@ class MangoCommunicationNetwork:
                 MosaikContainer instances (mango).
                 port (int): The port to establish socket communication with OMNeT++.
         """
+        self._start_time = start_timestamp
         self._client_container_mapping = client_container_mapping
         self._next_activities = list()
         self._current_time = 0
@@ -88,7 +90,7 @@ class MangoCommunicationNetwork:
         scenario_config.LOGGING_LEVEL = logging_level
         self._message_buffer.append((initial_msg, InitialMessage))
         for container_name, container in self._client_container_mapping.items():
-            output = await container.step(simulation_time=self._current_time, incoming_messages=[])
+            output = await container.step(simulation_time=self._start_time, incoming_messages=[])
             self.process_mango_outputs(container_name, output)
         await self.send_messages_to_omnetpp()
         await self.run_scenario()
@@ -155,7 +157,7 @@ class MangoCommunicationNetwork:
                                                for message in received_messages
                                                if type(message) == InfoMessage
                                                and message.receiver == container_name]
-            output = await container.step(simulation_time=self._current_time / MANGO_CONVERSION_FACTOR,
+            output = await container.step(simulation_time=self._current_time / MANGO_CONVERSION_FACTOR + self._start_time,
                                           incoming_messages=received_messages_for_container)
             self.process_mango_outputs(container_name, output)
         self._next_activities = [n_a for n_a in self._next_activities if n_a > self._current_time]
@@ -179,12 +181,12 @@ class MangoCommunicationNetwork:
         for mango_output in output.messages:
             msg_output_time = math.ceil(mango_output.time * MANGO_CONVERSION_FACTOR)
             message_dict = {'msg_id': f'AgentMessage_{container_name}_{self._msg_counter}',
-                            'max_advance': next_activity,
-                            'sim_time': msg_output_time,
+                            'max_advance': next_activity - self._start_time,
+                            'sim_time': msg_output_time - self._start_time,
                             'sender': container_name,
                             'receiver': mango_output.receiver,
                             'content': mango_output.message.decode(),
-                            'creation_time': msg_output_time,
+                            'creation_time': msg_output_time - self._start_time,
                             }
             self._message_buffer.append((message_dict, InfoMessage))
             self._msg_counter += 1
@@ -207,7 +209,7 @@ class MangoCommunicationNetwork:
             waiting_msg = {
                 'msg_type': SynchronisationMessage.MsgType.WAITING,
                 'msg_id': f'WaitingMessage_{self._waiting_msgs_counter}',
-                'sim_time': self._current_time,
+                'sim_time': self._current_time - self._start_time,
                 'max_advance': UNTIL,
             }
             self._waiting_msgs_counter += 1
@@ -220,8 +222,8 @@ class MangoCommunicationNetwork:
             waiting_msg = {
                 'msg_type': SynchronisationMessage.MsgType.WAITING,
                 'msg_id': f'WaitingMessage_{self._waiting_msgs_counter}',
-                'sim_time': self._current_time,
-                'max_advance': smallest_next_activity,
+                'sim_time': self._current_time - self._start_time,
+                'max_advance': smallest_next_activity - self._start_time,
             }
             self._waiting_msgs_counter += 1
             self._message_buffer.append((waiting_msg, SynchronisationMessage))
