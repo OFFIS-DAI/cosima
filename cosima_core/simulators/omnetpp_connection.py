@@ -92,7 +92,7 @@ class OmnetppConnection:
         """
         self._done_receiving = False
         if data.count(b'END') == 0:
-            raise ValueError('No separation tag in message!')
+            raise ValueError(f'No separation tag in message! {data}')
         data_split = data.split(b'END')
         data = data_split[0]
         try:
@@ -135,7 +135,6 @@ class OmnetppConnection:
 
             def handle(self):
                 outer_class_self._done_receiving = False
-                prev_data = None
                 outer_class_self.current_received_msgs_groups = 0
 
                 while not outer_class_self._done_receiving:

@@ -100,7 +100,7 @@ async def run_scenario():
             else:
                 assert False, f"check_inbox terminated unexpectedly."
 
-    await asyncio.wait_for(wait_for_solution_confirmed(aggregation_role), timeout=10000000000000)
+    await asyncio.wait_for(wait_for_solution_confirmed(aggregation_role), timeout=10000000)
 
     # gracefully shutdown
     for a in cohda_agents + [controller_agent]:
@@ -115,8 +115,6 @@ async def run_scenario():
         list(cohda_agents[1]._role_context.get_or_create_model(CohdaNegotiationModel)._negotiations.values())[0]
     cluster_schedule = cohda_negotiation._memory.solution_candidate.cluster_schedule
     print('cluster schedule: ', cluster_schedule)
-
-    print('time: ', time.time() - start)
 
     mango_communication_network.omnetpp_connection.close_connection()
     stop_omnet(mango_communication_network.omnet_process)

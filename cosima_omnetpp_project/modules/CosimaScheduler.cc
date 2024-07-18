@@ -371,7 +371,6 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
     if (data.size() == 0) {
         return 0;
     }
-    log("CosimaScheduler: handles msg!!!");
     GOOGLE_PROTOBUF_VERIFY_VERSION;
     CosimaMsgGroup pmsg_group;
     auto success = pmsg_group.ParseFromString(data.data());

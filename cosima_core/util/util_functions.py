@@ -139,7 +139,7 @@ def create_protobuf_messages(messages, current_step):
     for msg_group in msg_groups:
         msg_group.number_of_message_groups = len(msg_groups)
         if msg_group.ByteSize() > cfg.MAX_BYTE_SIZE_PER_MSG_GROUP:
-            raise ValueError(f'Max byte size exceeded. Consider increasing the MAX_BYTE_SIZE_PER_MSG_GROUP.')
+            raise ValueError(f'Max byte size exceeded. Consider increasing the MAX_BYTE_SIZE_PER_MSG_GROUP. Size: {msg_group.ByteSize()}')
 
     return msg_groups, message_count, msg_ids
 

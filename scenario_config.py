@@ -4,7 +4,7 @@ from data.traffic_configurations.traffic_config import ddos_traffic_configuratio
 USE_COMMUNICATION_SIMULATION = True
 
 # can be 'warnings' (only warnings), 'info' (only important information), 'debug' (all information)
-LOGGING_LEVEL = 'debug'
+LOGGING_LEVEL = 'info'
 LOG_TO_FILE = False
 
 # end of simulation (in milliseconds)

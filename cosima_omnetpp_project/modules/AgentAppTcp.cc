@@ -178,6 +178,23 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double couplingSimTime) {
         timerMsg->setReceiverPort(receiverPort);
         timerMsg->setMessageId(msgId);
 
+        if (strcmp(senderName, "fgeneration_agent_1") == 0) {
+            std::cout << "start manipulation?" << endl;
+            double randomNumber = rand()/double(RAND_MAX);
+            std::cout << randomNumber << endl;
+            if (randomNumber <= 1.999) {
+                payload->setIsFalsified(true);
+                // TODO
+                int randNum = rand()%(150-100 + 1) + 100;
+                std::cout << "schedule at " << randNum << endl;
+                std::cout << "sim time " << simTime() << endl;
+                std::cout << "coupling sim time " << couplingSimTime << endl;
+                scheduleAt(simTime()+randNum, timerMsg);
+                delete msg;
+                return true;
+            }
+        }
+
         // schedule timer as self message
         scheduleAt(simTime(), timerMsg);
 

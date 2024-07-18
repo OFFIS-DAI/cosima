@@ -1,8 +1,24 @@
 import asyncio
+import math
+from typing import Dict
+
+import h5py
+import numpy as np
+
+from mango.container.mosaik import MosaikContainer
+
+import scenario_config
+from cosima_core.messages.message_pb2 import InfoMessage, InitialMessage, SynchronisationMessage
+from cosima_core.simulators.omnetpp_connection import OmnetppConnection
+from cosima_core.util.general_config import MAX_BYTE_SIZE_PER_MSG_GROUP, MANGO_CONVERSION_FACTOR
+from cosima_core.util.util_functions import create_protobuf_messages, check_omnet_connection, start_omnet, \
+    get_dict_from_protobuf_message
 import asyncio
 import math
 from typing import Dict
 
+import h5py
+import numpy as np
 from mango.container.mosaik import MosaikContainer
 
 import scenario_config
@@ -13,7 +29,7 @@ from cosima_core.util.util_functions import create_protobuf_messages, check_omne
     get_dict_from_protobuf_message
 
 UNTIL = 1000000000
-logging_level = 'debug'
+logging_level = 'info'
 
 
 class MangoCommunicationNetwork:
@@ -44,7 +60,7 @@ class MangoCommunicationNetwork:
            _number_of_messages_received (int): Count of received messages.
        """
 
-    def __init__(self, client_container_mapping: Dict[str, MosaikContainer], port: int):
+    def __init__(self, client_container_mapping: Dict[str, MosaikContainer], port: int, codec=None):
         """
             Initialize the MangoCommunicationNetwork instance.
 
@@ -70,6 +86,8 @@ class MangoCommunicationNetwork:
         self._sent_msgs_ids = list()
         self._number_of_messages_sent = 0
         self._number_of_messages_received = 0
+        self._codec = codec
+        self._manipulated_msg_ids = []
 
     async def _start_scenario(self):
         """
@@ -128,6 +146,13 @@ class MangoCommunicationNetwork:
             received_messages = self.omnetpp_connection.return_messages()
             if len(received_messages) != 0:
                 received_info_msgs = [msg for msg in received_messages if type(msg) == InfoMessage]
+                if received_info_msgs:
+                    for msg_obj in received_info_msgs:
+                        if msg_obj.is_falsified:
+                            a = str.encode(get_dict_from_protobuf_message(received_messages[0])['content'])
+                            message = self._codec.decode(a)
+                            content, acl_meta = message.split_content_and_meta()
+                            self._manipulated_msg_ids.append(acl_meta['conversation_id'])
                 self._number_of_messages_received += len(received_info_msgs)
                 self._current_time = received_messages[0].sim_time
 
@@ -263,3 +288,11 @@ class MangoCommunicationNetwork:
         self.omnetpp_connection.send_messages(serialized_messages)
         self._message_buffer.clear()
         return message_count
+
+    async def store_falsified_msgs(self, current_date_time):
+        db_file = 'results' + current_date_time + '.hdf5'
+        f = h5py.File(db_file, 'a')
+        general_group = f.create_group('falsified_msgs')
+        general_group.create_dataset('manipulated ids',
+                                     data=np.array(self._manipulated_msg_ids, dtype='S'))
+        f.close()

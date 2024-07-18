@@ -15,7 +15,7 @@ import simu5g.world.radio.LteChannelControl;
 import modules.CosimaSchedulerModule;
 import modules.CosimaScenarioManager;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
-
+import modules.attacks.Attacked_Ue;
 
 network SimbenchNetwork5G {
 parameters: @display("i=block/network2;bgb=517.3986958301393,730.220225494355");
@@ -95,6 +95,10 @@ submodules:
 	pdc_agent: NRUe {@display("p=258,365");}
 	grid_operator_agent: StandardHost {@display("p=100,100");}
 	substation_agent: NRUe {@display("p=258,365");}
+	client0: Attacked_Ue {@display("p=783,278");}
+    client1: Attacked_Ue {@display("p=710.1813,364.41876");}
+    client2: Attacked_Ue {@display("p=664.1625,288.55");}
+    client3: Attacked_Ue {@display("p=717.64374,277.35626");}
 connections:
 	server.pppg++ <--> Eth10G <--> router.pppg++;
 	router.pppg++ <--> Eth10G <--> upf.filterGate;
