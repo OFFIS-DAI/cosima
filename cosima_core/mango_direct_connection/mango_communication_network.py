@@ -4,21 +4,6 @@ from typing import Dict
 
 import h5py
 import numpy as np
-
-from mango.container.mosaik import MosaikContainer
-
-import scenario_config
-from cosima_core.messages.message_pb2 import InfoMessage, InitialMessage, SynchronisationMessage
-from cosima_core.simulators.omnetpp_connection import OmnetppConnection
-from cosima_core.util.general_config import MAX_BYTE_SIZE_PER_MSG_GROUP, MANGO_CONVERSION_FACTOR
-from cosima_core.util.util_functions import create_protobuf_messages, check_omnet_connection, start_omnet, \
-    get_dict_from_protobuf_message
-import asyncio
-import math
-from typing import Dict
-
-import h5py
-import numpy as np
 from mango.container.mosaik import MosaikContainer
 
 import scenario_config
