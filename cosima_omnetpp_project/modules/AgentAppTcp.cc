@@ -392,15 +392,20 @@ void AgentAppTcp::renew(const char *receiver_name) {
 }
 
 void AgentAppTcp::socketEstablished(inet::TcpSocket *socket) {
-    auto moduleName = scheduler->getModuleNameFromPort(socket->getRemotePort());
-    if(moduleName != "") {
-        auto timerMsg = getTimerForModuleId(getModuleIdByName(moduleName.c_str()));
-        // type 1 means send
-        timerMsg->setTimerType(1);
-        timerMsg->setReceiverName(moduleName.c_str());
-        timerMsg->setReceiverPort(socket->getRemotePort());
-        scheduleAt(simTime(), timerMsg);
+    int port = socket->getRemotePort();
+    if (std::find(waitingForPortsToConnectTo.begin(), waitingForPortsToConnectTo.end(), port) == waitingForPortsToConnectTo.end()) {
+    } else {
+        auto moduleName = scheduler->getModuleNameFromPort(socket->getRemotePort());
+        if(moduleName != "") {
+            auto timerMsg = getTimerForModuleId(getModuleIdByName(moduleName.c_str()));
+            // type 1 means send
+            timerMsg->setTimerType(1);
+            timerMsg->setReceiverName(moduleName.c_str());
+            timerMsg->setReceiverPort(socket->getRemotePort());
+            scheduleAt(simTime(), timerMsg);
+        }
     }
+
 }
 
 void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
