@@ -44,7 +44,7 @@ class MangoCommunicationNetwork:
        """
 
     def __init__(self, client_container_mapping: Dict[str, ExternalSchedulingContainer], port: int,
-                 start_timestamp=0.0):
+                 start_timestamp=0.0, start_mode='cmd', network='SimbenchNetwork'):
         """
             Initialize the MangoCommunicationNetwork instance.
 
@@ -65,7 +65,7 @@ class MangoCommunicationNetwork:
         self._msg_counter = 0
         self._waiting_msgs_counter = 0
         self.omnetpp_connection = OmnetppConnection(observer_port=port)
-        self.omnet_process = start_omnet('cmd', 'SimpleNetworkTCP')
+        self.omnet_process = start_omnet(start_mode, network)
         check_omnet_connection(port)
         self.omnetpp_connection.start_connection()
         self._sent_msgs_ids = list()
@@ -174,7 +174,7 @@ class MangoCommunicationNetwork:
                 output: Output received from the MosaikContainer's step.
         """
         if output.next_activity is None:
-            next_activity = UNTIL
+            next_activity = UNTIL + self._start_time
         else:
             next_activity = math.ceil(output.next_activity * MANGO_CONVERSION_FACTOR)
             self._next_activities.append(next_activity)
