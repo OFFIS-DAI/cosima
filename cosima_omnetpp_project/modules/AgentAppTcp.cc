@@ -184,8 +184,10 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double couplingSimTime) {
             std::cout << randomNumber << endl;
             if (randomNumber <= 1.999) {
                 payload->setIsFalsified(true);
-                // TODO
-                int randNum = rand()%(150-100 + 1) + 100;
+                float random = ((float) rand()) / (float) RAND_MAX;
+                float diff = 2 - 1.5;
+                float r = random * diff;
+                float randNum = 1.5 + r;
                 std::cout << "schedule at " << randNum << endl;
                 std::cout << "sim time " << simTime() << endl;
                 std::cout << "coupling sim time " << couplingSimTime << endl;
@@ -539,8 +541,7 @@ void AgentAppTcp::socketDataArrived(inet::TcpSocket *socket,
                         answer->setCreationTime(creationTime);
                         foundApplicationChunk = true;
                         receivedMsgIds.push_back(msgId);
-                        sendReply(answer);
-                    }
+                        sendReply(answer);                    }
 
                 } else {
                     offset += chunk->getChunkLength();
