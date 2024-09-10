@@ -5,7 +5,7 @@ from pathlib import Path
 MAX_BYTE_SIZE_PER_MSG_GROUP = 30000
 
 # units conversion factor for mango scenarios
-MANGO_CONVERSION_FACTOR = 1000
+MANGO_CONVERSION_FACTOR = 1
 
 # path to load content for agent messages from
 ROOT_PATH = Path(abspath(__file__)).parent.parent
@@ -20,7 +20,7 @@ GRID_NAME = "large grid"
 
 CHP_DATA = str(ROOT_PATH.parent / 'data')
 
-INET_INSTALLATION_PATH = '../inet4/src/inet'
+INET_INSTALLATION_PATH = '../inet4.5/src/inet'
 
 # path to store results to
 RESULTS_FILENAME = str(ROOT_PATH.parent / 'cosima_core' / 'results' / 'result_')
