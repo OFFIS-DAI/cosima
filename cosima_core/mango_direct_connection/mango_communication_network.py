@@ -128,7 +128,7 @@ class MangoCommunicationNetwork:
             if len(received_messages) != 0:
                 received_info_msgs = [msg for msg in received_messages if type(msg) == InfoMessage]
                 self._number_of_messages_received += len(received_info_msgs)
-                self._current_time = received_messages[0].sim_time
+                self._current_time = received_messages[0].sim_time + self._start_time
 
                 # perform container steps in mango
                 await self.step_mango_containers(received_messages=received_messages)
@@ -157,7 +157,7 @@ class MangoCommunicationNetwork:
                                                for message in received_messages
                                                if type(message) == InfoMessage
                                                and message.receiver == container_name]
-            output = await container.step(simulation_time=self._current_time / MANGO_CONVERSION_FACTOR + self._start_time,
+            output = await container.step(simulation_time=self._current_time,
                                           incoming_messages=received_messages_for_container)
             self.process_mango_outputs(container_name, output)
         self._next_activities = [n_a for n_a in self._next_activities if n_a > self._current_time]
