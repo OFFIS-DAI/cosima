@@ -164,15 +164,9 @@ class MangoCommunicationNetwork:
         if self.results_recorder:
             for message in received_messages:
                 if type(message) == InfoMessage:
-                    try:
-                        self.results_recorder.add_comm_results(msg_id=message.msg_id,
-                                                               time_send=message.creation_time,
-                                                               time_receive=message.sim_time,
-                                                               sender=message.sender,
-                                                               receiver=message.receiver,
-                                                               content=message.content)
-                    except AttributeError:
-                        print('!!', message)
+                    self.results_recorder.update_received_message(msg_id=message.msg_id,
+                                                                  time_receive=message.sim_time)
+
         for container_name, container in self._client_container_mapping.items():
             received_messages_for_container = [str.encode(get_dict_from_protobuf_message(message)['content'])
                                                for message in received_messages
@@ -201,7 +195,8 @@ class MangoCommunicationNetwork:
             self._next_activities.append(next_activity)
         for mango_output in output.messages:
             msg_output_time = math.ceil(mango_output.time * MANGO_CONVERSION_FACTOR)
-            message_dict = {'msg_id': f'AgentMessage_{container_name}_{self._msg_counter}',
+            msg_id = f'AgentMessage_{container_name}_{self._msg_counter}'
+            message_dict = {'msg_id': msg_id,
                             'max_advance': next_activity - self._start_time,
                             'sim_time': msg_output_time - self._start_time,
                             'sender': container_name,
@@ -209,6 +204,12 @@ class MangoCommunicationNetwork:
                             'content': mango_output.message.decode(),
                             'creation_time': msg_output_time - self._start_time,
                             }
+            self.results_recorder.add_comm_results(msg_id=msg_id,
+                                                   time_send=msg_output_time - self._start_time,
+                                                   time_receive=None,
+                                                   sender=container_name,
+                                                   receiver=mango_output.receiver,
+                                                   content=mango_output.message.decode())
             self._message_buffer.append((message_dict, InfoMessage))
             self._msg_counter += 1
 
