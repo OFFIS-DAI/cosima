@@ -623,8 +623,6 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         delete reconnectEvent;
     }
 
-    std::cout << "return " << pmsg_group.number_of_message_groups() << endl;
-
     return (pmsg_group.number_of_message_groups());
 }
 
