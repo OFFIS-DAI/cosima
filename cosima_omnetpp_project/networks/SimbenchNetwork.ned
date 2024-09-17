@@ -387,11 +387,16 @@ network SimbenchNetwork
             @display("p=355.322,225.072");
         }
 
+        control_system: StandardHost {
+            @display("p=315.25598,146.584");
+        }
+
     connections:
         server.pppg++ <--> Eth10G <--> router.pppg++;
         router.pppg++ <--> Eth10G <--> pgw.filterGate;
         pgw.pppg++ <--> Eth10G <--> eNB.ppp;
         router.pppg++ <--> Eth10G <--> market_agent.pppg++;
         router.pppg++ <--> Eth10G <--> aggregator_agent.pppg++;
+        router.pppg++ <--> Eth10G <--> control_system.pppg++;
         router.pppg++ <--> Eth10G <--> forecasting_agent.pppg++;
 }
