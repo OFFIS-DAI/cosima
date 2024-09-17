@@ -6,7 +6,7 @@ from mango.container.external_coupling import ExternalSchedulingContainer
 from typing import Dict
 
 import scenario_config
-from cosima_core.messages.message_pb2 import InfoMessage, InitialMessage, SynchronisationMessage
+from cosima_core.messages.message_pb2 import InfoMessage, InitialMessage, SynchronisationMessage, TrafficMessage
 from cosima_core.simulators.omnetpp_connection import OmnetppConnection
 from cosima_core.util.general_config import MAX_BYTE_SIZE_PER_MSG_GROUP, MANGO_CONVERSION_FACTOR
 from cosima_core.util.util_functions import create_protobuf_messages, check_omnet_connection, start_omnet, \
@@ -45,7 +45,7 @@ class MangoCommunicationNetwork:
 
     def __init__(self, client_container_mapping: Dict[str, ExternalSchedulingContainer], port: int,
                  duration_s: int, start_timestamp=0.0, start_mode='cmd', network='SimbenchNetwork',
-                 results_recorder=None):
+                 results_recorder=None, traffic_configuration=[]):
         """
             Initialize the MangoCommunicationNetwork instance.
 
@@ -76,6 +76,7 @@ class MangoCommunicationNetwork:
         self._sent_msgs_ids = list()
         self._number_of_messages_sent = 0
         self._number_of_messages_received = 0
+        self._traffic_configurations = traffic_configuration
 
         self.results_recorder = results_recorder
 
@@ -96,6 +97,19 @@ class MangoCommunicationNetwork:
         }
         scenario_config.LOGGING_LEVEL = logging_level
         self._message_buffer.append((initial_msg, InitialMessage))
+        for traffic_config in self._traffic_configurations:
+            traffic_message = {
+                'msg_id': f'traffic_msg_{self._msg_counter}',
+                'sim_time': 0,
+                'source': traffic_config['source'],
+                'destination': traffic_config['destination'],
+                'start': 0 if 'start' not in traffic_config else traffic_config['start'],
+                'stop': int(self._simulation_end_time - self._start_time) if 'stop' not in traffic_config else traffic_config['stop'],
+                'interval': traffic_config['interval_ms'],
+                'packet_length': traffic_config['packet_length_B']
+            }
+            self._msg_counter += 1
+            self._message_buffer.append((traffic_message, TrafficMessage))
         for container_name, container in self._client_container_mapping.items():
             output = await container.step(simulation_time=self._start_time, incoming_messages=[])
             self.process_mango_outputs(container_name, output)
