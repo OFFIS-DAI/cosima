@@ -112,7 +112,6 @@ class MangoCommunicationNetwork:
                                 'content': 't' * traffic_config['packet_length_B'],
                                 'creation_time': msg_dispatch_time,
                                 }
-                msg_dispatch_time += traffic_config['interval_ms']
                 self._msg_counter += 1
                 self._message_buffer.append((message_dict, InfoMessage))
                 self.results_recorder.add_comm_results(msg_id=msg_id,
@@ -121,6 +120,7 @@ class MangoCommunicationNetwork:
                                                        sender=source,
                                                        receiver=destination,
                                                        content=f'traffic with {traffic_config["packet_length_B"]} Bytes')
+                msg_dispatch_time += traffic_config['interval_ms']
         for container_name, container in self._client_container_mapping.items():
             output = await container.step(simulation_time=self._start_time, incoming_messages=[])
             self.process_mango_outputs(container_name, output)
