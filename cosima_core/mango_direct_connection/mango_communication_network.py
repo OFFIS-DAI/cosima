@@ -12,7 +12,7 @@ from cosima_core.util.general_config import MAX_BYTE_SIZE_PER_MSG_GROUP, MANGO_C
 from cosima_core.util.util_functions import create_protobuf_messages, check_omnet_connection, start_omnet, \
     get_dict_from_protobuf_message
 
-logging_level = 'info'
+logging_level = 'debug'
 
 
 class MangoCommunicationNetwork:
@@ -98,7 +98,7 @@ class MangoCommunicationNetwork:
         scenario_config.LOGGING_LEVEL = logging_level
         self._message_buffer.append((initial_msg, InitialMessage))
         for traffic_config in self._traffic_configurations:
-            msg_dispatch_time = math.ceil(traffic_config['start'])
+            msg_dispatch_time = 0 if 'start' not in traffic_config else math.ceil(traffic_config['start'])
             msg_end_time = int(self._simulation_end_time - self._start_time) if 'stop' not in traffic_config else traffic_config['stop']
             source = traffic_config['source']
             destination = traffic_config['destination']
