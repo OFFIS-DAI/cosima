@@ -98,18 +98,29 @@ class MangoCommunicationNetwork:
         scenario_config.LOGGING_LEVEL = logging_level
         self._message_buffer.append((initial_msg, InitialMessage))
         for traffic_config in self._traffic_configurations:
-            traffic_message = {
-                'msg_id': f'traffic_msg_{self._msg_counter}',
-                'sim_time': 0,
-                'source': traffic_config['source'],
-                'destination': traffic_config['destination'],
-                'start': 0 if 'start' not in traffic_config else traffic_config['start'],
-                'stop': int(self._simulation_end_time - self._start_time) if 'stop' not in traffic_config else traffic_config['stop'],
-                'interval': traffic_config['interval_ms'],
-                'packet_length': traffic_config['packet_length_B']
-            }
-            self._msg_counter += 1
-            self._message_buffer.append((traffic_message, TrafficMessage))
+            msg_dispatch_time = math.ceil(traffic_config['start'])
+            msg_end_time = int(self._simulation_end_time - self._start_time) if 'stop' not in traffic_config else traffic_config['stop']
+            source = traffic_config['source']
+            destination = traffic_config['destination']
+            while msg_dispatch_time < msg_end_time:
+                msg_id = f'TrafficMessage_{source}_{self._msg_counter}'
+                message_dict = {'msg_id': msg_id,
+                                'max_advance': self._simulation_end_time - self._start_time,
+                                'sim_time': msg_dispatch_time,
+                                'sender': source,
+                                'receiver': destination,
+                                'content': 't' * traffic_config['packet_length_B'],
+                                'creation_time': msg_dispatch_time,
+                                }
+                msg_dispatch_time += traffic_config['interval_ms']
+                self._msg_counter += 1
+                self._message_buffer.append((message_dict, InfoMessage))
+                self.results_recorder.add_comm_results(msg_id=msg_id,
+                                                       time_send=msg_dispatch_time,
+                                                       time_receive=None,
+                                                       sender=source,
+                                                       receiver=destination,
+                                                       content=f'traffic with {traffic_config["packet_length_B"]} Bytes')
         for container_name, container in self._client_container_mapping.items():
             output = await container.step(simulation_time=self._start_time, incoming_messages=[])
             self.process_mango_outputs(container_name, output)
