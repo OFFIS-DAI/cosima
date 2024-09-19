@@ -196,6 +196,7 @@ class MangoCommunicationNetwork:
             received_messages_for_container = [str.encode(get_dict_from_protobuf_message(message)['content'])
                                                for message in received_messages
                                                if type(message) == InfoMessage
+                                               and 'Traffic' not in message.msg_id
                                                and message.receiver == container_name]
             output = await container.step(simulation_time=self._current_time,
                                           incoming_messages=received_messages_for_container)
