@@ -1,5 +1,6 @@
 // network generated from Simbench network with code 1-LV-semiurb4--2-sw (Szenario 2: zukuenftige Netze mit starker Zunahme an DEAs sowie Verbreitung von Wärmepumpen oder Elektrofahrzeuge)
 package networks;
+import inet.common.scenario.ScenarioManager;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.networklayer.ipv4.RoutingTableRecorder;
 import inet.node.ethernet.Eth10G;
@@ -49,8 +50,11 @@ network SimbenchNetwork
         pgw: PgwStandard {
             @display("p=228.198,408.464");
         }
-        eNB: eNodeB {
-            @display("p=513.706,427.22;is=vl");
+        eNB1: eNodeB {
+            @display("p=566,408;is=vl");
+        }
+        eNB2: eNodeB {
+            @display("p=436,777;is=vl");
         }
         flexibility_agent_0: Ue {
             @display("p=730.442,615.822");
@@ -152,46 +156,46 @@ network SimbenchNetwork
             @display("p=172.972,632.494");
         }
         flexibility_agent_33: Ue {
-            @display("p=819.012,439.724");
+            @display("p=819.012,439.724;i=Agent");
         }
         flexibility_agent_34: Ue {
-            @display("p=819.012,439.724");
+            @display("p=819.012,439.724;i=Agent");
         }
         flexibility_agent_35: Ue {
-            @display("p=819.012,439.724");
+            @display("p=819.012,439.724;i=Agent");
         }
         flexibility_agent_36: Ue {
-            @display("p=819.012,439.724");
+            @display("p=819.012,439.724;i=Agent");
         }
         flexibility_agent_37: Ue {
-            @display("p=325.104,745.03");
+            @display("p=325.104,745.03;i=Agent");
         }
         flexibility_agent_38: Ue {
-            @display("p=315.726,634.578");
+            @display("p=315.726,634.578;i=Agent");
         }
         flexibility_agent_39: Ue {
-            @display("p=478.278,690.846");
+            @display("p=478.278,690.846;i=Agent");
         }
         flexibility_agent_40: Ue {
-            @display("p=228.198,633.536");
+            @display("p=228.198,633.536;i=Agent");
         }
         flexibility_agent_41: Ue {
-            @display("p=194.854,743.988");
+            @display("p=194.854,743.988;i=Agent");
         }
         flexibility_agent_42: Ue {
-            @display("p=566.848,691.888");
+            @display("p=566.848,691.888;i=Agent");
         }
         flexibility_agent_43: Ue {
-            @display("p=653.334,692.93");
+            @display("p=653.334,692.93;i=Agent");
         }
         flexibility_agent_44: Ue {
-            @display("p=653.334,692.93");
+            @display("p=653.334,692.93;i=Agent");
         }
         flexibility_agent_45: Ue {
-            @display("p=609.57,692.93");
+            @display("p=609.57,692.93;i=Agent");
         }
         flexibility_agent_46: Ue {
-            @display("p=609.57,692.93");
+            @display("p=609.57,692.93;i=Agent");
         }
         flexibility_agent_47: Ue {
             @display("p=130.25,632.494;i=Agent");
@@ -364,19 +368,6 @@ network SimbenchNetwork
         flexibility_agent_103: Ue {
             @display("p=480.362,535.588");
         }
-
-        storage_agent_0: Ue {
-            @display("p=653.334,692.93");
-        }
-        storage_agent_1: Ue {
-            @display("p=777.33203,317.81");
-        }
-        storage_agent_2: Ue {
-            @display("p=228.198,633.536");
-        }
-        storage_agent_3: Ue {
-            @display("p=733.568,316.768");
-        }
         market_agent: StandardHost {
             @display("p=205.274,211.526");
         }
@@ -391,12 +382,165 @@ network SimbenchNetwork
             @display("p=315.25598,146.584");
         }
 
+        attacker_0: Ue {
+            @display("p=762,506;i=,#EF2929");
+        }
+        attacker_1: Ue {
+            @display("p=373,482;i=,#EF2929");
+        }
+        attacker_2: Ue {
+            @display("p=874,389;i=,#EF2929");
+        }
+        attacker_3: Ue {
+            @display("p=748,254;i=,#EF2929");
+        }
+        attacker_4: Ue {
+            @display("p=777,721;i=,#EF2929");
+        }
+        attacker_5: Ue {
+            @display("p=940,420;i=,#EF2929");
+        }
+        attacker_6: Ue {
+            @display("p=503,627;i=,#EF2929");
+        }
+        attacker_7: Ue {
+            @display("p=893,721;i=,#EF2929");
+        }
+        attacker_8: Ue {
+            @display("p=595,615;i=,#EF2929");
+        }
+        attacker_9: Ue {
+            @display("p=551,762;i=,#EF2929");
+        }
+        attacker_10: Ue {
+            @display("p=445,359;i=,#EF2929");
+        }
+        attacker_11: Ue {
+            @display("p=451,470;i=,#EF2929");
+        }
+        attacker_12: Ue {
+            @display("p=922,506;i=,#EF2929");
+        }
+        attacker_13: Ue {
+            @display("p=846,548;i=,#EF2929");
+        }
+        attacker_14: Ue {
+            @display("p=684,777;i=,#EF2929");
+        }
+        attacker_15: Ue {
+            @display("p=98,482;i=,#EF2929");
+        }
+        attacker_16: Ue {
+            @display("p=68,568;i=,#EF2929");
+        }
+        attacker_17: Ue {
+            @display("p=130,700;i=,#EF2929");
+        }
+        attacker_18: Ue {
+            @display("p=864,870;i=,#EF2929");
+        }
+        attacker_19: Ue {
+            @display("p=774,848;i=,#EF2929");
+        }
+        attacker_20: Ue {
+            @display("p=172,475;i=,#EF2929");
+        }
+        attacker_21: Ue {
+            @display("p=911,793;i=,#EF2929");
+        }
+        attacker_22: Ue {
+            @display("p=358,348;i=,#EF2929");
+        }
+        attacker_23: Ue {
+            @display("p=882,242;i=,#EF2929");
+        }
+        attacker_24: Ue {
+            @display("p=929,359;i=,#EF2929");
+        }
+        attacker_25: Ue {
+            @display("p=465,282;i=,#EF2929");
+        }
+        attacker_26: Ue {
+            @display("p=846,682;i=,#EF2929");
+        }
+        attacker_27: Ue {
+            @display("p=358,808;i=,#EF2929");
+        }
+        attacker_28: Ue {
+            @display("p=503,746;i=,#EF2929");
+        }
+        attacker_29: Ue {
+            @display("p=179,548;i=,#EF2929");
+        }
+        attacker_30: Ue {
+            @display("p=281,682;i=,#EF2929");
+        }
+        attacker_31: Ue {
+            @display("p=846,799;i=,#EF2929");
+        }
+        attacker_32: Ue {
+            @display("p=684,848;i=,#EF2929");
+        }
+        attacker_33: Ue {
+            @display("p=270,527;i=,#EF2929");
+        }
+        attacker_34: Ue {
+            @display("p=503,827;i=,#EF2929");
+        }
+        attacker_35: Ue {
+            @display("p=536,482;i=,#EF2929");
+        }
+        attacker_36: Ue {
+            @display("p=820,254;i=,#EF2929");
+        }
+        attacker_37: Ue {
+            @display("p=911,296;i=,#EF2929");
+        }
+        attacker_38: Ue {
+            @display("p=730,377;i=,#EF2929");
+        }
+        attacker_39: Ue {
+            @display("p=791,377;i=,#EF2929");
+        }
+        attacker_40: Ue {
+            @display("p=281,451;i=,#EF2929");
+        }
+        attacker_41: Ue {
+            @display("p=663,597;i=,#EF2929");
+        }
+        attacker_42: Ue {
+            @display("p=325,566;i=,#EF2929");
+        }
+        attacker_43: Ue {
+            @display("p=762,777;i=,#EF2929");
+        }
+        attacker_44: Ue {
+            @display("p=580,839;i=,#EF2929");
+        }
+        attacker_45: Ue {
+            @display("p=911,615;i=,#EF2929");
+        }
+        attacker_46: Ue {
+            @display("p=774,566;i=,#EF2929");
+        }
+        attacker_47: Ue {
+            @display("p=422,848;i=,#EF2929");
+        }
+        attacker_48: Ue {
+            @display("p=345,870;i=,#EF2929");
+        }
+        attacker_49: Ue {
+            @display("p=611,768;i=,#EF2929");
+        }
     connections:
         server.pppg++ <--> Eth10G <--> router.pppg++;
         router.pppg++ <--> Eth10G <--> pgw.filterGate;
-        pgw.pppg++ <--> Eth10G <--> eNB.ppp;
+        pgw.pppg++ <--> Eth10G <--> eNB1.ppp;
+        pgw.pppg++ <--> Eth10G <--> eNB2.ppp;
         router.pppg++ <--> Eth10G <--> market_agent.pppg++;
         router.pppg++ <--> Eth10G <--> aggregator_agent.pppg++;
         router.pppg++ <--> Eth10G <--> control_system.pppg++;
         router.pppg++ <--> Eth10G <--> forecasting_agent.pppg++;
+        //# X2 connections
+        eNB1.x2++ <--> Eth10G <--> eNB2.x2++;
 }
