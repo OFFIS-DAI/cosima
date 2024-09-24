@@ -69,9 +69,17 @@ class OmnetppConnection:
     def sender(self, message):
         sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         time.sleep(1)
-        sender_socket.connect((self._servername, self.observer_port))
-        sender_socket.send(message)
-        sender_socket.close()
+        for i in range(100):
+            if not self._wait_for_messages:
+                break
+            try:
+                sender_socket.connect((self._servername, self.observer_port))
+                sender_socket.send(message)
+                sender_socket.close()
+                break
+            except Exception:
+                time.sleep(1)
+
 
     def return_messages(self):
         time.sleep(0.1)
