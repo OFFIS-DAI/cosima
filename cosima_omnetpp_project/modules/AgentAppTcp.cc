@@ -160,7 +160,7 @@ bool AgentAppTcp::handleSocketEvent(cMessage *msg, double couplingSimTime) {
         payload->setReceiver(receiverName);
         payload->setSender(senderName);
         payload->setChunkLength(inet::B(msgSize));
-        payload->setCreationTimeOmnetpp(couplingSimTime);
+        payload->setCreationTimeOmnetpp(simTime());
         payload->setMsgId(msgId);
         payload->setCreationTimeCoupling(creation_time);
         payload->setIsTrafficMessage(false);
