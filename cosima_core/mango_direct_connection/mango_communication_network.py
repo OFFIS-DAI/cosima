@@ -4,7 +4,7 @@ from typing import Dict
 
 import h5py
 import numpy as np
-from mango.container.mosaik import MosaikContainer
+from mango.container.external_coupling import ExternalSchedulingContainer
 
 import scenario_config
 from cosima_core.messages.message_pb2 import InfoMessage, InitialMessage, SynchronisationMessage
@@ -25,13 +25,13 @@ class MangoCommunicationNetwork:
        and interacts with an OMNeT++ simulation.
 
        Args:
-           client_container_mapping (Dict[str, MosaikContainer]): A mapping of client names (in OMNeT++) to
-           MosaikContainer instances (mango).
+           client_container_mapping (Dict[str, ExternalSchedulingContainer]): A mapping of client names (in OMNeT++) to
+           ExternalSchedulingContainer instances (mango).
            port (int): The port to establish socket communication with OMNeT++.
 
        Attributes:
-           _client_container_mapping (Dict[str, MosaikContainer]): A mapping of client names (in OMNeT++) to
-           MosaikContainer instances (mango).
+           _client_container_mapping (Dict[str, ExternalSchedulingContainer]): A mapping of client names (in OMNeT++) to
+           ExternalSchedulingContainer instances (mango).
            _next_activities (list): List of next activity timestamps from agents in mango containers.
            _current_time (int): Current simulation time in milliseconds.
            _loop (asyncio.AbstractEventLoop): The asyncio event loop.
@@ -45,15 +45,15 @@ class MangoCommunicationNetwork:
            _number_of_messages_received (int): Count of received messages.
        """
 
-    def __init__(self, client_container_mapping: Dict[str, MosaikContainer], port: int, codec=None):
+    def __init__(self, client_container_mapping: Dict[str, ExternalSchedulingContainer], port: int, codec=None):
         """
             Initialize the MangoCommunicationNetwork instance.
 
             This method sets up the necessary attributes.
 
             Args:
-                client_container_mapping (Dict[str, MosaikContainer]): A mapping of client names (in OMNeT++) to
-                MosaikContainer instances (mango).
+                client_container_mapping (Dict[str, ExternalSchedulingContainer]): A mapping of client names (in OMNeT++) to
+                ExternalSchedulingContainer instances (mango).
                 port (int): The port to establish socket communication with OMNeT++.
         """
         self._client_container_mapping = client_container_mapping
@@ -180,12 +180,12 @@ class MangoCommunicationNetwork:
         """
             Process the mango outputs from a container.
 
-            This method processes the output from a MosaikContainer, generates message
+            This method processes the output from a ExternalSchedulingContainer, generates message
             dictionaries, and adds them to the message buffer.
 
             Args:
                 container_name (str): Name of the container.
-                output: Output received from the MosaikContainer's step.
+                output: Output received from the ExternalSchedulingContainer's step.
         """
         if output.next_activity is None:
             next_activity = UNTIL
