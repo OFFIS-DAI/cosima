@@ -57,7 +57,7 @@ async def run_scenario():
     ]
 
     for c_i in range(NUM_AGENTS):
-        current_container = await create_container(addr=f"client{c_i}", codec=codec, connection_type='mosaik')
+        current_container = await create_container(addr=f"client{c_i}", codec=codec, connection_type='external_connection')
 
         if c_i == 0:
             # is controller agent
