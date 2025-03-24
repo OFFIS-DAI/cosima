@@ -16,7 +16,7 @@ private:
 
     cGate *connectGate;
 
-    std::string nameStr;
+    std::string clientName;
 
 public:
     AgentAppUdp(){}
@@ -36,7 +36,7 @@ protected:
      * a message from the scheduler. In that case the message is now
      * forwarded over the network in OMNeT++.
      */
-    void handleSocketEvent(cMessage *msg);
+    void handleSchedulerMessage(CosimaSchedulerMessage *msg);
     /**
      * Send a reply to the scheduler after sending a message
      * over the network.
@@ -51,9 +51,6 @@ protected:
      *      * Returns the number of init stages.
      */
     int numInitStages() const override { return (inet::NUM_INIT_STAGES); }
-    /**
-     * Called when data arrives at socket.
-     */
 
 };
 

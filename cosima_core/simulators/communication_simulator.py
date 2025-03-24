@@ -230,7 +230,7 @@ class CommunicationSimulator(mosaik_api.Simulator):
         """
         proto_messages, message_count, msg_ids = create_protobuf_messages(messages, self._current_time)
         equal_entries = [entry for entry in msg_ids if entry in self._sent_msgs_ids]
-        if len(equal_entries) != 0:
+        if equal_entries:
             raise Exception(f'Message ID {equal_entries} has already been sent! Please use unique ids.')
         self._sent_msgs_ids.extend(msg_ids)
         serialized_messages = list()

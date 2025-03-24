@@ -57,7 +57,7 @@ class OmnetppConnection:
         os.system('fuser -k 4243/tcp')
 
     def send_messages(self, messages):
-        sender_threads = list()
+        sender_threads = []
         for message in messages:
             sender_thread = threading.Thread(target=self.sender, args=(message,), daemon=True)
             sender_threads.append(sender_thread)

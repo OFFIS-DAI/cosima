@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 this_directory = Path(__file__).parent
-long_description = (this_directory / "description_pypi.md").read_text()
+long_description = (this_directory / "README.md").read_text()
 
 setuptools.setup(
     name="cosima",

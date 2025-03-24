@@ -10,7 +10,9 @@
  *  can be inserted into the simulation as events.
  *
  */
+#pragma once
 
+#include <vector>
 #ifndef __COSIMASCHEDULER_H__
 #define __COSIMASCHEDULER_H__
 
@@ -18,6 +20,10 @@
 #include <omnetpp/platdep/sockets.h>
 
 #include "../messages/CosimaSchedulerMessage_m.h"
+#include "../messages/message.pb.h"
+
+class CosimaSchedulerModule;
+class CosimaScenarioManager;
 
 class CosimaScheduler : public omnetpp::cScheduler
 {
@@ -31,12 +37,12 @@ public:
      * Helper functions for testing.
      */
     std::list<omnetpp::cModule*> getModuleList();
-    omnetpp::cModule *getSchedulerModule() { return schedulerModule; }
+    CosimaSchedulerModule *getSchedulerModule() { return schedulerModule; }
     bool socketToCoupledSimulationInitialized() { return listenerSocket != -1; }
 
 protected:
-    omnetpp::cModule *schedulerModule;
-    omnetpp::cModule *scenarioManager;
+    CosimaSchedulerModule *schedulerModule;
+    CosimaScenarioManager *scenarioManager;
 
     // save time of last event
     omnetpp::simtime_t lastEventTime;
@@ -47,14 +53,9 @@ protected:
     SOCKET listenerSocket;
 
     // registered modules that represent agents in coupled simulation
-    int numModules;
-    std::list<omnetpp::cModule*> modules = {};
+    std::map<std::string, omnetpp::cSimpleModule*> modules = {};
 
     std::list<omnetpp::cModule*> attackModules = {};
-
-    // event at socket
-    omnetpp::cMessage *socketEvent;
-
 
     /**
      * Initialize socket in order to listen to incoming connections from coupled simulation.
@@ -80,7 +81,7 @@ public:
     /**
      * Return a description for the GUI.
      */
-    virtual std::string info() const override;
+    virtual std::string str() const override;
 
     /**
      * Called at the beginning of a simulation run.
@@ -108,11 +109,11 @@ public:
     void log(std::string info, std::string logLevel);
 
     /**
-     * To be called from the module which wishes to receive data from the
-     * socket. The method must be called from the module's initialize()
-     * function.
+     * Use the given `CosimaSchedulerModule` as the scheduler module for this
+     * simulation. This method should be called once from a
+     * `CosimaSchedulerModule`'s `initialize` method.
      */
-    virtual void setInterfaceModule(omnetpp::cModule *module, bool isCosimaSchedulerModule);
+    virtual void setSchedulerModule(CosimaSchedulerModule* mod);
 
     /***
      * Register network layer for attack at CosimaScheduler.
@@ -123,12 +124,16 @@ public:
     /**
      * Register scenario manager at scheduler module.
      */
-    virtual void setScenarioManager(omnetpp::cModule *manager);
+    virtual void setScenarioManager(CosimaScenarioManager *manager);
 
     /**
-     * To be called within the scheduler to add module to list of modules.
+     * Make a simple module available to mosaik using the entity ID `eid`.
+     * Whenever data arrives for that entity, it will be scheduled as a self-
+     * message of type `CosimaSchedulerMessage` at the given module.
+     * This method should be called in the registered module's `initialize`
+     * method.
      */
-    virtual void addModule(omnetpp::cModule *module);
+    virtual void registerModule(std::string eid, omnetpp::cSimpleModule *module);
 
     /**
      * Searches in registered modules for module with given port and returns name of module.
@@ -138,9 +143,10 @@ public:
     virtual std::string getModuleNameFromPort(int port);
 
     /**
-     * To be called to get receiver module from message.
+     * Find the (registered) App module based on the name of the client
+     * containing it.
      */
-    virtual omnetpp::cModule *getReceiverModule(std::string module_name);
+    virtual omnetpp::cSimpleModule *getModuleByEid(std::string module_name);
     omnetpp::cModule *getAttackNetworkLayerModule(std::string module_name);
 
 
@@ -193,6 +199,16 @@ public:
      * Getter method
      */
     bool getUntilReached();
+
+private:
+    void handleInitialMessage(InitialMessage);
+    void handleInfoMessage(InfoMessage);
+    void handleSynchronizationMessage(SynchronisationMessage);
+    void handleInfrastructureMessage(InfrastructureMessage, std::vector<std::string>, std::vector<std::string>);
+    void handleTrafficMessage(TrafficMessage);
+    void handleAttackMessage(AttackMessage);
+
+    void handleIcmpError(omnetpp::cEvent*);
 
 };
 

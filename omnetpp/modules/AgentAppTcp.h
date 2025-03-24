@@ -20,6 +20,7 @@
 #include "inet/applications/tcpapp/TcpAppBase.h"
 #include "inet/common/lifecycle/LifecycleOperation.h"
 #include "inet/common/lifecycle/NodeStatus.h"
+#include "omnetpp/simtime.h"
 
 using namespace omnetpp;
 
@@ -57,6 +58,11 @@ protected:
      * Overwrites message of TcpAppBase to be able to receive messages from CosimaScheduler
      */
     void handleMessageWhenUp(cMessage *msg) override;
+    /*
+     * Transmit a message from the coupled simulation through the communication
+     * simulation.
+     */
+    void transmitMessage(CosimaSchedulerMessage*, SimTime);
     /**
      * Handle event from socket to coupled simulation.
      */

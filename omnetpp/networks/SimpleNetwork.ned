@@ -17,16 +17,16 @@ package networks;
 import inet.common.scenario.ScenarioManager;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.node.ethernet.Eth10M;
-import inet.node.ethernet.EtherLink;
-import inet.node.ethernet.EtherSwitch;
+import inet.node.ethernet.EthernetLink;
+import inet.node.ethernet.EthernetSwitch;
 import inet.node.inet.Router;
 import inet.node.inet.StandardHost;
-import inet.visualizer.integrated.IntegratedCanvasVisualizer;
+import inet.visualizer.canvas.integrated.IntegratedCanvasVisualizer;
 import modules.CosimaSchedulerModule;
 import modules.CosimaScenarioManager;
 
 
-channel MyEth10M extends EtherLink
+channel MyEth10M extends EthernetLink
 {
     datarate = 10Mbps;
 }
@@ -65,10 +65,10 @@ network SimpleNetwork
         router1: Router {
             @display("p=300.3,452.4");
         }
-        switch0: EtherSwitch {
+        switch0: EthernetSwitch {
             @display("p=800.8,657.8");
         }
-        switch1: EtherSwitch {
+        switch1: EthernetSwitch {
             @display("p=495.3,109.2");
         }
 
@@ -85,13 +85,13 @@ network SimpleNetwork
         router4: Router {
             @display("p=284.69998,128.7");
         }
-        switch2: EtherSwitch {
+        switch2: EthernetSwitch {
             @display("p=613.6,315.9");
         }
         client3: StandardHost {
             @display("p=1030.9,942.5");
         }
-        switch3: EtherSwitch {
+        switch3: EthernetSwitch {
             @display("p=688.32007,876.82263");
         }
     connections:
@@ -142,10 +142,10 @@ network DisconnectedClient2_SimpleNetwork
         router1: Router {
             @display("p=300.3,452.4");
         }
-        switch0: EtherSwitch {
+        switch0: EthernetSwitch {
             @display("p=800.8,657.8");
         }
-        switch1: EtherSwitch {
+        switch1: EthernetSwitch {
             @display("p=495.3,109.2");
         }
 
@@ -162,7 +162,7 @@ network DisconnectedClient2_SimpleNetwork
         router4: Router {
             @display("p=284.69998,128.7");
         }
-        switch2: EtherSwitch {
+        switch2: EthernetSwitch {
             @display("p=613.6,315.9");
         }
     connections:
@@ -210,10 +210,10 @@ network DisconnectedClient1_SimpleNetwork
         router1: Router {
             @display("p=300.3,452.4");
         }
-        switch0: EtherSwitch {
+        switch0: EthernetSwitch {
             @display("p=800.8,657.8");
         }
-        switch1: EtherSwitch {
+        switch1: EthernetSwitch {
             @display("p=495.3,109.2");
         }
 
@@ -230,7 +230,7 @@ network DisconnectedClient1_SimpleNetwork
         router4: Router {
             @display("p=284.69998,128.7");
         }
-        switch2: EtherSwitch {
+        switch2: EthernetSwitch {
             @display("p=613.6,315.9");
         }
     connections:
@@ -276,10 +276,10 @@ network SmallNetwork
         router0: Router {
             @display("p=463,359");
         }
-        switch0: EtherSwitch {
+        switch0: EthernetSwitch {
             @display("p=582,358");
         }
-        switch1: EtherSwitch {
+        switch1: EthernetSwitch {
             @display("p=307,341");
         }
 
@@ -287,7 +287,7 @@ network SmallNetwork
             @display("p=98,209");
         }
 
-        switch2: EtherSwitch {
+        switch2: EthernetSwitch {
             @display("p=543,477");
         }
     connections:

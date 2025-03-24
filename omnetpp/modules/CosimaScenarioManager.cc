@@ -38,7 +38,7 @@ void CosimaScenarioManager::handleMessage(cMessage *msg) {
     if (typeid(*msg) == typeid(CosimaCtrlEvent)) {
         CosimaCtrlEvent *event = dynamic_cast<CosimaCtrlEvent *>(msg);
         if (event->getCtrlType() == 6) {
-            cModule *receiverModule = scheduler->getReceiverModule(event->getSource());
+            cModule *receiverModule = scheduler->getModuleByEid(event->getSource());
             if (receiverModule == nullptr) {
                 throw cRuntimeError("CosimaScenarioManager: Can't resolve traffic sender module.");
             }

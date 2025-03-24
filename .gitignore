@@ -11,7 +11,7 @@ mosaik_omnetpp_files/src/results/**
 /cosima_omnetpp_project/out/clang-release/MosaikMessage_m.h.d
 /cosima_omnetpp_project/out/clang-release/MosaikMessage_m.o
 /cosima_omnetpp_project/.qtenvrc
-/cosima_omnetpp_project/.cproject 
+/cosima_omnetpp_project/.cproject
 /cosima_omnetpp_project/.oppbuildspec
 *.o.d
 *.o
@@ -32,3 +32,15 @@ mosaik_omnetpp_files/src/results/**
 /tests/unit_tests/simulators/.pytest_cache
 /tests/integration_tests/snapshot.txt
 /scenario_config.py
+
+omnetpp/out/**
+omnetpp/cosima
+omnetpp/cosima_dbg
+omnetpp/Makefile
+omnetpp/.settings/**
+**/.clangd
+
+log.txt
+omnetpp/results/**
+**/*_m.h
+**/*_m.cc

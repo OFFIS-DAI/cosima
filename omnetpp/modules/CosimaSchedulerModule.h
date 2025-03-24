@@ -5,6 +5,7 @@
  *  This is needed in order to schedule the max advance event.
  *
  */
+#pragma once
 
 #ifndef COSIMASCHEDULERMODULE_H_
 #define COSIMASCHEDULERMODULE_H_
