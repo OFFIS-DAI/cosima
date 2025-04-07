@@ -1,11 +1,11 @@
 import mosaik_api
 
-from cosima_core.util.general_config import MAX_BYTE_SIZE_PER_MSG_GROUP
+from cosima.util.general_config import MAX_BYTE_SIZE_PER_MSG_GROUP
 import scenario_config
-from cosima_core.messages.message_pb2 import InitialMessage, InfoMessage, SynchronisationMessage, \
+from cosima.messages.message_pb2 import InitialMessage, InfoMessage, SynchronisationMessage, \
     InfrastructureMessage, TrafficMessage, AttackMessage
-from cosima_core.simulators.omnetpp_connection import OmnetppConnection
-from cosima_core.util.util_functions import log, create_protobuf_messages, get_dict_from_protobuf_message, SynchronizationError
+from cosima.simulators.omnetpp_connection import OmnetppConnection
+from cosima.util.util_functions import log, create_protobuf_messages, get_dict_from_protobuf_message, SynchronizationError
 
 META = {
     'models': {

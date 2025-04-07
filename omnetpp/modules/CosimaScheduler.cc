@@ -134,11 +134,11 @@ class Message
     int getByteSize()
     {
         if (this->messageType == INFO_MESSAGE) {
-            return this->infoMessage.ByteSize();
+            return this->infoMessage.ByteSizeLong();
         } else if (this->messageType == SYNCHRONISATION_MESSAGE) {
-            return this->syncMessage.ByteSize();
+            return this->syncMessage.ByteSizeLong();
         } else if (this->messageType == INFRASTRUCTURE_MESSAGE) {
-            return this->infrastructureMessage.ByteSize();
+            return this->infrastructureMessage.ByteSizeLong();
         }
         return -1;
     }
@@ -283,13 +283,14 @@ CosimaScheduler::getCurrentTime()
     strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", timeinfo);
 
     char currentTime[84] = "";
-    sprintf(currentTime, "%s:%d", buffer, usec);
+    sprintf(currentTime, "%s.%.6d", buffer, usec);
     return currentTime;
 }
 
 void
 CosimaScheduler::log(std::string info, std::string logLevel)
 {
+    EV << info << endl;
     if (logLevel.compare("warning") == 0) {
         printCurrentTime();
         std::cout << FRED(" | WARNING | OMNeT++: ");
@@ -709,6 +710,13 @@ CosimaScheduler::informCoupledSimulationAboutWaiting()
 void
 CosimaScheduler::receive()
 {
+    auto future = std::async(std::launch::async, Receiver(), listenerSocket);
+    std::future_status status;
+    do {
+        getEnvir()->idle();
+        status = future.wait_for(std::chrono::milliseconds(100));
+    } while (status != std::future_status::ready);
+
     while (true) {
         auto returnValue =
           std::async(std::launch::async, Receiver(), listenerSocket).get();
@@ -791,6 +799,8 @@ CosimaScheduler::handleIcmpError(omnetpp::cEvent* event)
 cEvent*
 CosimaScheduler::takeNextEvent()
 {
+    receive();
+
     if (!initialMessageReceived) {
         log("Waiting for connection");
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -819,6 +829,11 @@ CosimaScheduler::takeNextEvent()
 
     // use time of next event
     simtime_t eventSimtime = event->getArrivalTime();
+    if (eventSimtime >= maxAdvance) {
+        getEnvir()->idle();
+        return nullptr;
+    }
+
     if (eventSimtime < lastEventTime) {
         log("ATTENTION! CosimaScheduler: try to execute event for "
             "simtime " +
@@ -829,11 +844,6 @@ CosimaScheduler::takeNextEvent()
                             "https://cosima.offis.de/pages/contact");
     }
     lastEventTime = eventSimtime;
-
-    if (not eventScheduled) {
-        receive();
-    }
-
 
     // remove event from FES and return it
     cEvent* tmp = sim->getFES()->removeFirst();
@@ -921,7 +931,7 @@ CosimaScheduler::sendMsgGroupToCoupledSimulation(bool isWaitingMsg)
     for (auto message : newMessagesList) {
         auto byteSize = message.getByteSize();
 
-        if (msgGroup.ByteSize() + byteSize >=
+        if (msgGroup.ByteSizeLong() + byteSize >=
             (MAX_BYTE_SIZE_PER_MSG -
              100)) { // 3 bytes for "END" and 3 bytes for size
             // message size is outside boundaries -> add message group to list
@@ -1014,9 +1024,6 @@ CosimaScheduler::sendToCoupledSimulation(cMessage* reply)
             log("CosimaScheduler: request to send message for the same step " +
                 std::to_string(currentStep) + " back to coupled simulation.");
         } else {
-            // get scheduler module
-            CosimaSchedulerModule* schedulerModuleObject =
-              dynamic_cast<CosimaSchedulerModule*>(schedulerModule);
             CosimaCtrlEvent* endOfStepEvent =
               new CosimaCtrlEvent("send message to coupled simulation");
             endOfStepEvent->setCtrlType(ControlType::EndOfStep);

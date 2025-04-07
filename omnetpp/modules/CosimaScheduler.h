@@ -47,6 +47,19 @@ protected:
     // save time of last event
     omnetpp::simtime_t lastEventTime;
 
+    /**
+     * Current max_advance; this should be the minimum of the max_advance from
+     * mosaik and the time of our current reply.
+     */
+    omnetpp::simtime_t maxAdvance;
+
+    /**
+     * List of messages to be sent back to mosaik.  When adding a reply to this
+     * list, `maxAdvance` should be updated to the reply's time if it is earlier
+     * than the current `maxAdvance`.
+     */
+    std::list<void*> replies;
+
     // TCP port to coupled simulation
     auto static const PORT = 4242;
 

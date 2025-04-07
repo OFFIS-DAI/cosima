@@ -3,8 +3,8 @@ from pathlib import Path
 import argparse
 
 import scenario_config
-from cosima_core.scenarios import communication_scenario, negotiation_scenario
-from cosima_core.scenarios.mango import mango_cohda_scenario, mango_simple_scenario, mango_units_scenario, \
+from cosima.scenarios import communication_scenario, negotiation_scenario
+from cosima.scenarios.mango import mango_cohda_scenario, mango_simple_scenario, mango_units_scenario, \
     mango_direct_connection_scenario, mango_direct_connection_cohda_scenario
 
 
