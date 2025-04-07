@@ -1,0 +1,14 @@
+#
+# Customize Makefile to link with winsoc on windows
+# but without the user interface libs (oppenvir, oppcmdenv, opptkenv)
+#
+
+ifeq ($(PLATFORM),win32.x86_64)
+OMNETPP_LIBS += -lwsock32
+endif
+MSGC:=$(MSGC) --msg6
+
+# Compile Protobuf message
+# I'm not sure this is the cleanest way of doing this.
+messages/%.pb.cc messages/%.pb.h: ../protobuf/%.proto
+	protoc --cpp_out=messages -I../protobuf message.proto
