@@ -95,7 +95,7 @@ ENV PATH $PATH:/usr/omnetpp/omnetpp-5.6.2/bin
 # Configure and compile
 RUN cd omnetpp-5.6.2 && \
     xvfb-run ./configure PREFER_CLANG=yes CXXFLAGS=-std=c++14 && \
-    make
+    make -j$(grep -c proc /proc/cpuinfo)
 
 # Cleanup
 RUN apt-get clean && \
