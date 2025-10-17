@@ -81,7 +81,7 @@ class MangoCommunicationNetwork:
             'msg_id': 'InitialMessage',
             'max_advance': UNTIL,
             'until': UNTIL,
-            'stepSize': 1000,
+            'timeResolution': 0.001,
             'logging_level': logging_level,
             'max_byte_size_per_msg_group': MAX_BYTE_SIZE_PER_MSG_GROUP
         }

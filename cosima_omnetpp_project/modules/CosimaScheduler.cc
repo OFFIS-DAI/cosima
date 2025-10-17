@@ -59,6 +59,7 @@ auto reconnectCounter = 0U;
 auto messageCounter = 0U;
 
 // parameter from coupled simulation
+auto timeResolution = 0.001;
 auto stepSize = 1.0;
 auto until = 100.0;
 auto untilReached = false; // indicates whether simulation end is reached in coupled simulation
@@ -72,6 +73,14 @@ auto currentStepInMessage = 0U;
 auto lastStepInMessage = 0U;
 
 std::string loggingLevel;
+
+static double mosaik_time_to_seconds(int32_t sim_time) {
+    return sim_time * timeResolution;
+}
+
+static int32_t seconds_to_mosaik_time(double ms) {
+    return ceil(ms / timeResolution);
+}
 
 class Message {
     /*
@@ -400,8 +409,9 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
     for(auto i=0; i < pmsg_group.initial_messages().size(); i++) {
         InitialMessage initialMessage = pmsg_group.initial_messages(i);
         initialMessageReceived = true;
-        // calculate from milliseconds to seconds
-        until = initialMessage.until()*1.0/1000;
+        timeResolution = initialMessage.time_resolution();
+        // calculate from sim time to milliseconds
+        until = mosaik_time_to_seconds(initialMessage.until());
         // cancel until event
         schedulerModuleObject->cancelUntilEvent();
         // schedule until event
@@ -409,7 +419,6 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         getSimulation()->getFES()->insert(schedulerModuleObject->untilEvent);
         log("CosimaScheduler: until event inserted for time " + std::to_string(until) + " at simtime " + simTime().str(), "info");
 
-        stepSize = initialMessage.step_size();
         auto loggingLevelMsg = initialMessage.logging_level();
         std::string loggingLevelStr = loggingLevelMsg;
         loggingLevel = loggingLevelStr;
@@ -418,7 +427,7 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         log("Setting max byte size per message to " + std::to_string(MAX_BYTE_SIZE_PER_MSG));
 
         // schedule max advance event
-        auto maxAdvance = (initialMessage.max_advance() * 1.0)/1000;
+        auto maxAdvance = mosaik_time_to_seconds(initialMessage.max_advance());
         schedulerModuleObject->cancelMaxAdvanceEvent();
         schedulerModuleObject->maxAdvEvent->setCtrlType(ControlType::MaxAdvance);
         if (maxAdvance >= simTime().dbl()) {
@@ -436,7 +445,7 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         // get information from message
         auto msgId = infoMessage.msg_id();
         // calculate from milliseconds to seconds
-        auto maxAdvance = (infoMessage.max_advance() * 1.0)/1000;
+        auto maxAdvance = mosaik_time_to_seconds(infoMessage.max_advance());
         auto sender = infoMessage.sender();
         auto receiver = infoMessage.receiver();
         auto size = infoMessage.size();
@@ -465,7 +474,7 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
             socketEvent = dynamic_cast<cMessage *>(pkt);
 
 
-            adjustedCouplingSimTime = (infoMessage.sim_time() * 1.0) / 1000;
+            adjustedCouplingSimTime = mosaik_time_to_seconds(infoMessage.sim_time());
 
             log("Cosima Scheduler received message with sender: " + sender + " for simTime " + std::to_string(adjustedCouplingSimTime) + " and id " + msgId );
 
@@ -498,8 +507,8 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
             std::string msgId = syncMessage.msg_id();
             log("CosimaScheduler: received waiting message with Id " + msgId);
             // Pretend to have an inserted event to not longer wait for messages
-            auto waitingMsgTime = ((syncMessage.sim_time()) * 1.0) / 1000;
-            auto maxAdvance = ((syncMessage.max_advance()) * 1.0) / 1000;
+            auto waitingMsgTime = mosaik_time_to_seconds(syncMessage.sim_time());
+            auto maxAdvance = mosaik_time_to_seconds(syncMessage.max_advance());
             log("waiting msg time " + std::to_string(waitingMsgTime) + " sim time " + simTime().str() + " max advance " + std::to_string(maxAdvance));
 
             // schedule max advance event
@@ -529,11 +538,11 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
     // get infrastructure messages
     for(auto i=0; i < pmsg_group.infrastructure_messages().size(); i++) {
         InfrastructureMessage infrastructureMessage = pmsg_group.infrastructure_messages().Get(i);
-        adjustedCouplingSimTime = (infrastructureMessage.sim_time() * 1.0) / 1000;
+        adjustedCouplingSimTime = mosaik_time_to_seconds(infrastructureMessage.sim_time());
         if (infrastructureMessage.change_module() != "") {
             if (infrastructureMessage.msg_type() == InfrastructureMessage_MsgType_DISCONNECT) {
                 auto msgId = infrastructureMessage.msg_id();
-                auto adjustedCouplingSimTime = (infrastructureMessage.sim_time() * 1.0) / 1000;
+                auto adjustedCouplingSimTime = mosaik_time_to_seconds(infrastructureMessage.sim_time());
                 log("CosimaScheduler: disconnect event inserted for simtime " + std::to_string(adjustedCouplingSimTime) + " for " + infrastructureMessage.change_module() + ".");
                 disconnectModules.push_back((infrastructureMessage.change_module()).c_str());
 
@@ -559,7 +568,7 @@ int CosimaScheduler::handleMsgFromCoupledSimulation(std::vector<char> data) {
         trafficEvent->setStop(trafficMessage.stop());
         trafficEvent->setInterval(trafficMessage.interval());
         trafficEvent->setPacketLength(trafficMessage.packet_length());
-        auto arrivalTime = (trafficMessage.start() * 1.0) / 1000;
+        auto arrivalTime = mosaik_time_to_seconds(trafficMessage.start());
         trafficEvent->setArrival(scenarioManagerObject->getId(), -1, arrivalTime);
         log("CosimaScheduler: traffic event inserted for simtime " + std::to_string(arrivalTime) + " for " + trafficMessage.source() + " to " + trafficMessage.destination() + ".");
         getSimulation()->getFES()->insert(trafficEvent);
@@ -864,8 +873,8 @@ void CosimaScheduler::sendToCoupledSimulation(cMessage *reply) {
     }
     // round up current simTime
     auto currentStep = 0U;
-    currentStep = ceil(simTime().dbl()*1000);
-    auto currentStep_d = (currentStep * 1.0) / 1000;
+    currentStep = seconds_to_mosaik_time(simTime().dbl());
+    auto currentStep_d = mosaik_time_to_seconds(currentStep);
     CosimaCtrlEvent *replyEvent;
 
     auto scheduleMessage = true;
@@ -878,7 +887,7 @@ void CosimaScheduler::sendToCoupledSimulation(cMessage *reply) {
     if (scheduleMessage) {
         if (currentStep == lastStepInMessage) {
             currentStep += 1;
-            currentStep_d = (currentStep * 1.0) / 1000;
+            currentStep_d = mosaik_time_to_seconds(currentStep);
         }
         if(currentStepInMessage == currentStep) {
             log("CosimaScheduler: request to send message for the same step " + std::to_string(currentStep) + " back to coupled simulation." );

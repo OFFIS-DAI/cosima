@@ -68,13 +68,11 @@ class OmnetppConnection:
 
     def sender(self, message):
         sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-        time.sleep(1)
         sender_socket.connect((self._servername, self.observer_port))
         sender_socket.send(message)
         sender_socket.close()
 
     def return_messages(self):
-        time.sleep(0.1)
         if not self._done_receiving:
             return []
         if self.expected_messages > len(self.stored_messages):

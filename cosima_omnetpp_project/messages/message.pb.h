@@ -273,11 +273,11 @@ class InitialMessage : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::int32 until() const;
   void set_until(::google::protobuf::int32 value);
 
-  // int32 step_size = 4;
-  void clear_step_size();
-  static const int kStepSizeFieldNumber = 4;
-  ::google::protobuf::int32 step_size() const;
-  void set_step_size(::google::protobuf::int32 value);
+  // double time_resolution = 4;
+  void clear_time_resolution();
+  static const int kTimeResolutionFieldNumber = 4;
+  double time_resolution() const;
+  void set_time_resolution(double value);
 
   // int32 max_byte_size_per_msg_group = 6;
   void clear_max_byte_size_per_msg_group();
@@ -293,7 +293,7 @@ class InitialMessage : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::internal::ArenaStringPtr logging_level_;
   ::google::protobuf::int32 max_advance_;
   ::google::protobuf::int32 until_;
-  ::google::protobuf::int32 step_size_;
+  double time_resolution_;
   ::google::protobuf::int32 max_byte_size_per_msg_group_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_cosima_5fcore_2fmessages_2fmessage_2eproto::TableStruct;
@@ -1496,18 +1496,18 @@ inline void InitialMessage::set_until(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:InitialMessage.until)
 }
 
-// int32 step_size = 4;
-inline void InitialMessage::clear_step_size() {
-  step_size_ = 0;
+// double time_resolution = 4;
+inline void InitialMessage::clear_time_resolution() {
+  time_resolution_ = 0;
 }
-inline ::google::protobuf::int32 InitialMessage::step_size() const {
-  // @@protoc_insertion_point(field_get:InitialMessage.step_size)
-  return step_size_;
+inline double InitialMessage::time_resolution() const {
+  // @@protoc_insertion_point(field_get:InitialMessage.time_resolution)
+  return time_resolution_;
 }
-inline void InitialMessage::set_step_size(::google::protobuf::int32 value) {
+inline void InitialMessage::set_time_resolution(double value) {
   
-  step_size_ = value;
-  // @@protoc_insertion_point(field_set:InitialMessage.step_size)
+  time_resolution_ = value;
+  // @@protoc_insertion_point(field_set:InitialMessage.time_resolution)
 }
 
 // string logging_level = 5;

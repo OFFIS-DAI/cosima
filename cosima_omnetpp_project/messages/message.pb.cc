@@ -189,7 +189,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, msg_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, max_advance_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, until_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, step_size_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, time_resolution_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, logging_level_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::InitialMessage, max_byte_size_per_msg_group_),
   ~0u,  // no _has_bits_
@@ -308,50 +308,50 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\"cosima_core/messages/message.proto\"\223\001\n"
+      "\n\"cosima_core/messages/message.proto\"\231\001\n"
       "\016InitialMessage\022\016\n\006msg_id\030\001 \001(\t\022\023\n\013max_a"
-      "dvance\030\002 \001(\005\022\r\n\005until\030\003 \001(\005\022\021\n\tstep_size"
-      "\030\004 \001(\005\022\025\n\rlogging_level\030\005 \001(\t\022#\n\033max_byt"
-      "e_size_per_msg_group\030\006 \001(\005\"\262\001\n\013InfoMessa"
-      "ge\022\016\n\006msg_id\030\001 \001(\t\022\023\n\013max_advance\030\002 \001(\005\022"
-      "\020\n\010sim_time\030\003 \001(\005\022\016\n\006sender\030\004 \001(\t\022\020\n\010rec"
-      "eiver\030\005 \001(\t\022\014\n\004size\030\006 \001(\005\022\017\n\007content\030\007 \001"
-      "(\t\022\025\n\rcreation_time\030\010 \001(\005\022\024\n\014is_falsifie"
-      "d\030\t \001(\010\"\354\001\n\026SynchronisationMessage\0221\n\010ms"
-      "g_type\030\001 \001(\0162\037.SynchronisationMessage.Ms"
+      "dvance\030\002 \001(\005\022\r\n\005until\030\003 \001(\005\022\027\n\017time_reso"
+      "lution\030\004 \001(\001\022\025\n\rlogging_level\030\005 \001(\t\022#\n\033m"
+      "ax_byte_size_per_msg_group\030\006 \001(\005\"\262\001\n\013Inf"
+      "oMessage\022\016\n\006msg_id\030\001 \001(\t\022\023\n\013max_advance\030"
+      "\002 \001(\005\022\020\n\010sim_time\030\003 \001(\005\022\016\n\006sender\030\004 \001(\t\022"
+      "\020\n\010receiver\030\005 \001(\t\022\014\n\004size\030\006 \001(\005\022\017\n\007conte"
+      "nt\030\007 \001(\t\022\025\n\rcreation_time\030\010 \001(\005\022\024\n\014is_fa"
+      "lsified\030\t \001(\010\"\354\001\n\026SynchronisationMessage"
+      "\0221\n\010msg_type\030\001 \001(\0162\037.SynchronisationMess"
+      "age.MsgType\022\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030"
+      "\003 \001(\005\022\023\n\013max_advance\030\004 \001(\005\022\017\n\007timeout\030\005 "
+      "\001(\010\022\026\n\016timeout_msg_id\030\006 \001(\t\"\?\n\007MsgType\022\017"
+      "\n\013MAX_ADVANCE\020\000\022\013\n\007WAITING\020\001\022\026\n\022TRANSMIS"
+      "SION_ERROR\020\002\"\322\001\n\025InfrastructureMessage\0220"
+      "\n\010msg_type\030\001 \001(\0162\036.InfrastructureMessage"
+      ".MsgType\022\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030\003 \001"
+      "(\005\022\025\n\rchange_module\030\004 \001(\t\022$\n\034connection_"
+      "change_successful\030\005 \001(\010\"(\n\007MsgType\022\016\n\nDI"
+      "SCONNECT\020\000\022\r\n\tRECONNECT\020\001\"\235\001\n\016TrafficMes"
+      "sage\022\016\n\006msg_id\030\001 \001(\t\022\020\n\010sim_time\030\002 \001(\005\022\016"
+      "\n\006source\030\003 \001(\t\022\023\n\013destination\030\004 \001(\t\022\r\n\005s"
+      "tart\030\005 \001(\005\022\014\n\004stop\030\006 \001(\005\022\020\n\010interval\030\007 \001"
+      "(\005\022\025\n\rpacket_length\030\010 \001(\005\"\365\001\n\rAttackMess"
+      "age\022(\n\010msg_type\030\001 \001(\0162\026.AttackMessage.Ms"
       "gType\022\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030\003 \001(\005\022"
-      "\023\n\013max_advance\030\004 \001(\005\022\017\n\007timeout\030\005 \001(\010\022\026\n"
-      "\016timeout_msg_id\030\006 \001(\t\"\?\n\007MsgType\022\017\n\013MAX_"
-      "ADVANCE\020\000\022\013\n\007WAITING\020\001\022\026\n\022TRANSMISSION_E"
-      "RROR\020\002\"\322\001\n\025InfrastructureMessage\0220\n\010msg_"
-      "type\030\001 \001(\0162\036.InfrastructureMessage.MsgTy"
-      "pe\022\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030\003 \001(\005\022\025\n\r"
-      "change_module\030\004 \001(\t\022$\n\034connection_change"
-      "_successful\030\005 \001(\010\"(\n\007MsgType\022\016\n\nDISCONNE"
-      "CT\020\000\022\r\n\tRECONNECT\020\001\"\235\001\n\016TrafficMessage\022\016"
-      "\n\006msg_id\030\001 \001(\t\022\020\n\010sim_time\030\002 \001(\005\022\016\n\006sour"
-      "ce\030\003 \001(\t\022\023\n\013destination\030\004 \001(\t\022\r\n\005start\030\005"
-      " \001(\005\022\014\n\004stop\030\006 \001(\005\022\020\n\010interval\030\007 \001(\005\022\025\n\r"
-      "packet_length\030\010 \001(\005\"\365\001\n\rAttackMessage\022(\n"
-      "\010msg_type\030\001 \001(\0162\026.AttackMessage.MsgType\022"
-      "\016\n\006msg_id\030\002 \001(\t\022\020\n\010sim_time\030\003 \001(\005\022\027\n\017att"
-      "acked_module\030\004 \001(\t\022\r\n\005start\030\005 \001(\005\022\014\n\004sto"
-      "p\030\006 \001(\005\022\032\n\022attack_probability\030\007 \001(\005\"F\n\007M"
-      "sgType\022\017\n\013PACKET_DROP\020\000\022\030\n\024PACKET_FALSIF"
-      "ICATION\020\001\022\020\n\014PACKET_DELAY\020\002\"\201\003\n\016CosimaMs"
-      "gGroup\022)\n\020initial_messages\030\001 \003(\0132\017.Initi"
-      "alMessage\022#\n\rinfo_messages\030\002 \003(\0132\014.InfoM"
-      "essage\0229\n\030synchronisation_messages\030\003 \003(\013"
-      "2\027.SynchronisationMessage\0227\n\027infrastruct"
-      "ure_messages\030\004 \003(\0132\026.InfrastructureMessa"
-      "ge\022)\n\020traffic_messages\030\005 \003(\0132\017.TrafficMe"
-      "ssage\022\'\n\017attack_messages\030\006 \003(\0132\016.AttackM"
-      "essage\022\031\n\021current_time_step\030\007 \001(\005\022 \n\030num"
-      "ber_of_message_groups\030\010 \001(\005\022\032\n\022number_of"
-      "_messages\030\t \001(\005b\006proto3"
+      "\027\n\017attacked_module\030\004 \001(\t\022\r\n\005start\030\005 \001(\005\022"
+      "\014\n\004stop\030\006 \001(\005\022\032\n\022attack_probability\030\007 \001("
+      "\005\"F\n\007MsgType\022\017\n\013PACKET_DROP\020\000\022\030\n\024PACKET_"
+      "FALSIFICATION\020\001\022\020\n\014PACKET_DELAY\020\002\"\201\003\n\016Co"
+      "simaMsgGroup\022)\n\020initial_messages\030\001 \003(\0132\017"
+      ".InitialMessage\022#\n\rinfo_messages\030\002 \003(\0132\014"
+      ".InfoMessage\0229\n\030synchronisation_messages"
+      "\030\003 \003(\0132\027.SynchronisationMessage\0227\n\027infra"
+      "structure_messages\030\004 \003(\0132\026.Infrastructur"
+      "eMessage\022)\n\020traffic_messages\030\005 \003(\0132\017.Tra"
+      "fficMessage\022\'\n\017attack_messages\030\006 \003(\0132\016.A"
+      "ttackMessage\022\031\n\021current_time_step\030\007 \001(\005\022"
+      " \n\030number_of_message_groups\030\010 \001(\005\022\032\n\022num"
+      "ber_of_messages\030\t \001(\005b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1623);
+      descriptor, 1629);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "cosima_core/messages/message.proto", &protobuf_RegisterTypes);
 }
@@ -443,7 +443,7 @@ void InitialMessage::InitAsDefaultInstance() {
 const int InitialMessage::kMsgIdFieldNumber;
 const int InitialMessage::kMaxAdvanceFieldNumber;
 const int InitialMessage::kUntilFieldNumber;
-const int InitialMessage::kStepSizeFieldNumber;
+const int InitialMessage::kTimeResolutionFieldNumber;
 const int InitialMessage::kLoggingLevelFieldNumber;
 const int InitialMessage::kMaxByteSizePerMsgGroupFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -573,14 +573,14 @@ bool InitialMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // int32 step_size = 4;
+      // double time_resolution = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(33u /* 33 & 0xFF */)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &step_size_)));
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &time_resolution_)));
         } else {
           goto handle_unusual;
         }
@@ -663,9 +663,9 @@ void InitialMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->until(), output);
   }
 
-  // int32 step_size = 4;
-  if (this->step_size() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->step_size(), output);
+  // double time_resolution = 4;
+  if (this->time_resolution() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->time_resolution(), output);
   }
 
   // string logging_level = 5;
@@ -718,9 +718,9 @@ void InitialMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->until(), target);
   }
 
-  // int32 step_size = 4;
-  if (this->step_size() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->step_size(), target);
+  // double time_resolution = 4;
+  if (this->time_resolution() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->time_resolution(), target);
   }
 
   // string logging_level = 5;
@@ -784,11 +784,9 @@ size_t InitialMessage::ByteSizeLong() const {
         this->until());
   }
 
-  // int32 step_size = 4;
-  if (this->step_size() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->step_size());
+  // double time_resolution = 4;
+  if (this->time_resolution() != 0) {
+    total_size += 1 + 8;
   }
 
   // int32 max_byte_size_per_msg_group = 6;
@@ -839,8 +837,8 @@ void InitialMessage::MergeFrom(const InitialMessage& from) {
   if (from.until() != 0) {
     set_until(from.until());
   }
-  if (from.step_size() != 0) {
-    set_step_size(from.step_size());
+  if (from.time_resolution() != 0) {
+    set_time_resolution(from.time_resolution());
   }
   if (from.max_byte_size_per_msg_group() != 0) {
     set_max_byte_size_per_msg_group(from.max_byte_size_per_msg_group());
@@ -877,7 +875,7 @@ void InitialMessage::InternalSwap(InitialMessage* other) {
     GetArenaNoVirtual());
   swap(max_advance_, other->max_advance_);
   swap(until_, other->until_);
-  swap(step_size_, other->step_size_);
+  swap(time_resolution_, other->time_resolution_);
   swap(max_byte_size_per_msg_group_, other->max_byte_size_per_msg_group_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }

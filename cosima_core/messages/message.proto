@@ -4,7 +4,7 @@ message InitialMessage {
     string msg_id = 1;
     int32 max_advance = 2;
     int32 until = 3;
-    int32 step_size = 4;
+    double time_resolution = 4;
     string logging_level = 5;
     int32 max_byte_size_per_msg_group = 6;
   }

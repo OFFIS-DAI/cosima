@@ -15,7 +15,7 @@ There are different types of protobuf messages with different values:
   * `max_advance` : the current value of the mosaik-internal max advance value
   * `int32 until` : the time of the simulation end in mosaik
   * `bool is_time_based`: indicates whether the simulation in mosaik is time-based or not
-  * `int32 step_size` : the step size used in the simulation, based on the step-size definition in mosaik (e.g., 1 mosaik step is equivalent to 1 millisecond)
+  * `double time_resolution` : the duration in seconds of each simulation step in mosaik, based on the time resolution definition in mosaik (e.g., 1 mosaik step is equivalent to 1 millisecond)
 * `InfoMessage`
   * `string msg_id` : a msg id identifies the message
   * `max_advance` : the current value of the mosaik-internal max advance value

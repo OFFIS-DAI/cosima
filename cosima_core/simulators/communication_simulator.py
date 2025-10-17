@@ -68,7 +68,7 @@ class CommunicationSimulator(mosaik_api.Simulator):
         self._node_connections = {}
         self._models = {}
         self._model_names = []
-        self._step_size = None
+        self._time_resolution = None
         self._received_answer = True
         self._number_messages_sent = 0
         self._number_messages_received = 0
@@ -95,7 +95,7 @@ class CommunicationSimulator(mosaik_api.Simulator):
 
         self._model_names = list(sim_params['client_attribute_mapping'].keys())
 
-        self._step_size = int(1 / time_resolution)
+        self._time_resolution = time_resolution
         self._omnetpp_connection = OmnetppConnection(sim_params['port'])
         self._omnetpp_connection.start_connection()
 
@@ -246,7 +246,7 @@ class CommunicationSimulator(mosaik_api.Simulator):
             'msg_id': 'InitialMessage',
             'max_advance': max_advance,
             'until': self.mosaik.world.until,
-            'stepSize': self._step_size,
+            'timeResolution': self._time_resolution,
             'logging_level': scenario_config.LOGGING_LEVEL,
             'max_byte_size_per_msg_group': MAX_BYTE_SIZE_PER_MSG_GROUP
         }
@@ -258,7 +258,7 @@ class CommunicationSimulator(mosaik_api.Simulator):
         waiting_msg = {
             'msg_type': SynchronisationMessage.MsgType.WAITING,
             'msg_id': f'WaitingMessage_{self._waiting_msgs_counter}',
-            'sim_time': self.calculate_to_ms(sim_time, self._step_size),
+            'sim_time': sim_time,
             'max_advance': max_advance,
         }
         log(f'Send WaitingMessage_{self._waiting_msgs_counter} at time {sim_time} with max advance {max_advance}')
@@ -272,11 +272,6 @@ class CommunicationSimulator(mosaik_api.Simulator):
         # needs to be divisible by step size
         value = int(value - (value % step_size))
         return value
-
-    @staticmethod
-    def calculate_to_ms(value, step_size):
-        """calculates value to milliseconds for OMNeT++"""
-        return value * step_size
 
     @staticmethod
     def check_msgs(messages, time, until):

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\"cosima_core/messages/message.proto\"\x93\x01\n\x0eInitialMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\r\n\x05until\x18\x03 \x01(\x05\x12\x11\n\tstep_size\x18\x04 \x01(\x05\x12\x15\n\rlogging_level\x18\x05 \x01(\t\x12#\n\x1bmax_byte_size_per_msg_group\x18\x06 \x01(\x05\"\xb2\x01\n\x0bInfoMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x0e\n\x06sender\x18\x04 \x01(\t\x12\x10\n\x08receiver\x18\x05 \x01(\t\x12\x0c\n\x04size\x18\x06 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x07 \x01(\t\x12\x15\n\rcreation_time\x18\x08 \x01(\x05\x12\x14\n\x0cis_falsified\x18\t \x01(\x08\"\xec\x01\n\x16SynchronisationMessage\x12\x31\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1f.SynchronisationMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x13\n\x0bmax_advance\x18\x04 \x01(\x05\x12\x0f\n\x07timeout\x18\x05 \x01(\x08\x12\x16\n\x0etimeout_msg_id\x18\x06 \x01(\t\"?\n\x07MsgType\x12\x0f\n\x0bMAX_ADVANCE\x10\x00\x12\x0b\n\x07WAITING\x10\x01\x12\x16\n\x12TRANSMISSION_ERROR\x10\x02\"\xd2\x01\n\x15InfrastructureMessage\x12\x30\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1e.InfrastructureMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x15\n\rchange_module\x18\x04 \x01(\t\x12$\n\x1c\x63onnection_change_successful\x18\x05 \x01(\x08\"(\n\x07MsgType\x12\x0e\n\nDISCONNECT\x10\x00\x12\r\n\tRECONNECT\x10\x01\"\x9d\x01\n\x0eTrafficMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x10\n\x08sim_time\x18\x02 \x01(\x05\x12\x0e\n\x06source\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65stination\x18\x04 \x01(\t\x12\r\n\x05start\x18\x05 \x01(\x05\x12\x0c\n\x04stop\x18\x06 \x01(\x05\x12\x10\n\x08interval\x18\x07 \x01(\x05\x12\x15\n\rpacket_length\x18\x08 \x01(\x05\"\xf5\x01\n\rAttackMessage\x12(\n\x08msg_type\x18\x01 \x01(\x0e\x32\x16.AttackMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x17\n\x0f\x61ttacked_module\x18\x04 \x01(\t\x12\r\n\x05start\x18\x05 \x01(\x05\x12\x0c\n\x04stop\x18\x06 \x01(\x05\x12\x1a\n\x12\x61ttack_probability\x18\x07 \x01(\x05\"F\n\x07MsgType\x12\x0f\n\x0bPACKET_DROP\x10\x00\x12\x18\n\x14PACKET_FALSIFICATION\x10\x01\x12\x10\n\x0cPACKET_DELAY\x10\x02\"\x81\x03\n\x0e\x43osimaMsgGroup\x12)\n\x10initial_messages\x18\x01 \x03(\x0b\x32\x0f.InitialMessage\x12#\n\rinfo_messages\x18\x02 \x03(\x0b\x32\x0c.InfoMessage\x12\x39\n\x18synchronisation_messages\x18\x03 \x03(\x0b\x32\x17.SynchronisationMessage\x12\x37\n\x17infrastructure_messages\x18\x04 \x03(\x0b\x32\x16.InfrastructureMessage\x12)\n\x10traffic_messages\x18\x05 \x03(\x0b\x32\x0f.TrafficMessage\x12\'\n\x0f\x61ttack_messages\x18\x06 \x03(\x0b\x32\x0e.AttackMessage\x12\x19\n\x11\x63urrent_time_step\x18\x07 \x01(\x05\x12 \n\x18number_of_message_groups\x18\x08 \x01(\x05\x12\x1a\n\x12number_of_messages\x18\t \x01(\x05\x62\x06proto3')
+  serialized_pb=_b('\n\"cosima_core/messages/message.proto\"\x99\x01\n\x0eInitialMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\r\n\x05until\x18\x03 \x01(\x05\x12\x17\n\x0ftime_resolution\x18\x04 \x01(\x01\x12\x15\n\rlogging_level\x18\x05 \x01(\t\x12#\n\x1bmax_byte_size_per_msg_group\x18\x06 \x01(\x05\"\xb2\x01\n\x0bInfoMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x13\n\x0bmax_advance\x18\x02 \x01(\x05\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x0e\n\x06sender\x18\x04 \x01(\t\x12\x10\n\x08receiver\x18\x05 \x01(\t\x12\x0c\n\x04size\x18\x06 \x01(\x05\x12\x0f\n\x07\x63ontent\x18\x07 \x01(\t\x12\x15\n\rcreation_time\x18\x08 \x01(\x05\x12\x14\n\x0cis_falsified\x18\t \x01(\x08\"\xec\x01\n\x16SynchronisationMessage\x12\x31\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1f.SynchronisationMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x13\n\x0bmax_advance\x18\x04 \x01(\x05\x12\x0f\n\x07timeout\x18\x05 \x01(\x08\x12\x16\n\x0etimeout_msg_id\x18\x06 \x01(\t\"?\n\x07MsgType\x12\x0f\n\x0bMAX_ADVANCE\x10\x00\x12\x0b\n\x07WAITING\x10\x01\x12\x16\n\x12TRANSMISSION_ERROR\x10\x02\"\xd2\x01\n\x15InfrastructureMessage\x12\x30\n\x08msg_type\x18\x01 \x01(\x0e\x32\x1e.InfrastructureMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x15\n\rchange_module\x18\x04 \x01(\t\x12$\n\x1c\x63onnection_change_successful\x18\x05 \x01(\x08\"(\n\x07MsgType\x12\x0e\n\nDISCONNECT\x10\x00\x12\r\n\tRECONNECT\x10\x01\"\x9d\x01\n\x0eTrafficMessage\x12\x0e\n\x06msg_id\x18\x01 \x01(\t\x12\x10\n\x08sim_time\x18\x02 \x01(\x05\x12\x0e\n\x06source\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65stination\x18\x04 \x01(\t\x12\r\n\x05start\x18\x05 \x01(\x05\x12\x0c\n\x04stop\x18\x06 \x01(\x05\x12\x10\n\x08interval\x18\x07 \x01(\x05\x12\x15\n\rpacket_length\x18\x08 \x01(\x05\"\xf5\x01\n\rAttackMessage\x12(\n\x08msg_type\x18\x01 \x01(\x0e\x32\x16.AttackMessage.MsgType\x12\x0e\n\x06msg_id\x18\x02 \x01(\t\x12\x10\n\x08sim_time\x18\x03 \x01(\x05\x12\x17\n\x0f\x61ttacked_module\x18\x04 \x01(\t\x12\r\n\x05start\x18\x05 \x01(\x05\x12\x0c\n\x04stop\x18\x06 \x01(\x05\x12\x1a\n\x12\x61ttack_probability\x18\x07 \x01(\x05\"F\n\x07MsgType\x12\x0f\n\x0bPACKET_DROP\x10\x00\x12\x18\n\x14PACKET_FALSIFICATION\x10\x01\x12\x10\n\x0cPACKET_DELAY\x10\x02\"\x81\x03\n\x0e\x43osimaMsgGroup\x12)\n\x10initial_messages\x18\x01 \x03(\x0b\x32\x0f.InitialMessage\x12#\n\rinfo_messages\x18\x02 \x03(\x0b\x32\x0c.InfoMessage\x12\x39\n\x18synchronisation_messages\x18\x03 \x03(\x0b\x32\x17.SynchronisationMessage\x12\x37\n\x17infrastructure_messages\x18\x04 \x03(\x0b\x32\x16.InfrastructureMessage\x12)\n\x10traffic_messages\x18\x05 \x03(\x0b\x32\x0f.TrafficMessage\x12\'\n\x0f\x61ttack_messages\x18\x06 \x03(\x0b\x32\x0e.AttackMessage\x12\x19\n\x11\x63urrent_time_step\x18\x07 \x01(\x05\x12 \n\x18number_of_message_groups\x18\x08 \x01(\x05\x12\x1a\n\x12number_of_messages\x18\t \x01(\x05\x62\x06proto3')
 )
 
 
@@ -45,8 +45,8 @@ _SYNCHRONISATIONMESSAGE_MSGTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=543,
-  serialized_end=606,
+  serialized_start=549,
+  serialized_end=612,
 )
 _sym_db.RegisterEnumDescriptor(_SYNCHRONISATIONMESSAGE_MSGTYPE)
 
@@ -67,8 +67,8 @@ _INFRASTRUCTUREMESSAGE_MSGTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=779,
-  serialized_end=819,
+  serialized_start=785,
+  serialized_end=825,
 )
 _sym_db.RegisterEnumDescriptor(_INFRASTRUCTUREMESSAGE_MSGTYPE)
 
@@ -93,8 +93,8 @@ _ATTACKMESSAGE_MSGTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1157,
-  serialized_end=1227,
+  serialized_start=1163,
+  serialized_end=1233,
 )
 _sym_db.RegisterEnumDescriptor(_ATTACKMESSAGE_MSGTYPE)
 
@@ -128,9 +128,9 @@ _INITIALMESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='step_size', full_name='InitialMessage.step_size', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      name='time_resolution', full_name='InitialMessage.time_resolution', index=3,
+      number=4, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -161,7 +161,7 @@ _INITIALMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=39,
-  serialized_end=186,
+  serialized_end=192,
 )
 
 
@@ -247,8 +247,8 @@ _INFOMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=189,
-  serialized_end=367,
+  serialized_start=195,
+  serialized_end=373,
 )
 
 
@@ -314,8 +314,8 @@ _SYNCHRONISATIONMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=370,
-  serialized_end=606,
+  serialized_start=376,
+  serialized_end=612,
 )
 
 
@@ -374,8 +374,8 @@ _INFRASTRUCTUREMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=609,
-  serialized_end=819,
+  serialized_start=615,
+  serialized_end=825,
 )
 
 
@@ -454,8 +454,8 @@ _TRAFFICMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=822,
-  serialized_end=979,
+  serialized_start=828,
+  serialized_end=985,
 )
 
 
@@ -528,8 +528,8 @@ _ATTACKMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=982,
-  serialized_end=1227,
+  serialized_start=988,
+  serialized_end=1233,
 )
 
 
@@ -615,8 +615,8 @@ _COSIMAMSGGROUP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1230,
-  serialized_end=1615,
+  serialized_start=1236,
+  serialized_end=1621,
 )
 
 _SYNCHRONISATIONMESSAGE.fields_by_name['msg_type'].enum_type = _SYNCHRONISATIONMESSAGE_MSGTYPE
